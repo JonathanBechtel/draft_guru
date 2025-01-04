@@ -53,6 +53,9 @@ config :tailwind,
     cd: Path.expand("../assets", __DIR__)
   ]
 
+config :draft_guru, DraftGuru.NBADotComScraper,
+  base_url: "https://www.nba.com/stats/draft/"
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
