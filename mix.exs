@@ -58,7 +58,8 @@ defmodule DraftGuru.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:httpoison, "~> 2.0"},
-      {:floki, ">= 0.30.0"}
+      {:floki, ">= 0.30.0"},
+      {:wallaby, "~> 0.30.0"}
     ]
   end
 

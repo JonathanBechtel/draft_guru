@@ -7,6 +7,8 @@ defmodule DraftGuru.NBADotComScraper do
   require Logger
   alias HTTPoison.Response
 
+  use Wallaby.DSL
+
   # pull in the config from the applicatioin
   @base_url Application.compile_env!(:draft_guru, __MODULE__)[:base_url]
 
@@ -21,7 +23,7 @@ defmodule DraftGuru.NBADotComScraper do
     Logger.info("Fetching data for draft section: #{combine_section} in year #{season_year}")
 
     case HTTPoison.get(url, [], follow_redirect: true) do
-      {:ok,  %Response{status_code:200, body: body}} ->
+      {:ok,  %Response{status_code: 200, body: body}} ->
         {:ok, body}
 
       {:ok, %Response{status_code: code}} ->
@@ -90,10 +92,55 @@ defmodule DraftGuru.NBADotComScraper do
 
   Returns `{:ok, rows}` on success, or `{:error, reason}` if something goes wrong.
   """
-  def fetch_and_parse(season_year) do
-    with {:ok, html} <- fetch_html(season_year) do
+  def fetch_and_parse(combine_section, season_year) do
+    with {:ok, html} <- fetch_html(combine_section, season_year) do
       rows = parse_combine_table(html)
       {:ok, rows}
     end
+  end
+
+  def scrape_nba_draft_site(combine_section, season_year) do
+    {:ok, session} = Wallaby.start_session()
+
+    url = "#{@base_url}#{combine_section}?SeasonYear=#{season_year}"
+
+    # 1) Visit the page
+    session = visit(session, url)
+
+    # 2) 'Wait' for the table to appear by telling the query to wait up to 5 seconds
+    table_tbody = Query.css("table.Crom_table__p1iZz > tbody.Crom_body__UYOcU", wait: 5_000)
+
+    # 3) find/2 will raise an error if it doesn't appear in time
+    _tbody_element = find(session, table_tbody)
+
+    # 4) Now that the <tbody> definitely exists, let's collect all rows <tr>
+    rows = all(session, Query.css("table.Crom_table__p1iZz > tbody.Crom_body__UYOcU > tr"))
+
+    # 5) For each row, parse the <td> cells
+    data =
+      Enum.map(rows, fn row ->
+        cells =
+          row
+          |> all(Query.css("td"))
+          |> Enum.map(&Wallaby.Element.text/1)
+
+        %{
+          player_name:       Enum.at(cells, 0),
+          position:          Enum.at(cells, 1),
+          body_fat_pct:      Enum.at(cells, 2),
+          hand_length:       Enum.at(cells, 3),
+          hand_width:        Enum.at(cells, 4),
+          height_wo_shoes:   Enum.at(cells, 5),
+          height_w_shoes:    Enum.at(cells, 6),
+          standing_reach:    Enum.at(cells, 7),
+          weight_lbs:        Enum.at(cells, 8),
+          wingspan:          Enum.at(cells, 9)
+        }
+      end)
+
+    # End session & return data
+    Wallaby.end_session(session)
+
+    {:ok, data}
   end
 end
