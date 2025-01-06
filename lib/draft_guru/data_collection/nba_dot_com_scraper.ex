@@ -99,7 +99,22 @@ defmodule DraftGuru.NBADotComScraper do
     end
   end
 
-  def scrape_nba_draft_site(combine_section, season_year) do
+  @doc """
+  Scrabes nba draft website for multiple season years
+
+  Returns {:ok, list} on success, or `{:error, reason}` if something goes wrong
+  """
+  def fetch_combine_data_multiple_years(combine_section, season_years) do
+    Enum.reduce(season_years, [], fn season_year, acc ->
+      case fetch_combine_data(combine_section, season_year) do
+        {:ok, data} -> acc ++ data
+        {:error, _reason} -> acc
+        _ -> acc
+      end
+    end)
+  end
+
+  def fetch_combine_data(combine_section, season_year) do
     {:ok, session} = Wallaby.start_session()
 
     url = "#{@base_url}#{combine_section}?SeasonYear=#{season_year}"
