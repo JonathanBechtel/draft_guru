@@ -59,7 +59,8 @@ defmodule DraftGuru.MixProject do
       {:bandit, "~> 1.5"},
       {:httpoison, "~> 2.0"},
       {:floki, ">= 0.30.0"},
-      {:wallaby, "~> 0.30.0"}
+      {:wallaby, "~> 0.30.0"},
+      {:nimble_csv, "~> 1.1"}
     ]
   end
 
