@@ -23,15 +23,19 @@ defmodule DraftGuru.NBADotComScraper do
       "2008-09", "2007-08", "2006-07", "2005-06", "2004-05", "2003-04", "2002-03",
      "2001-02"]
 
-    Enum.reduce(season_years, [], fn season_year, acc ->
-      case fetch_html(combine_section, season_year) do
+    data = Enum.reduce(season_years, [], fn season_year, acc ->
+      case fetch_combine_data(combine_section, season_year) do
         {:ok, body} -> [body | acc]
         {:error, reason} ->
           Logger.error("Failed to pull data for year: #{season_year}, because: #{reason}")
           acc
-        _ -> acc
       end
     end)
+
+    case data do
+      _ when is_list(data) -> {:ok, data}
+      _ -> {:error, "Did not return correct type"}
+    end
 
   end
 
@@ -125,8 +129,8 @@ defmodule DraftGuru.NBADotComScraper do
   @doc """
   Takes data retrieved from site, outputs to a csv
   """
-  def output_data_to_csv(list_data) do
-
+  def output_data_to_csv(_list_data) do
+    1
   end
 
   @doc """
