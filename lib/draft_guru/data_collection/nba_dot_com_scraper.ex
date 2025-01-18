@@ -7,38 +7,40 @@ defmodule DraftGuru.NBADotComScraper do
   require Logger
   alias HTTPoison.Response
 
-  import Utilities
+  import Utilities, only: [export_data_to_file: 2]
   use Wallaby.DSL
 
   # pull in the config from the applicatioin
   @base_url Application.compile_env!(:draft_guru, __MODULE__)[:base_url]
+  @seasons Application.compile_env!(:draft_guru, __MODULE__)[:seasons]
 
   @doc """
   Master function that runs fetch_html for multiple years
   """
-  def pull_data_for_multiple_years(combine_section) do
-    # NOTE:  hard coding these for now - can change later
-    season_years = ["2024-25", "2023-24", "2022-23", "2021-22"]
-    #  "2020-21", "2019-20", "2018-19", "2017-18", "2016-17", "2015-16",
-    #  "2014-15", "2013-14", "2012-13", "2011-12", "2010-11", "2009-10",
-    #  "2008-09", "2007-08", "2006-07", "2005-06", "2004-05", "2003-04", "2002-03",
-    # "2001-02"]
 
-    data = Enum.reduce(season_years, [], fn season_year, acc ->
+  def scrape_combine_data_for_section(combine_section) do
+    combine_section
+    |> pull_data_for_multiple_years()
+    |> clean_player_data()
+    |> export_data_to_file(String.replace(combine_section, "-", "_"))
+  end
+
+  def pull_data_for_multiple_years(combine_section) do
+    Enum.reduce(@seasons, [], fn season_year, acc ->
       case fetch_combine_data(combine_section, season_year) do
         {:ok, body} -> acc ++ body
-        {:error, reason} ->
-          Logger.error("Failed to pull data for year: #{season_year}, because: #{reason}")
-          acc
+        {:error, _message} -> acc
       end
     end)
+  end
 
-    # loop over each map, update the key / value pair with the cleaned value
-    data = Enum.map(data, fn player_map ->
+  defp clean_player_data(data_list) do
+
+   data = Enum.map(data_list, fn player_map ->
       Map.new(player_map, fn {key, value} -> {key, clean_map_value(value)} end)
     end)
 
-    case data do
+   case data do
       _ when is_list(data) -> {:ok, data}
       _ -> {:error, "Did not return correct type"}
     end
@@ -71,6 +73,8 @@ defmodule DraftGuru.NBADotComScraper do
     {:ok, session} = Wallaby.start_session()
 
     url = "#{@base_url}#{combine_section}?SeasonYear=#{season_year}"
+
+    IO.puts("Pulling data for url: #{url}")
 
     # 1) Visit the page
     session = visit(session, url)
@@ -109,17 +113,19 @@ defmodule DraftGuru.NBADotComScraper do
     # End session & return data
     Wallaby.end_session(session)
 
-    {:ok, data}
+    case data do
+      _ when is_list(data) -> {:ok, data}
+      _ -> {:error, "data did not return correctly"}
+    end
   end
 
-  @doc """
-  strips various formatted values of "no value" and returns nil value
-  Used to handle incoming data from NBACom that doesn't contain a real value
-  """
+  @doc false
   defp parse_null_value("-%"), do: nil
-  defp parse_null_value(_), do: nil
+  defp parse_null_value("_"), do: nil
   defp parse_null_value(""), do: nil
   defp parse_null_value("nil"), do: nil
+  defp parse_null_value(nil), do: nil
+  defp parse_null_value(value), do: value
 
   defp parse_float(str) when is_binary(str) do
     case Float.parse(str) do
@@ -129,13 +135,20 @@ defmodule DraftGuru.NBADotComScraper do
     end
   end
 
-  defp parse_string_measurements(measurement) when is_binary(measurement) do
+  defp parse_string_measurement(measurement) when is_binary(measurement) do
     regex = ~r/^(?<ft>\d+)'[\s]*(?<in>\d+(?:\.\d+)?)(?:"{0,2})?$/
 
-    case regex.named_captures(regex, measurement) do
+    case Regex.named_captures(regex, measurement) do
       %{"ft" => ft_str, "in" => in_str} ->
-        {feet, _suffix} -> Integer.parse(ft_str)
-        {inches, _suffix} -> Integer.parse(in_str)
+        feet = case Integer.parse(ft_str) do
+          {value, _} -> value
+          :error -> 0
+        end
+
+        inches = case Float.parse(in_str) do
+          {value, _} -> value
+          :error -> 0
+        end
         feet * 12 + inches
 
       # non measurement should show up here:  just return original value
@@ -143,17 +156,18 @@ defmodule DraftGuru.NBADotComScraper do
     end
   end
 
-  def clean_map_value(value_name) do
+  def clean_map_value(value) do
 
-    parsed_value = parse_null_value(value_name)
+    case parse_null_value(value) do
+      nil -> nil
+      not_nil_value ->
+        parsed_value = parse_float(not_nil_value)
 
-    case parsed_value do: nil -> nil end
-
-    parsed_value = parse_float(value_name)
-
-    case parsed_value do
-      _ when is_float(parsed_value) -> parse_string_measurements(parsed_value)
-      _ when is_binary(parsed_value) -> parsed_value
-      _ -> parsed_value
+        case parsed_value do
+          _ when is_float(parsed_value) -> parsed_value
+          _ when is_binary(parsed_value) -> parse_string_measurement(parsed_value)
+        end
     end
   end
+
+end
