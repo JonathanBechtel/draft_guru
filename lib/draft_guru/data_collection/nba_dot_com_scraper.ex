@@ -7,6 +7,7 @@ defmodule DraftGuru.NBADotComScraper do
   require Logger
   alias HTTPoison.Response
 
+  import Utilities
   use Wallaby.DSL
 
   # pull in the config from the applicatioin
@@ -15,7 +16,7 @@ defmodule DraftGuru.NBADotComScraper do
   @doc """
   Master function that runs fetch_html for multiple years
   """
-  def scrape_data_for_multiple_years(combine_section) do
+  def pull_data_for_multiple_years(combine_section) do
     # NOTE:  hard coding these for now - can change later
     season_years = ["2024-25", "2023-24", "2022-23", "2021-22"]
     #  "2020-21", "2019-20", "2018-19", "2017-18", "2016-17", "2015-16",
@@ -30,6 +31,11 @@ defmodule DraftGuru.NBADotComScraper do
           Logger.error("Failed to pull data for year: #{season_year}, because: #{reason}")
           acc
       end
+    end)
+
+    # loop over each map, update the key / value pair with the cleaned value
+    data = Enum.map(data, fn player_map ->
+      Map.new(player_map, fn {key, value} -> {key, clean_map_value(value)} end)
     end)
 
     case data do
@@ -59,93 +65,6 @@ defmodule DraftGuru.NBADotComScraper do
       {:error, reason} ->
         {:error, reason}
     end
-  end
-
-  @doc """
-  Parse the main table out of the NBA combine HTML.
-
-  Returns a list of maps—one per table row. You can adjust the selectors or column
-  extraction logic as needed for other URLs/tables on nba.com.
-  """
-  def parse_combine_table(html) do
-    # The table has a CSS class "Crom_table__p1iZz"
-    # Each row is <tr>, each cell <td>.
-    # We can find the <tbody> and parse each row.
-    {:ok, document} = Floki.parse_document(html)
-
-    # NOTE:  will need to see if classes differ by each page or not
-
-    # Locate the table body by class:
-    rows =
-      document
-      |> Floki.find("table.Crom_table__p1iZz > tbody.Crom_body__UYOcU > tr")
-
-    # For each row (tr), we pluck out each cell (td) in order
-    # We know from your snippet that columns are:
-    #
-    #  0: PLAYER
-    #  1: POS
-    #  2: BODY FAT %
-    #  3: HAND LENGTH (inches)
-    #  4: HAND WIDTH (inches)
-    #  5: HEIGHT W/O SHOES
-    #  6: HEIGHT W/ SHOES
-    #  7: STANDING REACH
-    #  8: WEIGHT (LBS)
-    #  9: WINGSPAN
-    #
-    # Adjust as needed if the page changes.
-
-    Enum.map(rows, fn row ->
-      cells = Floki.find(row, "td") |> Enum.map(&Floki.text/1)
-
-      %{
-        player_name: Enum.at(cells, 0),
-        position: Enum.at(cells, 1),
-        body_fat_pct: Enum.at(cells, 2),
-        hand_length: Enum.at(cells, 3),
-        hand_width: Enum.at(cells, 4),
-        height_wo_shoes: Enum.at(cells, 5),
-        height_w_shoes: Enum.at(cells, 6),   # This might be empty if the site has no data
-        standing_reach: Enum.at(cells, 7),
-        weight_lbs: Enum.at(cells, 8),
-        wingspan: Enum.at(cells, 9)
-      }
-    end)
-  end
-
-  @doc """
-  Fetch and parse the NBA Draft Combine 'anthro' table for a given season year.
-
-  Returns `{:ok, rows}` on success, or `{:error, reason}` if something goes wrong.
-  """
-  def fetch_and_parse(combine_section, season_year) do
-    with {:ok, html} <- fetch_html(combine_section, season_year) do
-      rows = parse_combine_table(html)
-      {:ok, rows}
-    end
-  end
-
-  @doc """
-  Takes data retrieved from site, outputs to a csv
-  """
-  def output_data_to_csv(_list_data) do
-    1
-  end
-
-  @doc """
-  Scrabes nba draft website for multiple season years
-
-  Returns {:ok, list} on success, or `{:error, reason}` if something goes wrong
-  """
-  def fetch_combine_data_multiple_years(combine_section, season_years) do
-    Enum.reduce(season_years, [], fn season_year, acc ->
-      case fetch_combine_data(combine_section, season_year) do
-        {:ok, data} -> acc ++ data
-        {:error, _reason} -> acc
-        _ -> acc
-      end
-    end)
   end
 
   def fetch_combine_data(combine_section, season_year) do
@@ -192,4 +111,49 @@ defmodule DraftGuru.NBADotComScraper do
 
     {:ok, data}
   end
-end
+
+  @doc """
+  strips various formatted values of "no value" and returns nil value
+  Used to handle incoming data from NBACom that doesn't contain a real value
+  """
+  defp parse_null_value("-%"), do: nil
+  defp parse_null_value(_), do: nil
+  defp parse_null_value(""), do: nil
+  defp parse_null_value("nil"), do: nil
+
+  defp parse_float(str) when is_binary(str) do
+    case Float.parse(str) do
+      {value, ""} -> value
+      {value, _rest} -> value
+      :error -> str
+    end
+  end
+
+  defp parse_string_measurements(measurement) when is_binary(measurement) do
+    regex = ~r/^(?<ft>\d+)'[\s]*(?<in>\d+(?:\.\d+)?)(?:"{0,2})?$/
+
+    case regex.named_captures(regex, measurement) do
+      %{"ft" => ft_str, "in" => in_str} ->
+        {feet, _suffix} -> Integer.parse(ft_str)
+        {inches, _suffix} -> Integer.parse(in_str)
+        feet * 12 + inches
+
+      # non measurement should show up here:  just return original value
+      _ -> measurement
+    end
+  end
+
+  def clean_map_value(value_name) do
+
+    parsed_value = parse_null_value(value_name)
+
+    case parsed_value do: nil -> nil end
+
+    parsed_value = parse_float(value_name)
+
+    case parsed_value do
+      _ when is_float(parsed_value) -> parse_string_measurements(parsed_value)
+      _ when is_binary(parsed_value) -> parsed_value
+      _ -> parsed_value
+    end
+  end
