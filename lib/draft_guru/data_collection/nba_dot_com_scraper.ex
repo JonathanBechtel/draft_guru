@@ -20,12 +20,12 @@ defmodule DraftGuru.NBADotComScraper do
 
   def scrape_combine_data_for_section(combine_section) do
     combine_section
-    |> pull_data_for_multiple_years()
+    |> scrape_data_for_multiple_years()
     |> clean_player_data()
     |> export_data_to_file(String.replace(combine_section, "-", "_"))
   end
 
-  def pull_data_for_multiple_years(combine_section) do
+  def scrape_data_for_multiple_years(combine_section) do
     Enum.reduce(@seasons, [], fn season_year, acc ->
       case fetch_combine_data(combine_section, season_year) do
         {:ok, body} -> acc ++ body
@@ -36,9 +36,23 @@ defmodule DraftGuru.NBADotComScraper do
 
   defp clean_player_data(data_list) do
 
+   keys_to_format = [
+    :height_w_shoes,
+    :height_wo_shoes
+   ]
+
    data = Enum.map(data_list, fn player_map ->
-      Map.new(player_map, fn {key, value} -> {key, clean_map_value(value)} end)
-    end)
+      Enum.reduce(player_map, %{}, fn {key, value}, acc ->
+
+        if key in keys_to_format do
+          acc
+          |> Map.put(key, value)
+          |> Map.put("#{key}_inches", clean_map_value(value))
+        else
+          Map.put(acc, key, clean_map_value(value))
+        end
+      end)
+  end)
 
    case data do
       _ when is_list(data) -> {:ok, data}
@@ -69,6 +83,33 @@ defmodule DraftGuru.NBADotComScraper do
     end
   end
 
+  def format_player_map(combine_section, cells) do
+    case combine_section do
+      "combine-anthro" -> %{
+        player_name:       Enum.at(cells, 0),
+        position:          Enum.at(cells, 1),
+        body_fat_pct:      Enum.at(cells, 2),
+        hand_length:       Enum.at(cells, 3),
+        hand_width:        Enum.at(cells, 4),
+        height_wo_shoes:   Enum.at(cells, 5),
+        height_w_shoes:    Enum.at(cells, 6),
+        standing_reach:    Enum.at(cells, 7),
+        weight_lbs:        Enum.at(cells, 8),
+        wingspan:          Enum.at(cells, 9)
+      }
+      "combine-strength-agility" -> %{
+        player_name: Enum.at(cells, 0),
+        position: Enum.at(cells, 1),
+        lane_agility_time: Enum.at(cells, 2),
+        shuttle_run: Enum.at(cells, 3),
+        three_quarter_sprint: Enum.at(cells, 4),
+        standing_vertical_leap: Enum.at(cells, 5),
+        max_vertical_leap: Enum.at(cells, 6),
+        max_bench_press_repetitions: Enum.at(cells, 7)
+      }
+    end
+  end
+
   def fetch_combine_data(combine_section, season_year) do
     {:ok, session} = Wallaby.start_session()
 
@@ -80,7 +121,7 @@ defmodule DraftGuru.NBADotComScraper do
     session = visit(session, url)
 
     # 2) 'Wait' for the table to appear by telling the query to wait up to 5 seconds
-    table_tbody = Query.css("table.Crom_table__p1iZz > tbody.Crom_body__UYOcU", wait: 5_000)
+    table_tbody = Query.css("table[class^='Crom_table__'] > tbody[class^='Crom_body__']", wait: 5_000)
 
     # 3) find/2 will raise an error if it doesn't appear in time
     _tbody_element = find(session, table_tbody)
@@ -96,18 +137,7 @@ defmodule DraftGuru.NBADotComScraper do
           |> all(Query.css("td"))
           |> Enum.map(&Wallaby.Element.text/1)
 
-        %{
-          player_name:       Enum.at(cells, 0),
-          position:          Enum.at(cells, 1),
-          body_fat_pct:      Enum.at(cells, 2),
-          hand_length:       Enum.at(cells, 3),
-          hand_width:        Enum.at(cells, 4),
-          height_wo_shoes:   Enum.at(cells, 5),
-          height_w_shoes:    Enum.at(cells, 6),
-          standing_reach:    Enum.at(cells, 7),
-          weight_lbs:        Enum.at(cells, 8),
-          wingspan:          Enum.at(cells, 9)
-        }
+        format_player_map(combine_section, cells)
       end)
 
     # End session & return data
@@ -124,21 +154,16 @@ defmodule DraftGuru.NBADotComScraper do
   defp parse_null_value("_"), do: nil
   defp parse_null_value(""), do: nil
   defp parse_null_value("nil"), do: nil
+  defp parse_null_value("-"), do: nil
   defp parse_null_value(nil), do: nil
   defp parse_null_value(value), do: value
 
-  defp parse_float(str) when is_binary(str) do
-    case Float.parse(str) do
-      {value, ""} -> value
-      {value, _rest} -> value
-      :error -> str
-    end
-  end
+  defp parse_non_null_value(value) do
 
-  defp parse_string_measurement(measurement) when is_binary(measurement) do
-    regex = ~r/^(?<ft>\d+)'[\s]*(?<in>\d+(?:\.\d+)?)(?:"{0,2})?$/
+    regex = ~r/^(?<ft>\d+)'[\s]*(?<in>\d+(?:\.\d+)?)(?:''|"{1,2})?$/
 
-    case Regex.named_captures(regex, measurement) do
+    case Regex.named_captures(regex, value) do
+
       %{"ft" => ft_str, "in" => in_str} ->
         feet = case Integer.parse(ft_str) do
           {value, _} -> value
@@ -151,8 +176,17 @@ defmodule DraftGuru.NBADotComScraper do
         end
         feet * 12 + inches
 
-      # non measurement should show up here:  just return original value
-      _ -> measurement
+        _ -> parse_float(value)
+    end
+
+  end
+
+  defp parse_float(str) when is_binary(str) do
+
+    case Float.parse(str) do
+      {value, ""} -> value
+      {value, _rest} -> value
+      :error -> str
     end
   end
 
@@ -160,13 +194,7 @@ defmodule DraftGuru.NBADotComScraper do
 
     case parse_null_value(value) do
       nil -> nil
-      not_nil_value ->
-        parsed_value = parse_float(not_nil_value)
-
-        case parsed_value do
-          _ when is_float(parsed_value) -> parsed_value
-          _ when is_binary(parsed_value) -> parse_string_measurement(parsed_value)
-        end
+      not_nil_value -> parse_non_null_value(not_nil_value)
     end
   end
 

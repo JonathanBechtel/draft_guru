@@ -40,8 +40,9 @@ defmodule Utilities do
   Creates a file "people.csv" with headers: name,age,city
   and rows filled in accordingly.
   """
-  def export_data_to_file(list_of_maps, combine_section) do
+  def export_data_to_file(tuple_of_maps, combine_section) do
     # Collect all unique keys across all maps to form the CSV headers
+    {:ok, list_of_maps} = tuple_of_maps
     headers =
       list_of_maps
       |> Enum.flat_map(&Map.keys/1)
