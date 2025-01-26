@@ -7,7 +7,8 @@ defmodule DraftGuru.NBADotComScraper do
   require Logger
   alias HTTPoison.Response
 
-  import Utilities, only: [export_data_to_file: 2]
+  import Utilities, only: [export_data_to_file: 2,
+                          split_name_into_parts: 1]
   use Wallaby.DSL
 
   # pull in the config from the applicatioin
@@ -41,15 +42,25 @@ defmodule DraftGuru.NBADotComScraper do
     :height_wo_shoes
    ]
 
+   name_keys = [
+    :player_name
+   ]
+
    data = Enum.map(data_list, fn player_map ->
       Enum.reduce(player_map, %{}, fn {key, value}, acc ->
 
-        if key in keys_to_format do
-          acc
-          |> Map.put(key, value)
-          |> Map.put("#{key}_inches", clean_map_value(value))
-        else
-          Map.put(acc, key, clean_map_value(value))
+        cond do
+
+          key in keys_to_format ->
+            acc
+            |> Map.put(key, value)
+            |> Map.put("#{key}_inches", clean_map_value(value))
+
+          key in name_keys ->
+            acc
+            |> Map.merge(split_name_into_parts(player_map[key]))
+
+          true -> Map.put(acc, key, clean_map_value(value))
         end
       end)
   end)
