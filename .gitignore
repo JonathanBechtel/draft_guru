@@ -38,4 +38,5 @@ npm-debug.log
 # .DS_Store files are created by macOS Finder.
 .DS_Store
 
-
+# 
+/lib/draft_guru/data_collection/data_files
