@@ -7,7 +7,9 @@ defmodule DraftGuru.NBADotComScraper do
   require Logger
   alias HTTPoison.Response
 
-  import Utilities, only: [export_data_to_file: 2]
+  import Utilities, only: [export_data_to_file: 2,
+                           split_name_into_parts: 1,
+                           sanitize: 1]
   use Wallaby.DSL
 
   # pull in the config from the applicatioin
@@ -41,23 +43,44 @@ defmodule DraftGuru.NBADotComScraper do
     :height_wo_shoes
    ]
 
+   keys_to_sanitize = [
+    :player_name,
+    :position
+   ]
+
+   name_keys = [
+    :player_name
+   ]
+
    data = Enum.map(data_list, fn player_map ->
       Enum.reduce(player_map, %{}, fn {key, value}, acc ->
 
-        if key in keys_to_format do
-          acc
-          |> Map.put(key, value)
-          |> Map.put("#{key}_inches", clean_map_value(value))
+        value = if key in keys_to_sanitize do
+          sanitize(value)
         else
-          Map.put(acc, key, clean_map_value(value))
+          value
+        end
+
+        cond do
+
+          key in keys_to_format ->
+            acc
+            |> Map.put(key, value)
+            |> Map.put("#{key}_inches", clean_map_value(value))
+
+          key in name_keys ->
+            acc
+            |> Map.merge(split_name_into_parts(player_map[key]))
+
+          true -> Map.put(acc, key, clean_map_value(value))
         end
       end)
   end)
 
-   case data do
+  case data do
       _ when is_list(data) -> {:ok, data}
       _ -> {:error, "Did not return correct type"}
-    end
+  end
 
   end
 
@@ -98,13 +121,13 @@ defmodule DraftGuru.NBADotComScraper do
         wingspan:          Enum.at(cells, 9)
       }
       "combine-strength-agility" -> %{
-        player_name: Enum.at(cells, 0),
-        position: Enum.at(cells, 1),
-        lane_agility_time: Enum.at(cells, 2),
-        shuttle_run: Enum.at(cells, 3),
-        three_quarter_sprint: Enum.at(cells, 4),
-        standing_vertical_leap: Enum.at(cells, 5),
-        max_vertical_leap: Enum.at(cells, 6),
+        player_name:                 Enum.at(cells, 0),
+        position:                    Enum.at(cells, 1),
+        lane_agility_time:           Enum.at(cells, 2),
+        shuttle_run:                 Enum.at(cells, 3),
+        three_quarter_sprint:        Enum.at(cells, 4),
+        standing_vertical_leap:      Enum.at(cells, 5),
+        max_vertical_leap:           Enum.at(cells, 6),
         max_bench_press_repetitions: Enum.at(cells, 7)
       }
     end

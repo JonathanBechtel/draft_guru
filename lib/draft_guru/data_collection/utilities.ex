@@ -68,4 +68,39 @@ defmodule Utilities do
     # Write the CSV string to the file
     File.write!(file_path, csv_lines)
   end
+
+  @doc """
+  Function to take whole string name from data and
+  split into its associated first name, middle initial, last name, etc
+  """
+  def split_name_into_parts(name_string) do
+    split_name = String.split(name_string)
+
+    name_suffixes = [
+      "II", "III", "IV", "jr", "sr", "junior", "senior"
+    ]
+
+    case split_name do
+      [first, middle, last, suffix] ->
+        %{first_name: first, middle_name: middle, last_name: last, suffix: suffix}
+
+      [first, last] ->
+        %{first_name: first, middle_name: nil, last_name: last, suffix: nil}
+
+      [first, middle, last] ->
+        if sanitize(last) in name_suffixes do
+          %{first_name: first, middle_name: nil, last_name: middle, suffix: last}
+
+        else
+          %{first_name: first, middle_name: middle, last_name: last, suffix: nil}
+        end
+    end
+
+  end
+
+  def sanitize(string) do
+    string
+    |> String.downcase()
+    |> String.replace(~r/[^[:alnum:]-]+/u, "")
+  end
 end
