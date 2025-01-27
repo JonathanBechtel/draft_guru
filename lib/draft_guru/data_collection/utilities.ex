@@ -88,7 +88,7 @@ defmodule Utilities do
         %{first_name: first, middle_name: nil, last_name: last, suffix: nil}
 
       [first, middle, last] ->
-        if last in name_suffixes do
+        if sanitize(last) in name_suffixes do
           %{first_name: first, middle_name: nil, last_name: middle, suffix: last}
 
         else
@@ -96,5 +96,11 @@ defmodule Utilities do
         end
     end
 
+  end
+
+  def sanitize(string) do
+    string
+    |> String.downcase()
+    |> String.replace(~r/[^[:alnum:]-]+/u, "")
   end
 end
