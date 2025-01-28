@@ -40,7 +40,8 @@ defmodule Utilities do
   Creates a file "people.csv" with headers: name,age,city
   and rows filled in accordingly.
   """
-  def export_data_to_file(tuple_of_maps, combine_section) do
+  def export_data_to_file(tuple_of_maps, combine_section,
+                          directory_path \\ "lib/draft_guru/data_collection/data_files") do
     # Collect all unique keys across all maps to form the CSV headers
     {:ok, list_of_maps} = tuple_of_maps
     headers =
@@ -63,10 +64,12 @@ defmodule Utilities do
       |> Enum.join("\n")
 
     # create the filepath
-    file_path = create_filename(combine_section)
+    file_name = create_filename(combine_section)
+
+    full_file_path = Path.join(directory_path, file_name)
 
     # Write the CSV string to the file
-    File.write!(file_path, csv_lines)
+    File.write!(full_file_path, csv_lines)
   end
 
   @doc """
@@ -77,7 +80,7 @@ defmodule Utilities do
     split_name = String.split(name_string)
 
     name_suffixes = [
-      "II", "III", "IV", "jr", "sr", "junior", "senior"
+      "ii", "iii", "iv", "jr", "sr", "junior", "senior",
     ]
 
     case split_name do
@@ -86,6 +89,9 @@ defmodule Utilities do
 
       [first, last] ->
         %{first_name: first, middle_name: nil, last_name: last, suffix: nil}
+
+      [first] ->
+        %{first_name: first, middle_name: nil, last_name: nil, suffix: nil}
 
       [first, middle, last] ->
         if sanitize(last) in name_suffixes do
@@ -101,6 +107,7 @@ defmodule Utilities do
   def sanitize(string) do
     string
     |> String.downcase()
-    |> String.replace(~r/[^[:alnum:]-]+/u, "")
+    |> String.trim()
+    |> String.replace(~r/[^[:alnum:]\s'\-]+/u, "")
   end
 end

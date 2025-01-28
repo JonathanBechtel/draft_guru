@@ -69,8 +69,9 @@ defmodule DraftGuru.NBADotComScraper do
             |> Map.put("#{key}_inches", clean_map_value(value))
 
           key in name_keys ->
+
             acc
-            |> Map.merge(split_name_into_parts(player_map[key]))
+            |> Map.merge(split_name_into_parts(value))
 
           true -> Map.put(acc, key, clean_map_value(value))
         end
