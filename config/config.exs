@@ -78,8 +78,7 @@ config :draft_guru, DraftGuru.NBADotComScraper,
             "2004-05",
             "2003-04",
             "2002-03",
-            "2001-02",
-            "2000-01"]
+            "2001-02"]
 
 # Configures Elixir's Logger
 config :logger, :console,

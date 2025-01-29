@@ -110,4 +110,14 @@ defmodule Utilities do
     |> String.trim()
     |> String.replace(~r/[^[:alnum:]\s'\-]+/u, "")
   end
+
+  def parse_draft_year(nil), do: "unknown"
+  def parse_draft_year(year) when is_integer(year), do: year
+  def parse_draft_year(year) when is_float(year), do: trunc(year)
+  def parse_draft_year(year) when is_binary(year) do
+    case Integer.parse(year) do
+      {int, _} -> Integer.to_string(int)
+      :error -> "invalid"
+    end
+  end
 end

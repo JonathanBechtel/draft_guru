@@ -9,7 +9,8 @@ defmodule DraftGuru.NBADotComScraper do
 
   import Utilities, only: [export_data_to_file: 2,
                            split_name_into_parts: 1,
-                           sanitize: 1]
+                           sanitize: 1,
+                           parse_draft_year: 1]
   use Wallaby.DSL
 
   # pull in the config from the applicatioin
@@ -61,7 +62,7 @@ defmodule DraftGuru.NBADotComScraper do
           value
         end
 
-        cond do
+        player_map = cond do
 
           key in keys_to_format ->
             acc
@@ -69,12 +70,15 @@ defmodule DraftGuru.NBADotComScraper do
             |> Map.put("#{key}_inches", clean_map_value(value))
 
           key in name_keys ->
-
             acc
             |> Map.merge(split_name_into_parts(value))
 
           true -> Map.put(acc, key, clean_map_value(value))
         end
+
+        # create a player slug for a pseudo-unique key
+        player_slug = "#{player_map[:first_name]}_#{player_map[:middle_name]}_#{player_map[:last_name]}_#{player_map[:suffix]}_#{parse_draft_year(player_map[:draft_year])}"
+        Map.put(player_map, :player_slug, player_slug)
       end)
   end)
 
@@ -119,7 +123,7 @@ defmodule DraftGuru.NBADotComScraper do
         height_w_shoes:    Enum.at(cells, 6),
         standing_reach:    Enum.at(cells, 7),
         weight_lbs:        Enum.at(cells, 8),
-        wingspan:          Enum.at(cells, 9)
+        wingspan:          Enum.at(cells, 9),
       }
       "combine-strength-agility" -> %{
         player_name:                 Enum.at(cells, 0),
@@ -161,7 +165,8 @@ defmodule DraftGuru.NBADotComScraper do
           |> all(Query.css("td"))
           |> Enum.map(&Wallaby.Element.text/1)
 
-        format_player_map(combine_section, cells)
+        player_map = format_player_map(combine_section, cells)
+        Map.put(player_map, :draft_year, season_year)
       end)
 
     # End session & return data
