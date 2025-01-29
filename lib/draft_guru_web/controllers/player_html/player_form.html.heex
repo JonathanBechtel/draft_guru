@@ -1,0 +1,14 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:id]} type="number" label="Id" />
+  <.input field={f[:first_name]} type="text" label="First name" />
+  <.input field={f[:middle_name]} type="text" label="Middle name" />
+  <.input field={f[:last_name]} type="text" label="Last name" />
+  <.input field={f[:suffix]} type="text" label="Suffix" />
+  <.input field={f[:draft_year]} type="number" label="Draft year" />
+  <:actions>
+    <.button>Save Player</.button>
+  </:actions>
+</.simple_form>

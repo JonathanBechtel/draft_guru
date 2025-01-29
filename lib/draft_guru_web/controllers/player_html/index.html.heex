@@ -1,0 +1,28 @@
+<.header>
+  Listing Player canonical
+  <:actions>
+    <.link href={~p"/player_canonical/new"}>
+      <.button>New Player</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="player_canonical" rows={@player_canonical} row_click={&JS.navigate(~p"/player_canonical/#{&1}")}>
+  <:col :let={player} label="Id">{player.id}</:col>
+  <:col :let={player} label="First name">{player.first_name}</:col>
+  <:col :let={player} label="Middle name">{player.middle_name}</:col>
+  <:col :let={player} label="Last name">{player.last_name}</:col>
+  <:col :let={player} label="Suffix">{player.suffix}</:col>
+  <:col :let={player} label="Draft year">{player.draft_year}</:col>
+  <:action :let={player}>
+    <div class="sr-only">
+      <.link navigate={~p"/player_canonical/#{player}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/player_canonical/#{player}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={player}>
+    <.link href={~p"/player_canonical/#{player}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

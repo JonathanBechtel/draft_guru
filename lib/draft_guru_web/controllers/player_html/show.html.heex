@@ -1,0 +1,20 @@
+<.header>
+  Player {@player.id}
+  <:subtitle>This is a player record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/player_canonical/#{@player}/edit"}>
+      <.button>Edit player</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Id">{@player.id}</:item>
+  <:item title="First name">{@player.first_name}</:item>
+  <:item title="Middle name">{@player.middle_name}</:item>
+  <:item title="Last name">{@player.last_name}</:item>
+  <:item title="Suffix">{@player.suffix}</:item>
+  <:item title="Draft year">{@player.draft_year}</:item>
+</.list>
+
+<.back navigate={~p"/player_canonical"}>Back to player_canonical</.back>
