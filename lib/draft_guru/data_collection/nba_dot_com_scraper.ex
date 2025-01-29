@@ -119,7 +119,7 @@ defmodule DraftGuru.NBADotComScraper do
         height_w_shoes:    Enum.at(cells, 6),
         standing_reach:    Enum.at(cells, 7),
         weight_lbs:        Enum.at(cells, 8),
-        wingspan:          Enum.at(cells, 9)
+        wingspan:          Enum.at(cells, 9),
       }
       "combine-strength-agility" -> %{
         player_name:                 Enum.at(cells, 0),
@@ -161,7 +161,8 @@ defmodule DraftGuru.NBADotComScraper do
           |> all(Query.css("td"))
           |> Enum.map(&Wallaby.Element.text/1)
 
-        format_player_map(combine_section, cells)
+        player_map = format_player_map(combine_section, cells)
+        Map.put(player_map, "draft_year", season_year)
       end)
 
     # End session & return data
