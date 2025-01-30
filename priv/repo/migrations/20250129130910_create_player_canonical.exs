@@ -3,7 +3,6 @@ defmodule DraftGuru.Repo.Migrations.CreatePlayerCanonical do
 
   def change do
     create table(:player_canonical) do
-      add :id, :integer
       add :first_name, :string
       add :middle_name, :string
       add :last_name, :string
