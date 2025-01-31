@@ -11,6 +11,9 @@ defmodule DraftGuru.Players.Player do
     field :draft_year, :integer
 
     timestamps(type: :utc_datetime)
+
+    has_many :id_lookups, DraftGuru.Players.PlayerIdLookup, foreign_key: :player_id
+    has_one :player_combine_stats, DraftGuru.Players.PlayerCombineStats, foreign_key: :player_id
   end
 
   @doc false

@@ -1,5 +1,5 @@
 defmodule DraftGuru.Players.PlayerCombineStats do
-  use Ecto.Schame
+  use Ecto.Schema
   import Ecto.Changeset
 
   schema "player_combine_stats" do
