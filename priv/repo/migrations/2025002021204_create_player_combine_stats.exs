@@ -2,7 +2,7 @@ defmodule DraftGuru.Repo.Migrations.CreatePlayerCombineStats do
   use Ecto.Migration
 
   def change do
-    create_table(:player_combine_stats) do
+    create table(:player_combine_stats) do
       add :position, :string
       add :player_slug, :string, null: false
       add :lane_agility_time, :float
@@ -32,6 +32,8 @@ defmodule DraftGuru.Repo.Migrations.CreatePlayerCombineStats do
     end
   end
 
-  create unique_index(:player_combine_stats, [:player_slug])
-  create unique_index(:player_combine_stats, [:player_id])
+  create unique_index(:player_combine_stats, [:player_slug],
+                      name: :player_combine_stats_unique_player_slug_index)
+  create unique_index(:player_combine_stats, [:player_id],
+                      name: :player_combine_stats_unique_player_id_index)
 end

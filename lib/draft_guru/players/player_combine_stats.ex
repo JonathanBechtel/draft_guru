@@ -63,5 +63,12 @@ defmodule DraftGuru.Players.PlayerCombineStats do
     |> validate_required([
             :player_slug,
             :player_id])
+    |> unique_constraint(:player_combine_stats,
+        name: :player_combine_stats_unique_player_slug_index,
+        message: "The player slug already exists")
+    |> unique_constraint(:player_combine_stats,
+        name: :player_combine_stats_unique_player_id_index,
+        message: "The player id already exists")
+
   end
 end
