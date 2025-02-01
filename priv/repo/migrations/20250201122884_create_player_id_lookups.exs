@@ -12,10 +12,7 @@ defmodule DraftGuru.Repo.Migrations.CreatePlayerIdLookup do
       timestamps(utc: :datetime)
     end
 
-    # Index so we can query quickly by the canonical player reference.
     create index(:player_id_lookup, [:player_id])
-    # Potentially also consider an index on [:data_source, :data_source_id]
-    # if you look these up often from the external ID:
     create unique_index(:player_id_lookup,
                 [:data_source, :data_source_id],
                 name: :player_id_lookup_unique_data_source_data_source_id_index)

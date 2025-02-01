@@ -30,10 +30,9 @@ defmodule DraftGuru.Repo.Migrations.CreatePlayerCombineStats do
 
       timestamps(utc: :datetime)
     end
+    create unique_index(:player_combine_stats, [:player_slug],
+          name: :player_combine_stats_unique_player_slug_index)
+    create unique_index(:player_combine_stats, [:player_id],
+          name: :player_combine_stats_unique_player_id_index)
   end
-
-  create unique_index(:player_combine_stats, [:player_slug],
-                      name: :player_combine_stats_unique_player_slug_index)
-  create unique_index(:player_combine_stats, [:player_id],
-                      name: :player_combine_stats_unique_player_id_index)
 end
