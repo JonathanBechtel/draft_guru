@@ -2,6 +2,7 @@ defmodule DraftGuru.Players.PlayerCombineStats do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @primary_key {:id, :id, autogenerate: true}
   schema "player_combine_stats" do
     field :position, :string
     field :player_slug, :string
@@ -45,6 +46,7 @@ defmodule DraftGuru.Players.PlayerCombineStats do
       :max_vertical_leap,
       :max_bench_press_repetitions,
       :height_w_shoes,
+      :height_wo_shoes,
       :body_fat_pct,
       :hand_length,
       :hand_length_inches,
@@ -59,29 +61,7 @@ defmodule DraftGuru.Players.PlayerCombineStats do
       :height_wo_shoes_inches,
       :player_id])
     |> validate_required([
-            :position,
             :player_slug,
-            :position,
-            :player_slug,
-            :lane_agility_time,
-            :shuttle_run,
-            :three_quarter_sprint,
-            :standing_vertical_leap,
-            :max_vertical_leap,
-            :max_bench_press_repetitions,
-            :height_w_shoes,
-            :body_fat_pct,
-            :hand_length,
-            :hand_length_inches,
-            :hand_width,
-            :hand_width_inches,
-            :standing_reach,
-            :standing_reach_inches,
-            :weight_lbs,
-            :wingspan,
-            :wingspan_inches,
-            :height_w_shoes_inches,
-            :height_wo_shoes_inches,
             :player_id])
   end
 end

@@ -3,13 +3,13 @@ defmodule DraftGuru.Repo.Migrations.CreatePlayerCanonical do
 
   def change do
     create table(:player_canonical) do
-      add :first_name, :string
+      add :first_name, :string, null: false
       add :middle_name, :string
-      add :last_name, :string
+      add :last_name, :string, null: false
       add :suffix, :string
       add :draft_year, :integer
 
-      timestamps(type: :utc_datetime)
+      timestamps(utc: :datetime)
     end
   end
 end
