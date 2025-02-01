@@ -34,7 +34,4 @@ defmodule DraftGuru.Repo.Migrations.CreatePlayerCombineStats do
 
   create unique_index(:player_combine_stats, [:player_slug])
   create unique_index(:player_combine_stats, [:player_id])
-
-  create index(:player_combine_stats, [:player_id])
-  create index(:player_combine_stats, [:player_slug])
 end
