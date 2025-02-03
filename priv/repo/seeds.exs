@@ -9,3 +9,10 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+defmodule DraftCombineStatsSeed do
+  
+  # use the data loading module
+  # use the Context for the Players
+  use 
+end
