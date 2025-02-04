@@ -41,7 +41,11 @@ defmodule DraftGuru.NBADotComScraper do
 
    keys_to_format = [
     :height_w_shoes,
-    :height_wo_shoes
+    :height_wo_shoes,
+    :hand_length,
+    :hand_width,
+    :standing_reach,
+    :wingspan
    ]
 
    keys_to_sanitize = [

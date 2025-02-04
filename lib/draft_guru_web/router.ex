@@ -18,6 +18,7 @@ defmodule DraftGuruWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    resources "/player_canonical", PlayerController
   end
 
   # Other scopes may use custom stacks.
