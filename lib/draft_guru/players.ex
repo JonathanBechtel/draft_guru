@@ -33,9 +33,42 @@ defmodule DraftGuru.Players do
 
       iex> get_player!(456)
       ** (Ecto.NoResultsError)
-
   """
   def get_player!(id), do: Repo.get!(Player, id)
+
+  def get_player_by_name(%{"suffix" => suffix,
+                           "first_name" => first_name,
+                           "middle_name" => middle_name,
+                           "last_name" => last_name,
+                           "draft_year" => draft_year} = _player_map) do
+
+      suffix      = if suffix == "", do: nil, else: suffix
+      middle_name = if middle_name == "", do: nil, else: middle_name
+
+      query =
+        Player
+        |> where([p], p.first_name == ^first_name)
+        |> where([p], p.last_name == ^last_name)
+        |> where([p], p.draft_year == ^trunc(draft_year))
+
+      # If suffix is nil, we use is_nil(p.suffix); otherwise p.suffix == ^suffix
+      query =
+        if is_nil(suffix) do
+          from(p in query, where: is_nil(p.suffix))
+        else
+          from(p in query, where: p.suffix == ^suffix)
+        end
+
+      # Similarly for `middle_name` if that can also be nil, etc.
+      query =
+        if is_nil(middle_name) do
+          from(p in query, where: is_nil(p.middle_name))
+        else
+          from(p in query, where: p.middle_name == ^middle_name)
+        end
+
+      Repo.one(query)
+  end
 
   @doc """
   Creates a player.
