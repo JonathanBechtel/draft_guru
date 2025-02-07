@@ -1,9 +1,8 @@
-defmodule DraftGuru.PlayerCombineStats do
+defmodule DraftGuru.PlayerCombineStat do
   @moduledoc """
-  Context for the PlayerCombineStats table
+  Context for the PlayerCombineStat table
   """
   import Ecto.Query, warn: false
-  alias DraftGuru.PlayerCombineStats
   alias DraftGuru.Repo
   alias DraftGuru.Players.PlayerCombineStats
 

@@ -1,4 +1,4 @@
-defmodule DraftGuru.Players.PlayerCombineStats do
+defmodule DraftGuru.Players.PlayerCombineStat do
   use Ecto.Schema
   import Ecto.Changeset
 

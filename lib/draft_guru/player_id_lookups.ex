@@ -1,4 +1,4 @@
-defmodule DraftGuru.PlayerID do
+defmodule DraftGuru.PlayerIDLookups do
   @moduledoc """
   Module for the PlayerID context.
   """

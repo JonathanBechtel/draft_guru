@@ -12,7 +12,7 @@
 
 import DraftGuru.DataLoader, only: [create_dataset: 1]
 alias DraftGuru.Players
-alias DraftGuru.PlayerID
+alias DraftGuru.PlayerIDLookups
 
 defmodule DraftGuru.DraftCombineStatsSeed do
 alias DraftGuru.Players.PlayerIdLookup
@@ -37,7 +37,7 @@ alias ExUnit.FailuresManifest
       # if there is a canonical player record,
       # check to see if there's a corresponding player id record
       player_id_record = case canonical_player_record do
-        {:ok, true, player} -> case PlayerID.get_lookup_by_player_id!(player.id) do
+        {:ok, true, player} -> case PlayerIDLookups.get_lookup_by_player_id!(player.id) do
           %PlayerIdLookup{} = player -> {:ok, true, player_id}
           nil -> {:error, false, :not_found}
         end
@@ -61,7 +61,7 @@ alias ExUnit.FailuresManifest
 
       cond do
         is_canonical_player and not has_player_id_lookup ->
-          {:ok, record} = PlayerID.create_id_lookup(%{
+          {:ok, record} = PlayerIDLookups.create_id_lookup(%{
             data_source: "nba.com/stats/draft",
             data_source_id: player_map["player_slug"],
             player_id: canonical_record.id
@@ -70,7 +70,7 @@ alias ExUnit.FailuresManifest
         is_canonical_player and has_player_id_lookup ->
           # warn that records is being overwritten
           IO.puts("WARNING:  Overwriting record for player with slug #{player_map["player_slug"]}")
-          {:ok, record} = PlayerID.update_player_id_lookup(PlayerIdLookup, %{
+          {:ok, record} = PlayerIDLookups.update_player_id_lookup(PlayerIdLookup, %{
             data_source: "nba.com/stats/draft",
             data_source_id: player_map["player_slug"],
             player_id: canonical_record.id
