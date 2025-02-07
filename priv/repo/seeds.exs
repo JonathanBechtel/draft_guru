@@ -41,6 +41,69 @@ alias ExUnit.FailuresManifest
         end
       end
 
+      {_, is_canonical_player, canonical_record} = canonical_player_record
+      {_, has_player_id_lookup, id_record} = player_id_record
+
+      # add the player to the canonical player table if they do
+      # not currently exist -- note success of the transacation
+      if not is_canonical_player do
+        is_canonical_player = case Players.create_player(%{"suffix" => suffix,
+              "first_name" => first_name,
+              "middle_name" => middle_name,
+              "last_name" => last_name,
+              "draft_year" => draft_year} = player_map) do
+                {:ok, %Player{}} -> true
+                _ -> false
+              end
+      end
+
+      cond do
+        is_canonical_player and not has_player_id_lookup ->
+          {:ok, record} = PlayerID.create_player_id(%{
+            data_source: "nba.com/stats/draft",
+            data_source_id: player_map["player_slug"],
+            player_id: canonical_record.id
+          })
+
+        is_canonical_player and has_player_id_lookup ->
+          # warn that records is being overwritten
+          IO.puts("WARNING:  Overwriting record for player with slug #{player_map["player_slug"]}")
+          {:ok, record} = PlayerID.update_player(PlayerID, %{
+            data_source: "nba.com/stats/draft",
+            data_source_id: player_map["player_slug"],
+            player_id: canonical_record.id
+          })
+      end
+
+      # finally, add the player to the draft combine stats table
+      {:ok, record} = PlayerCombineStats.create_player(%{
+        position: player_map["position"],
+        player_slug: player_map["player_slug"],
+        lane_agility_time: player_map["lane_agility_time"],
+        shuttle_run: player_map["shuttle_run"],
+        three_quarter_sprint: player_map["three_quarter_sprint"],
+        standing_vertical_leap: player_map["standing_vertical_leap"],
+        max_vertical_leap: player_map["max_vertical_leap"],
+        max_bench_press_repetitions: player_map["max_bench_press_repetitions"],
+        height_w_shoes: player_map["height_w_shoes"],
+        height_wo_shoes: player_map["height_wo_shoes"],
+        body_fat_pct: player_map["body_fat_pct"],
+        hand_length: player_map["hand_length"],
+        hand_length_inches: player_map["hand_length_inches"],
+        hand_width: player_map["hand_width"],
+        hand_width_inches: player_map["hand_width_inches"],
+        standing_reach: player_map["standing_reach"],
+        standing_reach_inches: player_map["standing_reach"],
+        weight_lbs: player_map["weight_lbs"],
+        wingspan: player_map["wingspan"],
+        wingspan_inches: player_map["wingspan_inches"],
+        height_wo_shoes_inches: player_map["height_wo_shoes_inches"],
+        height_w_shoes_inches: player_map["height_w_shoes_inches"],
+        player_id: canonical_record.id
+      })
+
+
+
     end)
   end
 
