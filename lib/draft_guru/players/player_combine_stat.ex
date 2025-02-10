@@ -15,12 +15,12 @@ defmodule DraftGuru.Players.PlayerCombineStat do
     field :height_w_shoes, :string
     field :height_wo_shoes, :string
     field :body_fat_pct, :float
-    field :hand_length, :string
+    field :hand_length, :float
     field :hand_length_inches, :float
-    field :hand_width, :string
+    field :hand_width, :float
     field :hand_width_inches, :float
     field :standing_reach, :string
-    field :standing_reach_inches, :string
+    field :standing_reach_inches, :float
     field :weight_lbs, :float
     field :wingspan, :string
     field :wingspan_inches, :float
