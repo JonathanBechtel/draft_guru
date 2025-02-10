@@ -14,9 +14,9 @@ defmodule DraftGuru.Repo.Migrations.CreatePlayerCombineStats do
       add :height_w_shoes, :string
       add :height_wo_shoes, :string
       add :body_fat_pct, :float
-      add :hand_length, :string
+      add :hand_length, :float
       add :hand_length_inches, :float
-      add :hand_width, :string
+      add :hand_width, :float
       add :hand_width_inches, :float
       add :standing_reach, :string
       add :standing_reach_inches, :float

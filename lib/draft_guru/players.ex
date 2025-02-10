@@ -49,7 +49,7 @@ defmodule DraftGuru.Players do
         Player
         |> where([p], p.first_name == ^first_name)
         |> where([p], p.last_name == ^last_name)
-        |> where([p], p.draft_year == ^trunc(draft_year))
+        |> where([p], p.draft_year == ^draft_year)
 
       # If suffix is nil, we use is_nil(p.suffix); otherwise p.suffix == ^suffix
       query =
@@ -67,7 +67,8 @@ defmodule DraftGuru.Players do
           from(p in query, where: p.middle_name == ^middle_name)
         end
 
-      Repo.one(query)
+      record = Repo.one(query)
+      record
   end
 
   @doc """

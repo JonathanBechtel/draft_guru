@@ -1,4 +1,4 @@
-defmodule DraftGuru.PlayerID do
+defmodule DraftGuru.PlayerIDLookups do
   @moduledoc """
   Module for the PlayerID context.
   """
@@ -29,7 +29,8 @@ defmodule DraftGuru.PlayerID do
   """
   def get_lookup!(id), do: Repo.get!(PlayerIdLookup, id)
 
-  def get_lookup_by_player_id(player_id), do: Repo.get_by!(PlayerIdLookup, player_id)
+  def get_lookup_by_player_id(player_id), do: Repo.get_by(PlayerIdLookup,
+                player_id: player_id)
 
   @doc """
   Creates the player id lookup
