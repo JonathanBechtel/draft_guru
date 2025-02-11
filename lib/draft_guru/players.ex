@@ -67,8 +67,7 @@ defmodule DraftGuru.Players do
           from(p in query, where: p.middle_name == ^middle_name)
         end
 
-      record = Repo.one(query)
-      record
+      Repo.one(query)
   end
 
   @doc """
