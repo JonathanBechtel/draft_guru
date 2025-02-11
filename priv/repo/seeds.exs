@@ -56,8 +56,6 @@ defmodule DraftGuru.DraftCombineStatsSeed do
           _ -> {:error, false, :not_found}
         end
 
-      IO.inspect(canonical_player_record, label: "canonical player record")
-
       # if there is a canonical player record,
       # check to see if there's a corresponding player id record
       player_id_record = case canonical_player_record do
@@ -68,9 +66,7 @@ defmodule DraftGuru.DraftCombineStatsSeed do
             {:error, false, :not_found}
         end
 
-        {:error, false, :not_found} ->
-          IO.puts("no value at all")
-          {:error, false, :not_found}
+        {:error, false, :not_found} -> {:error, false, :not_found}
       end
 
       {_, is_canonical_player, canonical_record} = canonical_player_record
