@@ -18,7 +18,10 @@ defmodule DraftGuru.DraftCombineStatsSeed do
 
     def process_player_data(player_data) do
       Enum.each(player_data, fn player_map ->
-        {:ok, message} = process_draft_combine_stats_map(player_map)
+        case process_draft_combine_stats_map(player_map) do
+          {:ok, message} -> IO.puts(message)
+          _ -> IO.puts("Could not update record for player: #{player_map["player_slug"]}")
+        end
     end)
   end
 end

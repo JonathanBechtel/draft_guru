@@ -5,6 +5,8 @@ defmodule DraftGuru.DraftCombineStatsPipeline do
 
   import DraftGuru.Players, only: [get_player_by_name: 1]
   import DraftGuru.PlayerCombineStats, only: [create_player_combine_stats: 1]
+  alias DraftGuru.Players.Player
+  alias DraftGuru.Players.PlayerIdLookup
 
   @doc """
   Cleans incoming player map for data inconsistencies
@@ -58,7 +60,7 @@ defmodule DraftGuru.DraftCombineStatsPipeline do
     {:ok, player_id_record}
   end
 
-  def update_player_id_lookup_table(canonical_player_result, player_id_result) do
+  def update_player_id_lookup_table(player_map, canonical_player_result, player_id_result) do
       {_, is_canonical_player, canonical_record} = canonical_player_result
       {_, has_player_id_lookup, id_record} = player_id_result
 
@@ -100,9 +102,10 @@ defmodule DraftGuru.DraftCombineStatsPipeline do
       end
 
       {:ok, canonical_record}
+    end
 
-      def insert_updated_map_into_draft_combine_stats_table(updated_player_map,
-            updated_canonical_record) do
+    def insert_updated_map_into_draft_combine_stats_table(player_map,
+            canonical_record) do
 
         case PlayerCombineStats.create_player_combine_stats(%{
           position: player_map["position"],
@@ -135,13 +138,12 @@ defmodule DraftGuru.DraftCombineStatsPipeline do
           {:error, _changeset} -> IO.puts("Unsuccessful insertion for player: #{player_map["player_slug"]}")
         end
       end
-  end
 
   def process_draft_combine_stats_map(player_map) do
     {:ok, updated_map} = parse_map(player_map)
     {:ok, canonical_player_result} = check_for_canonical_player_record(updated_map)
     {:ok, player_id_result} = check_for_player_id_lookup_record(canonical_player_result)
-    {:ok, updated_canonical_record} = update_player_id_lookup_table(canonical_player_result, player_id_result)
+    {:ok, updated_canonical_record} = update_player_id_lookup_table(updated_map, canonical_player_result, player_id_result)
     {:ok, _record} = insert_updated_map_into_draft_combine_stats_table(updated_map, updated_canonical_record)
     {:ok, :record_inserted_successfully}
   end
