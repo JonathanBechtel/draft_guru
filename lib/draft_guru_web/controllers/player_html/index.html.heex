@@ -7,6 +7,14 @@
   </:actions>
 </.header>
 
+<form action="/player_canonical" method="get">
+  <input
+    type="text"
+    name="name"
+    value={@search}
+    placeholder="Search by player name"
+  />
+</form>
 <.table id="player_canonical" rows={@player_canonical} row_click={&JS.navigate(~p"/player_canonical/#{&1}")}>
   <:col :let={player} label="Id">{player.id}</:col>
   <:col :let={player} label="First name">{player.first_name}</:col>
@@ -26,3 +34,8 @@
     </.link>
   </:action>
 </.table>
+
+<%= if String.to_integer(@page) > 1 do %> 
+  <.link navigate={~p"/player_canonical?page=#{String.to_integer(@page) - 1}&name=#{@search}"}>Previous</.link>
+<% end %>
+<.link navigate={~p"/player_canonical?page=#{String.to_integer(@page) + 1}&name=#{@search}"}>Next</.link>

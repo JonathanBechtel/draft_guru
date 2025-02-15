@@ -4,9 +4,12 @@ defmodule DraftGuruWeb.PlayerController do
   alias DraftGuru.Players
   alias DraftGuru.Players.Player
 
-  def index(conn, _params) do
-    player_canonical = Players.list_player_canonical()
-    render(conn, :index, player_canonical: player_canonical)
+  def index(conn, params) do
+    player_canonical = Players.list_player_canonical(params)
+    render(conn, :index,
+    player_canonical: player_canonical,
+    search: Map.get(params, "name", ""),
+    page: Map.get(params, "page", "1"))
   end
 
   def new(conn, _params) do
