@@ -2,9 +2,9 @@ defmodule DraftGuru.DraftCombineStatsPipeline do
   @moduledoc """
   Module for data pipeline that moves draft combine data to database
   """
-
-  import DraftGuru.Players, only: [get_player_by_name: 1]
-  import DraftGuru.PlayerCombineStats, only: [create_player_combine_stats: 1]
+  alias DraftGuru.Players
+  alias DraftGuru.PlayerIDLookups
+  alias DraftGuru.PlayerCombineStats
   alias DraftGuru.Players.Player
   alias DraftGuru.Players.PlayerIdLookup
 
@@ -30,7 +30,7 @@ defmodule DraftGuru.DraftCombineStatsPipeline do
   inside the player_canonical_table
   """
   def check_for_canonical_player_record(player_map) do
-    canonical_player_record = case get_player_by_name(player_map) do
+    canonical_player_record = case Players.get_player_by_name(player_map) do
 
       %Player{} = player -> {:ok, true, player}
       nil -> {:error, false, :not_found}

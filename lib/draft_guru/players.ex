@@ -17,8 +17,32 @@ defmodule DraftGuru.Players do
       [%Player{}, ...]
 
   """
-  def list_player_canonical do
-    Repo.all(Player)
+  def list_player_canonical(params \\ {}) do
+    query = Player
+
+    query =
+      case Map.get(params, "name") do
+        nil -> query
+
+        "" -> query
+
+        name ->
+          from (p in query,
+            where:
+              ilike(p.first_name, ^"%#{name}%")) or
+              ilike(p.last_name, ^"%#{name}%")
+      end
+
+    page_number = params["page"] |> to_integer_with_default(1)
+    page_size = 100
+    offset = (page_number - 1) * page_size
+
+    query =
+      query
+      |> limit(^page_size)
+      |> offset(^offset)
+
+    Repo.all(query)
   end
 
   @doc """
