@@ -57,9 +57,11 @@ defp apply_sorting(query, params) do
 
   # Safeguard so a user cannot sort by bogus columns
   sort_field =
-    if sort_field in allowed_fields,
-      do: sort_field,
-      else: "id"
+    if sort_field in allowed_fields do
+      sort_field
+    else
+      "id"
+    end
 
   # Convert string direction to :asc or :desc
   sort_dir_atom =
@@ -70,21 +72,8 @@ defp apply_sorting(query, params) do
 
   sort_field_atom = String.to_existing_atom(sort_field)
 
-  # Dynamically build an :asc or :desc order_by on the chosen field
-  dynamic_order =
-    case sort_dir_atom do
-      :asc  -> dynamic([p], asc: field(p, ^sort_field_atom))
-      :desc -> dynamic([p], desc: field(p, ^sort_field_atom))
-    end
-
-  from(q in query, order_by: ^dynamic_order)
-end
-
-def to_integer_with_default(str, default) do
-  case Integer.parse(to_string(str)) do
-    {int, _} -> int
-    :error -> default
-  end
+  from q in query,
+    order_by: [{^sort_dir_atom, field(q, ^sort_field_atom)}]
 end
 
 defp to_integer_with_default(nil, default), do: default

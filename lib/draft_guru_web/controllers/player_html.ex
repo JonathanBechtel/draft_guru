@@ -3,11 +3,12 @@ defmodule DraftGuruWeb.PlayerHTML do
 
   embed_templates "player_html/*"
 
-  @doc """
-  Renders a player form.
-  """
-  attr :changeset, Ecto.Changeset, required: true
-  attr :action, :string, required: true
-
-  def player_form(assigns)
+  # Simple function to toggle sort direction
+  def toggle_sort(current_field, current_direction, clicked_field) do
+    if current_field == clicked_field do
+      if current_direction == "asc", do: "desc", else: "asc"
+    else
+      "asc"
+    end
+  end
 end
