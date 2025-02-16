@@ -17,39 +17,72 @@ defmodule DraftGuru.Players do
       [%Player{}, ...]
 
   """
-  def list_player_canonical(params \\ {}) do
-    query = Player
+def list_player_canonical(params \\ %{}) do
+  # Start with a base query
+  query = Player
 
-    query =
-      case Map.get(params, "name") do
-        nil -> query
+  # 1) Optionally filter by name
+  query = maybe_apply_search(query, Map.get(params, "name"))
 
-        "" -> query
+  # 2) Sort by column/direction if provided
+  query = apply_sorting(query, params)
 
-        name ->
-          from(p in query,
-            where: ilike(p.first_name, ^"%#{name}%") or ilike(p.last_name, ^"%#{name}%")
-          )
-      end
+  # 3) Paginate at 100 rows/page
+  page     = to_integer_with_default(Map.get(params, "page"), 1)
+  page_size = 100
+  offset    = (page - 1) * page_size
 
-    page_number = params["page"] |> to_integer_with_default(1)
-    page_size = 50
-    offset = (page_number - 1) * page_size
+  query =
+    query
+    |> limit(^page_size)
+    |> offset(^offset)
 
-    query =
-      query
-      |> limit(^page_size)
-      |> offset(^offset)
+  Repo.all(query)
+end
 
-    Repo.all(query)
-  end
+defp maybe_apply_search(query, nil), do: query
+defp maybe_apply_search(query, ""),  do: query
+defp maybe_apply_search(query, name) do
+  from(p in query,
+    where:
+      ilike(p.first_name, ^"%#{name}%") or
+      ilike(p.last_name, ^"%#{name}%")
+  )
+end
 
-  def to_integer_with_default(str, default) do
-    case Integer.parse(to_string(str)) do
-      {int, _} -> int
-      :error -> default
+defp apply_sorting(query, params) do
+  allowed_fields    = ~w(id first_name middle_name last_name suffix draft_year inserted_at updated_at)
+  sort_field        = Map.get(params, "sort_field", "id")
+  sort_direction    = Map.get(params, "sort_direction", "asc")
+
+  # Safeguard so a user cannot sort by bogus columns
+  sort_field =
+    if sort_field in allowed_fields do
+      sort_field
+    else
+      "id"
     end
+
+  # Convert string direction to :asc or :desc
+  sort_dir_atom =
+    case sort_direction do
+      "desc" -> :desc
+      _      -> :asc
+    end
+
+  sort_field_atom = String.to_existing_atom(sort_field)
+
+  from q in query,
+    order_by: [{^sort_dir_atom, field(q, ^sort_field_atom)}]
+end
+
+defp to_integer_with_default(nil, default), do: default
+defp to_integer_with_default(str, default) do
+  case Integer.parse(to_string(str)) do
+    {int, _} -> int
+    :error   -> default
   end
+end
 
   @doc """
   Gets a single player.

@@ -7,27 +7,119 @@
   </:actions>
 </.header>
 
-<form action="/player_canonical" method="get">
+<!-- Search form -->
+<form action="/player_canonical" method="get" class="flex items-center gap-2 mb-4">
   <input
     type="text"
     name="name"
     value={@search}
     placeholder="Search by player name"
+    class="input"
   />
+  <!-- Keep the current sorting if we re-search -->
+  <input type="hidden" name="sort_field" value={@sort_field} />
+  <input type="hidden" name="sort_direction" value={@sort_direction} />
+
+  <.button>Search</.button>
 </form>
-<.table id="player_canonical" rows={@player_canonical} row_click={&JS.navigate(~p"/player_canonical/#{&1}")}>
-  <:col :let={player} label="Id">{player.id}</:col>
-  <:col :let={player} label="First name">{player.first_name}</:col>
-  <:col :let={player} label="Middle name">{player.middle_name}</:col>
-  <:col :let={player} label="Last name">{player.last_name}</:col>
-  <:col :let={player} label="Suffix">{player.suffix}</:col>
-  <:col :let={player} label="Draft year">{player.draft_year}</:col>
+
+<!-- Our main table using <.table> with <.col>/<:col> slot styling -->
+<.table
+  id="player_canonical"
+  rows={@player_canonical}
+  row_click={&JS.navigate(~p"/player_canonical/#{&1}")}
+>
+  <!-- ID Column, clickable label for sorting -->
+  <:col 
+    label={
+      ~H"""
+      <.link navigate={"/player_canonical?sort_field=id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "id")}&name=#{@search}"}>
+        Id
+      </.link>
+      """
+    }
+    :let={player}
+  >
+    <%= player.id %>
+  </:col>
+
+  <!-- First Name column -->
+  <:col 
+    label={
+      ~H"""
+      <.link 
+        navigate={"/player_canonical?sort_field=first_name&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "first_name")}&name=#{@search}"}
+      >
+        First name
+      </.link>
+      """
+    }
+    :let={player}
+  >
+    <%= player.first_name %>
+  </:col>
+
+  <!-- Middle Name column -->
+  <:col 
+    label={
+      ~H"""
+      <.link 
+        navigate={"/player_canonical?sort_field=middle_name&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "middle_name")}&name=#{@search}"}
+      >
+        Middle name
+      </.link>
+      """
+    }
+    :let={player}
+  >
+    <%= player.middle_name %>
+  </:col>
+
+  <!-- Last Name column -->
+  <:col 
+    label={
+      ~H"""
+      <.link 
+        navigate={"/player_canonical?sort_field=last_name&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "last_name")}&name=#{@search}"}
+      >
+        Last name
+      </.link>
+      """
+    }
+    :let={player}
+  >
+    <%= player.last_name %>
+  </:col>
+
+  <!-- Suffix -->
+  <:col label="Suffix" :let={player}>
+    <%= player.suffix %>
+  </:col>
+
+  <!-- Draft Year -->
+  <:col 
+    label={
+      ~H"""
+      <.link 
+        navigate={"/player_canonical?sort_field=draft_year&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "draft_year")}&name=#{@search}"}
+      >
+        Draft year
+      </.link>
+      """
+    }
+    :let={player}
+  >
+    <%= player.draft_year %>
+  </:col>
+
+  <!-- The "Edit" and "Delete" actions -->
   <:action :let={player}>
     <div class="sr-only">
       <.link navigate={~p"/player_canonical/#{player}"}>Show</.link>
     </div>
     <.link navigate={~p"/player_canonical/#{player}/edit"}>Edit</.link>
   </:action>
+
   <:action :let={player}>
     <.link href={~p"/player_canonical/#{player}"} method="delete" data-confirm="Are you sure?">
       Delete
@@ -35,7 +127,25 @@
   </:action>
 </.table>
 
-<%= if String.to_integer(@page) > 1 do %> 
-  <.link navigate={~p"/player_canonical?page=#{String.to_integer(@page) - 1}&name=#{@search}"}>Previous</.link>
+<!-- Simple Previous/Next pagination -->
+<div class="mt-4 flex gap-2">
+<%= if String.to_integer(@page) > 1 do %>
+  <.link 
+    navigate={
+      "/player_canonical?page=#{String.to_integer(@page) - 1}&name=#{@search}&sort_field=#{@sort_field}&sort_direction=#{@sort_direction}"
+    }
+    class="btn"
+  >
+    Previous
+  </.link>
 <% end %>
-<.link navigate={~p"/player_canonical?page=#{String.to_integer(@page) + 1}&name=#{@search}"}>Next</.link>
+
+<.link 
+  navigate={
+    "/player_canonical?page=#{String.to_integer(@page) + 1}&name=#{@search}&sort_field=#{@sort_field}&sort_direction=#{@sort_direction}"
+  }
+  class="btn"
+>
+  Next
+</.link>
+</div>
