@@ -1,4 +1,5 @@
 defmodule DraftGuruWeb.Router do
+  alias DraftGuru.PlayerIdLookupController
   use DraftGuruWeb, :router
 
   pipeline :browser do
@@ -19,6 +20,7 @@ defmodule DraftGuruWeb.Router do
 
     get "/", PageController, :home
     resources "/player_canonical", PlayerController
+    resources "/player_id_lookup", PlayerIdLookupController, only: [:show, :edit]
   end
 
   # Other scopes may use custom stacks.
