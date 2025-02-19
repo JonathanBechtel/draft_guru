@@ -1,5 +1,4 @@
 defmodule DraftGuruWeb.Router do
-  alias DraftGuru.PlayerIdLookupController
   use DraftGuruWeb, :router
 
   pipeline :browser do

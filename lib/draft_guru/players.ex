@@ -28,7 +28,7 @@ def list_player_canonical(params \\ %{}) do
   query = apply_sorting(query, params)
 
   # 3) Paginate at 100 rows/page
-  page     = to_integer_with_default(Map.get(params, "page"), 1)
+  page      = to_integer_with_default(Map.get(params, "page"), 1)
   page_size = 100
   offset    = (page - 1) * page_size
 

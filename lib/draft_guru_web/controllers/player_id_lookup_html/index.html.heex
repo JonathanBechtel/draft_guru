@@ -1,17 +1,25 @@
 <.header>
     Master List of Player ID Linkages
-    <:actions>
-        <.link href={~p"/player_id_lookup/new"}>
-            <.button>New Player ID Linkage</.button>
-        </.link>
-    </:actions>
-
 </.header>
 
-<.table>
+<!-- Search form -->
+<form action="/player_id_lookup" method="get" class="flex items-center gap-2 mb-4">
+    <input 
+        type="text"
+        name="idlookup"
+        value={@search}
+        placeholder="search by data source id"
+        class="input"
+    />
+
+    <.button>Search</.button>
+</form>
+
+<.table
     id = "player_id_lookup"
     rows = {@lookups}
     row_click = {&JS.navigate(~p"/player_id_lookup/#{&1}")}
+>
 
     <:col
         label = {"Id"}
@@ -19,4 +27,27 @@
     >
         <%= lookup.id %>
     </:col>
+
+    <:col 
+        label = {"Data Source"}
+        :let = {lookup}
+    >
+        <%= lookup.data_source %>
+    </:col>
+
+    <:col
+        label = {"Data Source ID"}
+        :let = {lookup}
+    >
+        <%= lookup.data_source_id %>
+
+    </:col>
+
+    <:col
+        label = {"Canonical Player ID"}
+        :let = {lookup}
+    >
+        <%= lookup.player_id %>
+    </:col>
+
 </.table>

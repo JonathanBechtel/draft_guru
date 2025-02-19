@@ -5,7 +5,6 @@ defmodule DraftGuruWeb.PlayerController do
   alias DraftGuru.Players.Player
 
   def index(conn, params) do
-    IO.inspect(params, label: "payload params")
     players = Players.list_player_canonical(params)
 
     render(conn, :index,
