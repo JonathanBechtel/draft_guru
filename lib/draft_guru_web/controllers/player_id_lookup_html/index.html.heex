@@ -12,4 +12,11 @@
     id = "player_id_lookup"
     rows = {@lookups}
     row_click = {&JS.navigate(~p"/player_id_lookup/#{&1}")}
+
+    <:col
+        label = {"Id"}
+        :let = {lookup}
+    >
+        <%= lookup.id %>
+    </:col>
 </.table>
