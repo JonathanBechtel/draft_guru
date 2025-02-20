@@ -9,10 +9,26 @@ defmodule DraftGuru.PlayerIDLookups do
   alias DraftGuru.Players.PlayerIdLookup
 
   @doc """
-  Returns the list of all player_id_lookups
+  Returns the list of all player_id_lookups, as modified by the search
+  function
   """
-  def list_player_id_lookups do
-    Repo.all(PlayerIdLookup)
+  def list_player_id_lookups(params \\ {}) do
+
+    query = PlayerIdLookup
+
+    query = maybe_apply_search(query, Map.get(params, "idlookup"))
+
+    query = from(p in query, order_by: [asc: p.id])
+    Repo.all(query)
+  end
+
+  defp maybe_apply_search(query, nil), do: query
+  defp maybe_apply_search(query, ""), do: query
+  defp maybe_apply_search(query, idlookup) do
+    from(p in query,
+      where:
+        ilike(p.data_source_id, ^"%#{idlookup}%")
+    )
   end
 
   @doc """

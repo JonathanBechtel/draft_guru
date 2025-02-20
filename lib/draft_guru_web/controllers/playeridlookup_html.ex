@@ -1,6 +1,6 @@
-defmodule DraftGuru.PlayerIdLookupHTML do
-  use DraftGuruWeb, :httpd_example
+defmodule DraftGuruWeb.PlayerIdLookupHTML do
+  use DraftGuruWeb, :html
 
-  embed_templates "player_id_lookup_html/"
+  embed_templates "player_id_lookup_html/*"
 
 end
