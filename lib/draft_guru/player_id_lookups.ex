@@ -17,6 +17,8 @@ defmodule DraftGuru.PlayerIDLookups do
     query = PlayerIdLookup
 
     query = maybe_apply_search(query, Map.get(params, "idlookup"))
+
+    query = from(p in query, order_by: [asc: p.id])
     Repo.all(query)
   end
 
