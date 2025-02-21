@@ -20,6 +20,7 @@ defmodule DraftGuruWeb.Router do
     get "/", PageController, :home
     resources "/player_canonical", PlayerController
     resources "/player_id_lookup", PlayerIdLookupController, only: [:show, :index]
+    resources "/player_combine_stats", PlayerCombineStatsController
   end
 
   # Other scopes may use custom stacks.

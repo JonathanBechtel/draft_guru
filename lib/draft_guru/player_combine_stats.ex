@@ -6,6 +6,8 @@ defmodule DraftGuru.PlayerCombineStats do
   alias DraftGuru.Repo
   alias DraftGuru.Players.PlayerCombineStat
 
+  def list_players_combine_stats, do: Repo.all(PlayerCombineStat)
+
   def get_player_combine_stats!(id), do: Repo.get!(PlayerCombineStat, id)
 
   def get_player_combine_stats_by_player_id!(player_id), do: Repo.get_by!(PlayerCombineStat, player_id)

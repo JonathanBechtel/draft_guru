@@ -1,0 +1,178 @@
+<.header>
+    Master list of draft combine stats for individual players
+</.header>
+
+<.table
+    id = "player_combine_stats"
+    rows = {@players}
+    row_click = {&JS.navigate(~p"/player_combine_stats/#{&1}")}
+>
+
+<:col 
+  label = {"Id"}
+  :let  = {lookup}
+>
+    <%= lookup.id %>
+</:col>
+
+<:col 
+  label = {"Position"}
+  :let = {lookup}
+>
+    <%= lookup.position %>
+</:col>
+
+<:col 
+  label = {"Player Slug"}
+  :let = {lookup}
+>
+    <%= lookup.player_slug %>
+</:col>
+
+<:col 
+  label = {"Lane Agility Time"}
+  :let = {lookup}
+>
+    <%= lookup.lane_agility_time %>
+</:col>
+
+<:col 
+  label = {"Shuttle Run"}
+  :let = {lookup}
+>
+    <%= lookup.shuttle_run %>
+</:col>
+
+<:col 
+  label = {"Three Quarter Sprint"}
+  :let = {lookup}
+>
+    <%= lookup.three_quarter_sprint %>
+</:col>
+
+<:col 
+  label = {"Standing Vertical Leap"}
+  :let = {lookup}
+>
+    <%= lookup.standing_vertical_leap %>
+</:col>
+
+<:col 
+  label = {"Max Vertical Leap"}
+  :let = {lookup}
+>
+    <%= lookup.max_vertical_leap %>
+</:col>
+
+<:col 
+  label = {"Max Bench Press Reps"}
+  :let = {lookup}
+>
+    <%= lookup.max_bench_press_repetitions %>
+</:col>
+
+<:col 
+  label = {"Height w/ Shoes"}
+  :let = {lookup}
+>
+    <%= lookup.height_w_shoes %>
+</:col>
+
+<:col 
+  label = {"Height w/o Shoes"}
+  :let = {lookup}
+>
+    <%= lookup.height_wo_shoes %>
+</:col>
+
+<:col 
+  label = {"Body Fat %"}
+  :let = {lookup}
+>
+    <%= lookup.body_fat_pct %>
+</:col>
+
+<:col 
+  label = {"Hand Length"}
+  :let = {lookup}
+>
+    <%= lookup.hand_length %>
+</:col>
+
+<:col 
+  label = {"Hand Length Inches"}
+  :let = {lookup}
+>
+    <%= lookup.hand_length_inches %>
+</:col>
+
+<:col 
+  label = {"Hand Width"}
+  :let = {lookup}
+>
+    <%= lookup.hand_width %>
+</:col>
+
+<:col 
+  label = {"Hand Width Inches"}
+  :let = {lookup}
+>
+    <%= lookup.hand_width_inches %>
+</:col>
+
+<:col 
+  label = {"Standing Reach"}
+  :let = {lookup}
+>
+    <%= lookup.standing_reach %>
+</:col>
+
+<:col 
+  label = {"Standing Reach Inches"}
+  :let = {lookup}
+>
+    <%= lookup.standing_reach_inches %>
+</:col>
+
+<:col 
+  label = {"Weight Lbs"}
+  :let = {lookup}
+>
+    <%= lookup.weight_lbs %>
+</:col>
+
+<:col 
+  label = {"Wingspan"}
+  :let = {lookup}
+>
+    <%= lookup.wingspan %>
+</:col>
+
+<:col 
+  label = {"Wingspan Inches"}
+  :let = {lookup}
+>
+    <%= lookup.wingspan_inches %>
+</:col>
+
+<:col 
+  label = {"Height w/ Shoes Inches"}
+  :let = {lookup}
+>
+    <%= lookup.height_w_shoes_inches %>
+</:col>
+
+<:col 
+  label = {"Height w/o Shoes Inches"}
+  :let = {lookup}
+>
+    <%= lookup.height_wo_shoes_inches %>
+</:col>
+
+<:col 
+  label = {"Canonical ID"}
+  :let = {lookup}
+>
+    <%= lookup.player_id %>
+</:col>
+</.table>
