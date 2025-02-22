@@ -6,7 +6,25 @@ defmodule DraftGuru.PlayerCombineStats do
   alias DraftGuru.Repo
   alias DraftGuru.Players.PlayerCombineStat
 
-  def list_players_combine_stats, do: Repo.all(PlayerCombineStat)
+  def list_players_combine_stats(params) do
+
+    player_slug = Map.get(params, "player_slug")
+
+    query = PlayerCombineStat
+
+    query = maybe_apply_search(query, player_slug)
+
+    Repo.all(query)
+
+  end
+
+  defp maybe_apply_search(query, ""), do: query
+  defp maybe_apply_search(query, nil), do: query
+  defp maybe_apply_search(query, player_slug) do
+      from(p in query,
+          where:
+            ilike(p.player_slug, ^"%#{idlookup}%"))
+  end
 
   def get_player_combine_stats!(id), do: Repo.get!(PlayerCombineStat, id)
 

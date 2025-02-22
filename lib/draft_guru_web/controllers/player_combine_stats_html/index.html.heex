@@ -2,6 +2,17 @@
     Master list of draft combine stats for individual players
 </.header>
 
+<form
+ type="text"
+ name="player_combine_stats_search"
+ value={@search}
+ placeholder="search by player name"
+ class="input"
+>
+
+<.button>Search</.button>
+</form>
+
 <.table
     id = "player_combine_stats"
     rows = {@players}

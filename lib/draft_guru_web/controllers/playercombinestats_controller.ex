@@ -3,12 +3,13 @@ defmodule DraftGuruWeb.PlayerCombineStatsController do
 
   alias DraftGuru.PlayerCombineStats
 
-  def index(conn, _params) do
-    players = PlayerCombineStats.list_players_combine_stats()
+  def index(conn, params) do
+    players = PlayerCombineStats.list_players_combine_stats(params)
 
     render(conn,
           :index,
-          players: players)
+          players: players,
+          search: Map.get(params, "player_combine_stats_search", ""))
   end
 
 end
