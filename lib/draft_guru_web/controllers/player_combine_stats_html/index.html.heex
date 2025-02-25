@@ -2,13 +2,14 @@
     Master list of draft combine stats for individual players
 </.header>
 
-<form
+<form action = "/player_combine_stats" method="get" class="flex items-center gap-2 mb-4">
+<input
  type="text"
  name="player_combine_stats_search"
  value={@search}
  placeholder="search by player name"
  class="input"
->
+/>
 
 <.button>Search</.button>
 </form>
