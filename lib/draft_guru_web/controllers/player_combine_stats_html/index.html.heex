@@ -5,7 +5,7 @@
 <form action = "/player_combine_stats" method="get" class="flex items-center gap-2 mb-4">
 <input
  type="text"
- name="player_combine_stats_search"
+ name="player_slug"
  value={@search}
  placeholder="search by player name"
  class="input"
@@ -188,3 +188,78 @@
     <%= lookup.player_id %>
 </:col>
 </.table>
+
+<!-- Code for the pagination buttons at the bottom -->
+
+<%
+    current_page = String.to_integer(@page)
+    total_pages = @total_pages
+    start_page = max(1, current_page - 2)
+    end_page = min(total_pages, current_page + 2)
+ %>
+
+ <div class="mt-4 flex flex-wrap items-center gap-2">
+    <%= if current_page > 1 do %>
+        <.link 
+            navigate = {
+                "/player_combine_stats?page=1" <>
+                "&player_slug=#{@search}"
+            }
+            class="btn">
+        First
+        </.link>
+    <% end %>
+
+    <%= if current_page > 1 do %>
+        <.link
+            navigate = {
+                "/player_combine_stats?page=#{current_page - 1}" <>
+                "&player_slug=#{@search}"
+            }
+            class="btn"
+        >
+        Previous
+        </.link>
+    <% end %>
+
+    <%= for page_number <- start_page..end_page do %>
+        <.link
+            navigate = {
+                "/player_combine_stats?page=#{page_number}" <>
+                "&player_slug=#{@search}"
+            }
+            class = {
+                "btn " <>
+                if page_number == current_page,
+                    do: "btn-active",
+                    else: ""
+            }
+        >
+        <%= page_number %>
+        </.link>
+    <% end %>
+
+    <%= if current_page < total_pages do %>
+        <.link
+            navigate = {
+                "/player_combine_stats?page=#{current_page + 1}" <>
+                "&player_slug=#{@search}"
+            }
+            class = "btn"
+        >
+        Next
+        </.link>
+
+        <.link
+            navigate = {
+                "/player_combine_stats?page=#{total_pages}" <>
+                "&player_slug=#{@search}"
+            }
+            class = "btn"
+        >
+        Last
+        </.link>
+    <% end %>
+
+ </div>
+

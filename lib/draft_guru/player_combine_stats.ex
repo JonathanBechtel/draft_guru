@@ -8,16 +8,30 @@ defmodule DraftGuru.PlayerCombineStats do
 
   def list_players_combine_stats(params) do
 
-    player_slug = Map.get(params, "player_combine_stats_search")
+    player_slug = Map.get(params, "player_slug")
 
     query = PlayerCombineStat
 
     query = maybe_apply_search(query, player_slug)
 
-    _page = to_integer_with_default(Map.get(params, "page"), 1)
+    page = to_integer_with_default(Map.get(params, "page"), 1)
+    page_size = 100
+    offset = (page - 1) * page_size
+
+    query =
+      query
+      |> limit(^page_size)
+      |> offset(^offset)
 
     Repo.all(query)
 
+  end
+
+  def get_total_pages(table_struct) do
+    total_count = Repo.one(from p in table_struct, select: count(p.id))
+
+    Float.ceil(total_count / 100)
+    |> trunc()
   end
 
   defp maybe_apply_search(query, ""), do: query
