@@ -198,16 +198,11 @@
     end_page = min(total_pages, current_page + 2)
  %>
 
- <div class="mt-4 flex flex-wrap items-center gap-2">
+ <div class="join">
     <%= if current_page > 1 do %>
-        <.link 
-            navigate = {
-                "/player_combine_stats?page=1" <>
-                "&player_slug=#{@search}"
-            }
-            class="btn">
-        First
-        </.link>
+        <button class="join-item btn">
+        <a href="/player_combine_stats?page=1&player_slug=#{@search}">First</a>
+        </button>
     <% end %>
 
     <%= if current_page > 1 do %>
