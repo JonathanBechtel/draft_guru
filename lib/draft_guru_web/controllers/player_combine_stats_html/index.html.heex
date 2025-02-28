@@ -201,59 +201,38 @@
  <div class="join">
     <%= if current_page > 1 do %>
         <button class="join-item btn">
-        <a href="/player_combine_stats?page=1&player_slug=#{@search}">First</a>
+        <a href={"/player_combine_stats?page=1&player_slug=#{@search}"}>First</a>
         </button>
     <% end %>
 
     <%= if current_page > 1 do %>
-        <.link
-            navigate = {
-                "/player_combine_stats?page=#{current_page - 1}" <>
-                "&player_slug=#{@search}"
-            }
-            class="btn"
-        >
-        Previous
-        </.link>
+
+      <button class="join-item btn">
+        <a href={"/player_combine_stats?page=#{current_page - 1}&player_slug=#{@search}"}>Previous</a>
+      </button>
     <% end %>
 
     <%= for page_number <- start_page..end_page do %>
-        <.link
-            navigate = {
-                "/player_combine_stats?page=#{page_number}" <>
-                "&player_slug=#{@search}"
-            }
-            class = {
-                "btn " <>
-                if page_number == current_page,
-                    do: "btn-active",
-                    else: ""
-            }
-        >
-        <%= page_number %>
-        </.link>
+
+<button class={"join-item btn " <> if page_number == current_page, do: "btn-active", else: ""}>
+  <a href={"/player_combine_stats?page=#{page_number}&player_slug=#{@search}"}>
+    <%= page_number %>
+  </a>
+</button>
+
     <% end %>
 
     <%= if current_page < total_pages do %>
-        <.link
-            navigate = {
-                "/player_combine_stats?page=#{current_page + 1}" <>
-                "&player_slug=#{@search}"
-            }
-            class = "btn"
-        >
-        Next
-        </.link>
 
-        <.link
-            navigate = {
-                "/player_combine_stats?page=#{total_pages}" <>
-                "&player_slug=#{@search}"
-            }
-            class = "btn"
-        >
-        Last
-        </.link>
+      <button class="join-item btn">
+        <a href={"/player_combine_stats?page=#{current_page + 1}&player_slug=#{@search}"}>Next</a>
+      </button>
+
+      <button class="join-item btn">
+        <a href={"/player_combine_stats?page=#{total_pages}&player_slug=#{@search}"}>Last</a>
+      </button>      
+
+
     <% end %>
 
  </div>
