@@ -21,7 +21,11 @@
 >
 
 <:col 
-  label = {"Id"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "id")}&player_slug=#{@search}"}>
+          Id
+          </.link>
+          """}
   :let  = {lookup}
 >
     <%= lookup.id %>

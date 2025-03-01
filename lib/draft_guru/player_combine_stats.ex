@@ -14,6 +14,8 @@ defmodule DraftGuru.PlayerCombineStats do
 
     query = maybe_apply_search(query, player_slug)
 
+    query = apply_sorting(query, params)
+
     page = to_integer_with_default(Map.get(params, "page"), 1)
     page_size = 100
     offset = (page - 1) * page_size
@@ -24,6 +26,32 @@ defmodule DraftGuru.PlayerCombineStats do
       |> offset(^offset)
 
     Repo.all(query)
+
+  end
+
+  defp apply_sorting(query, params) do
+    allowed_fields = ["id"]
+    sort_field = Map.get(params, "sort_field", "id")
+    sort_direction = Map.get(params, "sort_direction", "asc")
+
+    sort_field =
+      if sort_field in allowed_fields do
+        sort_field
+      else
+        "id"
+      end
+
+    # convert sort_field to atom to use w/ ecto query
+    sort_dir_atom =
+      case sort_direction do
+        "desc" -> :desc
+        _ -> :asc
+      end
+
+    sort_field_atom = String.to_existing_atom(sort_field)
+
+    from p in query,
+      order_by: [{^sort_dir_atom, field(p, ^sort_field_atom)}]
 
   end
 
