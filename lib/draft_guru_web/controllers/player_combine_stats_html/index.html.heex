@@ -32,161 +32,253 @@
 </:col>
 
 <:col 
-  label = {"Position"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=position&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "position")}&player_slug=#{@search}"}>
+          Position
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.position %>
 </:col>
 
 <:col 
-  label = {"Player Slug"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=player_slug&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "player_slug")}&player_slug=#{@search}"}>
+          Player Slug
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.player_slug %>
 </:col>
 
 <:col 
-  label = {"Lane Agility Time"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=lane_agility_time&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "lane_agility_time")}&player_slug=#{@search}"}>
+          Lane Agility
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.lane_agility_time %>
 </:col>
 
 <:col 
-  label = {"Shuttle Run"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=shuttle_run&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "shuttle_run")}&player_slug=#{@search}"}>
+          Shuttle Run
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.shuttle_run %>
 </:col>
 
 <:col 
-  label = {"Three Quarter Sprint"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=three_quarter_sprint&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "three_quarter_sprint")}&player_slug=#{@search}"}>
+          3/4 Sprint
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.three_quarter_sprint %>
 </:col>
 
 <:col 
-  label = {"Standing Vertical Leap"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=standing_vertical_leap&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "standing_vertical_leap")}&player_slug=#{@search}"}>
+          Standing Vertical Leap
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.standing_vertical_leap %>
 </:col>
 
 <:col 
-  label = {"Max Vertical Leap"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=max_vertical_leap&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "max_vertical_leap")}&player_slug=#{@search}"}>
+          Max Vertical Leap
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.max_vertical_leap %>
 </:col>
 
 <:col 
-  label = {"Max Bench Press Reps"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=max_bench_press_repetitions&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "max_bench_press_repetitions")}&player_slug=#{@search}"}>
+          Max Bench
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.max_bench_press_repetitions %>
 </:col>
 
 <:col 
-  label = {"Height w/ Shoes"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=height_w_shoes&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "height_w_shoes")}&player_slug=#{@search}"}>
+          Height w/ Shoes
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.height_w_shoes %>
 </:col>
 
 <:col 
-  label = {"Height w/o Shoes"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=height_wo_shoes&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "height_wo_shoes")}&player_slug=#{@search}"}>
+          Height w/o Shoes
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.height_wo_shoes %>
 </:col>
 
 <:col 
-  label = {"Body Fat %"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=body_fat_pct&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "body_fat_pct")}&player_slug=#{@search}"}>
+          Body Fat %
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.body_fat_pct %>
 </:col>
 
 <:col 
-  label = {"Hand Length"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=hand_length&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "hand_length")}&player_slug=#{@search}"}>
+          Hand Length
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.hand_length %>
 </:col>
 
 <:col 
-  label = {"Hand Length Inches"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=hand_length_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "hand_length_inches")}&player_slug=#{@search}"}>
+          Hand Length Inches
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.hand_length_inches %>
 </:col>
 
 <:col 
-  label = {"Hand Width"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=hand_width&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "hand_width")}&player_slug=#{@search}"}>
+          Hand Width
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.hand_width %>
 </:col>
 
 <:col 
-  label = {"Hand Width Inches"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=hand_width_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "hand_width_inches")}&player_slug=#{@search}"}>
+          Hand Width Inches
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.hand_width_inches %>
 </:col>
 
 <:col 
-  label = {"Standing Reach"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=standing_reach&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "standing_reach")}&player_slug=#{@search}"}>
+          Standing Reach
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.standing_reach %>
 </:col>
 
 <:col 
-  label = {"Standing Reach Inches"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=standing_reach_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "standing_reach_inches")}&player_slug=#{@search}"}>
+          Standing Reach Inches
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.standing_reach_inches %>
 </:col>
 
 <:col 
-  label = {"Weight Lbs"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=weight_lbs&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "weight_lbs")}&player_slug=#{@search}"}>
+          Weight (lbs)
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.weight_lbs %>
 </:col>
 
 <:col 
-  label = {"Wingspan"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=wingspan&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "wingspan")}&player_slug=#{@search}"}>
+          Wingspan
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.wingspan %>
 </:col>
 
 <:col 
-  label = {"Wingspan Inches"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=wingspan_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "wingspan_inches")}&player_slug=#{@search}"}>
+          Wingspan Inches
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.wingspan_inches %>
 </:col>
 
 <:col 
-  label = {"Height w/ Shoes Inches"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=height_w_shoes_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "height_w_shoes_inches")}&player_slug=#{@search}"}>
+          Height w/ Shoes (inches)
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.height_w_shoes_inches %>
 </:col>
 
 <:col 
-  label = {"Height w/o Shoes Inches"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=height_wo_shoes_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "height_wo_shoes_inches")}&player_slug=#{@search}"}>
+          Height w/o Shoes (inches)
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.height_wo_shoes_inches %>
 </:col>
 
 <:col 
-  label = {"Canonical ID"}
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=player_id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "player_id")}&player_slug=#{@search}"}>
+          Canonical Player ID
+          </.link>
+          """}
   :let = {lookup}
 >
     <%= lookup.player_id %>
