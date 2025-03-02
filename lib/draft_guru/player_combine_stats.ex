@@ -30,7 +30,12 @@ defmodule DraftGuru.PlayerCombineStats do
   end
 
   defp apply_sorting(query, params) do
-    allowed_fields = ["id"]
+    allowed_fields = ["id", "position", "player_slug", "lane_agility_time", "shuttle_run",
+                      "three_quarter_sprint", "standing_vertical_leap", "max_vertical_leap",
+                    "max_bench_press_repetitions", "height_w_shoes", "height_wo_shoes", "body_fat_pct",
+                  "hand_length", "hand_length_inches", "hand_width", "standing_reach", "standing_reach_inches",
+                  "weight_lbs", "wingspan", "wingspan_inches", "height_w_shoes_inches", "height_wo_shoes_inches",
+                  "player_id"]
     sort_field = Map.get(params, "sort_field", "id")
     sort_direction = Map.get(params, "sort_direction", "asc")
 
