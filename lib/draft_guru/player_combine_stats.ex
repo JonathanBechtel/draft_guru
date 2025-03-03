@@ -14,18 +14,27 @@ defmodule DraftGuru.PlayerCombineStats do
 
     query = maybe_apply_search(query, player_slug)
 
+    record_count = Repo.aggregate(query, :count, :id)
+
     query = apply_sorting(query, params)
 
     page = to_integer_with_default(Map.get(params, "page"), 1)
     page_size = 100
     offset = (page - 1) * page_size
 
+    total_pages = ceil(record_count / page_size)
+
     query =
       query
       |> limit(^page_size)
       |> offset(^offset)
 
-    Repo.all(query)
+    records = Repo.all(query)
+
+    %{
+      records: records,
+      total_pages: total_pages
+    }
 
   end
 

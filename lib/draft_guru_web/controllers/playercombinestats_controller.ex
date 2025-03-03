@@ -5,8 +5,10 @@ defmodule DraftGuruWeb.PlayerCombineStatsController do
   alias DraftGuru.Players.PlayerCombineStat
 
   def index(conn, params) do
-    players = PlayerCombineStats.list_players_combine_stats(params)
-    total_pages = PlayerCombineStats.get_total_pages(PlayerCombineStat)
+    %{
+      records: players,
+      total_pages: total_pages
+    } = PlayerCombineStats.list_players_combine_stats(params)
 
     render(conn,
           :index,

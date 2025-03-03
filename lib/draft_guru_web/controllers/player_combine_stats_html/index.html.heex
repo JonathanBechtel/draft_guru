@@ -310,11 +310,15 @@
 
     <%= for page_number <- start_page..end_page do %>
 
-<button class={"join-item btn " <> if page_number == current_page, do: "btn-active", else: ""}>
-  <a href={"/player_combine_stats?page=#{page_number}&player_slug=#{@search}"}>
-    <%= page_number %>
-  </a>
-</button>
+<%= if page_number < total_pages do %>
+
+  <button class={"join-item btn " <> if page_number == current_page, do: "btn-active", else: ""}>
+    <a href={"/player_combine_stats?page=#{page_number}&player_slug=#{@search}"}>
+      <%= page_number %>
+    </a>
+  </button>
+
+<% end %>
 
     <% end %>
 
