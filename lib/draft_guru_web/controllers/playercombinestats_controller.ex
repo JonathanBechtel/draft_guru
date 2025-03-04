@@ -2,13 +2,14 @@ defmodule DraftGuruWeb.PlayerCombineStatsController do
   use DraftGuruWeb, :controller
 
   alias DraftGuru.PlayerCombineStats
-  alias DraftGuru.Players.PlayerCombineStat
 
   def index(conn, params) do
     %{
       records: players,
       total_pages: total_pages
     } = PlayerCombineStats.list_players_combine_stats(params)
+
+    IO.inspect(players, label: "players after being selected")
 
     render(conn,
           :index,
@@ -17,7 +18,7 @@ defmodule DraftGuruWeb.PlayerCombineStatsController do
           page: Map.get(params, "page", "1"),
           sort_field: Map.get(params, "sort_field", "id"),
           sort_direction: Map.get(params, "sort_direction", "asc"),
-          search: Map.get(params, "player_slug", ""))
+          search: Map.get(params, "player_name", ""))
   end
 
 end
