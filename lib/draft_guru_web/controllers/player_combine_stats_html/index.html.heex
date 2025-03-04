@@ -33,6 +33,19 @@
 
 <:col 
   label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "id")}&player_slug=#{@search}"}>
+          Player Name
+          </.link>
+          """}
+  :let = {lookup}
+>
+
+  <%= lookup.player_canonical.first_name  %> <%= lookup.player_canonical.last_name %>
+
+</:col>
+
+<:col 
+  label = {~H"""
           <.link navigate={"/player_combine_stats?sort_field=position&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "position")}&player_slug=#{@search}"}>
           Position
           </.link>
