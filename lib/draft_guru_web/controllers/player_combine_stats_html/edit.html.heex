@@ -1,0 +1,8 @@
+<.header>
+    Edit Player w/ the Slug: {@player.player_slug}
+    <:subtitle>Use this form to edit player records for their draft combine stats</:subtitle>
+</.header>
+
+<.combine_stats_form changeset={@changeset} action={~p"/player_combine_stats/#{@player}"} />
+
+<.back navigate={~p"/player_combine_stats"}>Back to player combine stats</.back>
