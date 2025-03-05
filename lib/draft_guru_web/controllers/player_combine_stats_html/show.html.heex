@@ -1,0 +1,38 @@
+<.header>
+  Player {@player.id}
+  <:subtitle>Individual Combine Stats Record for {@player.player_canonical.first_name} {@player.player_canonical.last_name}</:subtitle>
+  <:actions>
+    <.link href={~p"/player_combine_stats/#{@player}/edit"}>
+      <.button>Edit player</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Player Name">{@player.player_canonical.first_name} {@player.player_canonical.last_name}</:item>
+  <:item title="Position">{@player.position}</:item>
+  <:item title="Player Slug">{@player.player_slug}</:item>
+  <:item title="Lane Agility">{@player.lane_agility_time}</:item>
+  <:item title="Shuttle Run">{@player.shuttle_run}</:item>
+  <:item title="3/4 Sprint">{@player.three_quarter_sprint}</:item>
+  <:item title="Standing Vertical Leap">{@player.standing_vertical_leap}</:item>
+  <:item title="Max Vertical Leap">{@player.max_vertical_leap}</:item>
+  <:item title="Max Bench">{@player.max_bench_press_repetitions}</:item>
+  <:item title="Height w/ Shoes">{@player.height_w_shoes}</:item>
+  <:item title="Height w/ Shoes (Inches)">{@player.height_w_shoes_inches}</:item>
+  <:item title="Height w/o Shoes">{@player.height_wo_shoes}</:item>
+  <:item title="Height w/o Shoes (Inches)">{@player.height_wo_shoes_inches}</:item>
+  <:item title="Body Fat %">{@player.body_fat_pct}</:item>
+  <:item title="Hand Length">{@player.hand_length}</:item>
+  <:item title="Hand Length Inches">{@player.hand_length_inches}</:item>
+  <:item title="Hand Width">{@player.hand_width}</:item>
+  <:item title="Hand Width Inches">{@player.hand_width_inches}</:item>
+  <:item title="Standing Reach">{@player.standing_reach}</:item>
+  <:item title="Standing Reach (Inches)">{@player.standing_reach_inches}</:item>
+  <:item title="Weight (lbs)">{@player.weight_lbs}</:item>
+  <:item title="Wingspan">{@player.wingspan}</:item>
+  <:item title="Wingspan (Inches)">{@player.wingspan_inches}</:item>
+  <:item title="Canonical Player ID">{@player.player_canonical.id}</:item>
+</.list>
+
+<.back navigate={~p"/player_combine_stats"}>Back to player combine stats</.back>

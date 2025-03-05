@@ -21,4 +21,13 @@ defmodule DraftGuruWeb.PlayerCombineStatsController do
           search: Map.get(params, "player_name", ""))
   end
 
+  def show(conn, %{"id" => id} = _params) do
+    player = PlayerCombineStats.get_player!(id)
+
+    render(conn,
+          :show,
+          player: player
+    )
+  end
+
 end
