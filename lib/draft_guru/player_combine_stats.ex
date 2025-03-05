@@ -6,6 +6,17 @@ defmodule DraftGuru.PlayerCombineStats do
   alias DraftGuru.Repo
   alias DraftGuru.Players.PlayerCombineStat
 
+  def get_player!(id) do
+    query = PlayerCombineStat
+
+    query = from(pcs in query,
+    join: p in assoc(pcs, :player_canonical),
+    preload: [player_canonical: p])
+
+    Repo.get!(query, id)
+
+  end
+
   def list_players_combine_stats(params) do
 
     player_slug = Map.get(params, "player_slug")
