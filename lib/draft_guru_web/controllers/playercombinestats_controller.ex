@@ -1,6 +1,7 @@
 defmodule DraftGuruWeb.PlayerCombineStatsController do
   use DraftGuruWeb, :controller
 
+  alias DraftGuru.Players.PlayerCombineStat
   alias DraftGuru.PlayerCombineStats
 
   def index(conn, params) do
@@ -51,6 +52,11 @@ defmodule DraftGuruWeb.PlayerCombineStatsController do
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :edit, player: player, changeset: changeset)
     end
+  end
+
+  def new(conn, _params) do
+    changeset = PlayerCombineStats.change_player(%PlayerCombineStat{})
+    render(conn, :new, changeset: changeset)
   end
 
 end
