@@ -6,7 +6,7 @@ defmodule DraftGuru.PlayerCombineStats do
   alias DraftGuru.Repo
   alias DraftGuru.Players.PlayerCombineStat
 
-  def get_player!(id) do
+  def get_player_w_full_name!(id) do
     query = PlayerCombineStat
 
     query = from(pcs in query,
@@ -116,4 +116,20 @@ defmodule DraftGuru.PlayerCombineStats do
     |> PlayerCombineStat.changeset(attrs)
     |> Repo.insert()
   end
+
+  def change_player(%PlayerCombineStat{} = player_combine_stat, attrs \\ %{}) do
+
+    PlayerCombineStat.changeset(player_combine_stat, attrs)
+  end
+
+  def update_player(%PlayerCombineStat{} = player, attrs) do
+    player
+    |> PlayerCombineStat.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_player(%PlayerCombineStat{} = player) do
+    Repo.delete(player)
+  end
+
 end
