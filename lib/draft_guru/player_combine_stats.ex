@@ -132,4 +132,10 @@ defmodule DraftGuru.PlayerCombineStats do
     Repo.delete(player)
   end
 
+  def create_combine_stats(attrs \\ %{}) do
+    %PlayerCombineStat{}
+    |> PlayerCombineStat.changeset(attrs)
+    |> Repo.insert()
+  end
+
 end
