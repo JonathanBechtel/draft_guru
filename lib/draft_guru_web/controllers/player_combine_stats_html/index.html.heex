@@ -27,17 +27,6 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "id")}&player_slug=#{@search}"}>
-          Id
-          </.link>
-          """}
-  :let  = {lookup}
->
-    <%= lookup.id %>
-</:col>
-
-<:col 
-  label = {~H"""
           <.link navigate={"/player_combine_stats?sort_field=player_name&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "player_name")}&player_slug=#{@search}"}>
           Player Name
           </.link>
@@ -45,7 +34,20 @@
   :let = {lookup}
 >
 
-  <%= lookup.player_canonical.first_name  %> <%= lookup.player_canonical.last_name %>
+  <%= lookup.player_name %>
+
+</:col>
+
+<:col 
+  label = {~H"""
+          <.link navigate={"/player_combine_stats?sort_field=draft_year&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "draft_year")}&player_slug=#{@search}"}>
+          Draft Year
+          </.link>
+          """}
+  :let = {lookup}
+>
+
+  <%= lookup.draft_year %>
 
 </:col>
 
