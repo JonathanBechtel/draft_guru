@@ -301,6 +301,19 @@
 >
     <%= lookup.player_id %>
 </:col>
+
+  <:action :let={lookup}>
+    <div class="sr-only">
+      <.link navigate={~p"/player_combine_stats/#{lookup}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/player_combine_stats/#{lookup}/edit"}>Edit</.link>
+  </:action>
+
+  <:action :let={lookup}>
+    <.link href={~p"/player_canonical/#{lookup}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
 </.table>
 
 <!-- Code for the pagination buttons at the bottom -->
