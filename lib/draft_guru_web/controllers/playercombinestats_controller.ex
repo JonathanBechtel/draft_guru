@@ -21,7 +21,7 @@ defmodule DraftGuruWeb.PlayerCombineStatsController do
   end
 
   def show(conn, %{"id" => id} = _params) do
-    player = PlayerCombineStats.get_player_w_full_name!(id)
+    player = PlayerCombineStats.get_player_combine_stats_w_full_name!(id)
 
     render(conn,
           :show,
@@ -32,7 +32,7 @@ defmodule DraftGuruWeb.PlayerCombineStatsController do
   def edit(conn, %{"id" => id} = _params) do
     player = PlayerCombineStats.get_player_combine_stats!(id)
 
-    changeset = PlayerCombineStats.change_player(player)
+    changeset = PlayerCombineStats.change_player_combine_stats(player)
 
     render(conn,
           :edit,
@@ -43,7 +43,7 @@ defmodule DraftGuruWeb.PlayerCombineStatsController do
   def update(conn, %{"id" => id, "player_combine_stat" => player_params}) do
     player = PlayerCombineStats.get_player_combine_stats!(id)
 
-    case PlayerCombineStats.update_player(player, player_params) do
+    case PlayerCombineStats.update_player_combine_stats(player, player_params) do
       {:ok, player} ->
         conn
         |> put_flash(:info, "Player updated successfully.")
@@ -55,7 +55,7 @@ defmodule DraftGuruWeb.PlayerCombineStatsController do
   end
 
   def new(conn, _params) do
-    changeset = PlayerCombineStats.change_player(%PlayerCombineStat{})
+    changeset = PlayerCombineStats.change_player_combine_stats(%PlayerCombineStat{})
     render(conn, :new, changeset: changeset)
   end
 

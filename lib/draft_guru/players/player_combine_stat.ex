@@ -59,7 +59,9 @@ defmodule DraftGuru.Players.PlayerCombineStat do
       :wingspan_inches,
       :height_w_shoes_inches,
       :height_wo_shoes_inches,
-      :player_id])
+      :player_id,
+      :draft_year,
+      :player_name])
     |> validate_required([
             :player_slug,
             :player_id])
@@ -69,6 +71,9 @@ defmodule DraftGuru.Players.PlayerCombineStat do
     |> unique_constraint(:player_combine_stats,
         name: :player_combine_stats_unique_player_id_index,
         message: "The player id already exists")
+    |> validate_inclusion(:draft_year, 1950..2100,
+        message: "Must be between 1950 and 2100",
+        allow_nil: true)
 
   end
 end
