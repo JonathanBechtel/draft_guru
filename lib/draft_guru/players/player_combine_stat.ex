@@ -26,6 +26,8 @@ defmodule DraftGuru.Players.PlayerCombineStat do
     field :wingspan_inches, :float
     field :height_w_shoes_inches, :float
     field :height_wo_shoes_inches, :float
+    field :draft_year, :integer
+    field :player_name, :string
 
     belongs_to :player_canonical, DraftGuru.Players.Player,
       foreign_key: :player_id,

@@ -16,7 +16,7 @@
     placeholder="Search by player name"
     class="input"
   />
-  
+
   <!-- Keep the current sorting if we re-search -->
   <input type="hidden" name="sort_field" value={@sort_field} />
   <input type="hidden" name="sort_direction" value={@sort_direction} />
@@ -95,22 +95,6 @@
   <!-- Suffix -->
   <:col label="Suffix" :let={player}>
     <%= player.suffix %>
-  </:col>
-
-  <!-- Draft Year -->
-  <:col 
-    label={
-      ~H"""
-      <.link 
-        navigate={"/player_canonical?sort_field=draft_year&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "draft_year")}&name=#{@search}"}
-      >
-        Draft year
-      </.link>
-      """
-    }
-    :let={player}
-  >
-    <%= player.draft_year %>
   </:col>
 
   <!-- The "Edit" and "Delete" actions -->
