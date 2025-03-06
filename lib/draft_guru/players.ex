@@ -51,7 +51,7 @@ defp maybe_apply_search(query, name) do
 end
 
 defp apply_sorting(query, params) do
-  allowed_fields    = ~w(id first_name middle_name last_name suffix draft_year inserted_at updated_at)
+  allowed_fields    = ~w(id first_name middle_name last_name suffix inserted_at updated_at)
   sort_field        = Map.get(params, "sort_field", "id")
   sort_direction    = Map.get(params, "sort_direction", "asc")
 
@@ -102,8 +102,7 @@ end
   def get_player_by_name(%{"suffix" => suffix,
                            "first_name" => first_name,
                            "middle_name" => middle_name,
-                           "last_name" => last_name,
-                           "draft_year" => draft_year} = _player_map) do
+                           "last_name" => last_name} = _player_map) do
 
       suffix      = if suffix == "", do: nil, else: suffix
       middle_name = if middle_name == "", do: nil, else: middle_name
@@ -112,7 +111,6 @@ end
         Player
         |> where([p], p.first_name == ^first_name)
         |> where([p], p.last_name == ^last_name)
-        |> where([p], p.draft_year == ^draft_year)
 
       # If suffix is nil, we use is_nil(p.suffix); otherwise p.suffix == ^suffix
       query =
