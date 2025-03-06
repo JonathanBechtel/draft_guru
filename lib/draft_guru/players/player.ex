@@ -12,7 +12,7 @@ defmodule DraftGuru.Players.Player do
     timestamps(utc: :datetime)
 
     has_many :id_lookups, DraftGuru.Players.PlayerIdLookup, foreign_key: :player_id
-    has_many :player_combine_stats, DraftGuru.Players.PlayerCombineStats, foreign_key: :player_id
+    has_many :player_combine_stats, DraftGuru.Players.PlayerCombineStat, foreign_key: :player_id
   end
 
   @doc false
