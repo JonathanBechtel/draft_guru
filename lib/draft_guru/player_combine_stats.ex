@@ -23,10 +23,6 @@ defmodule DraftGuru.PlayerCombineStats do
 
     query = PlayerCombineStat
 
-    query = from(pcs in query,
-      join: p in assoc(pcs, :player_canonical),
-      preload: [player_canonical: p])
-
     query = maybe_apply_search(query, player_slug)
 
     record_count = Repo.aggregate(query, :count, :id)
@@ -94,9 +90,9 @@ defmodule DraftGuru.PlayerCombineStats do
   defp maybe_apply_search(query, ""), do: query
   defp maybe_apply_search(query, nil), do: query
   defp maybe_apply_search(query, player_name) do
-      from([pcs, p] in query,
+      from(p in query,
           where:
-            ilike(fragment("? || ' ' || ?", p.first_name, p.last_name), ^"%#{player_name}%"))
+            ilike(p.player_name, ^"%#{player_name}%"))
   end
 
   defp to_integer_with_default(nil, default), do: default

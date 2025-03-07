@@ -2,6 +2,9 @@ defmodule DraftGuru.NBADotComScraper do
   @moduledoc """
     A module responsible for fetching and parsing the draft data from
     NBA.com/stats/draft
+
+    WARNING:  Has been edited since it was last run to collect data
+    may need to be tweaked to get it to work again for 2025-2026 season
   """
 
   require Logger
@@ -74,6 +77,8 @@ defmodule DraftGuru.NBADotComScraper do
           key in name_keys ->
             acc
             |> Map.merge(split_name_into_parts(value))
+            # this part was added after initial data pull
+            |> Map.put(key, clean_map_value(value))
 
           true -> Map.put(acc, key, clean_map_value(value))
         end

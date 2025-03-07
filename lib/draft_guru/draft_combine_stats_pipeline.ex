@@ -68,8 +68,7 @@ defmodule DraftGuru.DraftCombineStatsPipeline do
         Players.create_player(%{"suffix" => _suffix,
               "first_name" => _first_name,
               "middle_name" => _middle_name,
-              "last_name" => _last_name,
-              "draft_year" => _draft_year} = player_map)
+              "last_name" => _last_name} = player_map)
       else
         true
       end
@@ -108,6 +107,8 @@ defmodule DraftGuru.DraftCombineStatsPipeline do
             canonical_record) do
 
         case PlayerCombineStats.create_player_combine_stats(%{
+          player_name: player_map["player_name"],
+          draft_year: player_map["draft_year"],
           position: player_map["position"],
           player_slug: player_map["player_slug"],
           lane_agility_time: player_map["lane_agility_time"],
