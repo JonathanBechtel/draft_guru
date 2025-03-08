@@ -54,6 +54,19 @@ defmodule DraftGuruWeb.PlayerCombineStatsController do
     end
   end
 
+  def create(conn, %{"player_combine_stats" => player_params}) do
+    case PlayerCombineStats.create_player_combine_stats(player_params) do
+      {_canonical_params, _lookup_params, _combine_stats_params} ->
+        conn
+        |> put_flash(:info, "Sucessfully created player.")
+        |> redirect(to: ~p"/player_combine_stats")
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        # is there a better way to handle this?
+        render(conn, :new, changeset: changeset)
+    end
+  end
+
   def new(conn, _params) do
     changeset = PlayerCombineStats.change_player_combine_stats(%PlayerCombineStat{})
     render(conn, :new, changeset: changeset)

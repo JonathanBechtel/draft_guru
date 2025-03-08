@@ -1,4 +1,4 @@
-defmodule Utilities do
+defmodule DraftGuru.DataCollection.Utilities do
   @moduledoc """
   This module is for helper functions that don't merit
   inclusion in another module.  Mostly for string formatting,
@@ -109,6 +109,55 @@ defmodule Utilities do
     |> String.downcase()
     |> String.trim()
     |> String.replace(~r/[^[:alnum:]\s'\-]+/u, "")
+  end
+
+  def clean_map_value(value) do
+
+    case parse_null_value(value) do
+      nil -> nil
+      not_nil_value -> parse_non_null_value(not_nil_value)
+    end
+  end
+
+  @doc false
+  defp parse_null_value("-%"), do: nil
+  defp parse_null_value("_"), do: nil
+  defp parse_null_value(""), do: nil
+  defp parse_null_value("nil"), do: nil
+  defp parse_null_value("-"), do: nil
+  defp parse_null_value(nil), do: nil
+  defp parse_null_value(value), do: value
+
+  defp parse_non_null_value(value) do
+
+    regex = ~r/^(?<ft>\d+)'[\s]*(?<in>\d+(?:\.\d+)?)(?:''|"{1,2})?$/
+
+    case Regex.named_captures(regex, value) do
+
+      %{"ft" => ft_str, "in" => in_str} ->
+        feet = case Integer.parse(ft_str) do
+          {value, _} -> value
+          :error -> 0
+        end
+
+        inches = case Float.parse(in_str) do
+          {value, _} -> value
+          :error -> 0
+        end
+        feet * 12 + inches
+
+        _ -> parse_float(value)
+    end
+
+  end
+
+  defp parse_float(str) when is_binary(str) do
+
+    case Float.parse(str) do
+      {value, ""} -> value
+      {value, _rest} -> value
+      :error -> str
+    end
   end
 
   def parse_draft_year(nil), do: "unknown"
