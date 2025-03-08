@@ -5,7 +5,7 @@
 
     <.input field={f[:player_name]} type="text" label="Player Name" />
     <.input field={f[:position]} type="text" label="Position" />
-    <.input field={f[:player_slug]} type="text" label="Player Slug" readonly/>
+    <.input field={f[:draft_year]} type="text" label="Draft Year" />
     <.input field={f[:lane_agility_time]} type="text" label="Lane Agility" />
     <.input field={f[:shuttle_run]} type="text" label="Shuttle Run" />
     <.input field={f[:three_quarter_sprint]} type="text" label="3/4 Sprint" />
@@ -13,21 +13,13 @@
     <.input field={f[:max_vertical_leap]} type="text" label="Max Vertical Leap" />
     <.input field={f[:max_bench_press_repetitions]} type="text" label="Max Bench" />
     <.input field={f[:height_w_shoes]} type="text" label="Height w/ Shoes" />
-    <.input field={f[:height_w_shoes_inches]} type="text" label="Height w/ Shoes (Inches)" />
     <.input field={f[:height_wo_shoes]} type="text" label="Height w/o Shoes" />
-    <.input field={f[:height_wo_shoes_inches]} type="text" label="Height w/o Shoes (Inches)" />
     <.input field={f[:body_fat_pct]} type="text" label="Body Fat %" />
     <.input field={f[:hand_length]} type="text" label="Hand Length" />
-    <.input field={f[:hand_length_inches]} type="text" label="Hand Length Inches" />
     <.input field={f[:hand_width]} type="text" label="Hand Width" />
-    <.input field={f[:hand_width_inches]} type="text" label="Hand Width Inches" />
     <.input field={f[:standing_reach]} type="text" label="Standing Reach" />
-    <.input field={f[:standing_reach_inches]} type="text" label="Standing Reach (Inches)" />
     <.input field={f[:weight_lbs]} type="text" label="Weight (lbs)" />
     <.input field={f[:wingspan]} type="text" label="Wingspan" />
-    <.input field={f[:wingspan_inches]} type="text" label="Wingspan (Inches)" />
-    <.input field={f[:draft_year]} type="text" label="Draft Year" />
-    <.input field={f[:player_id]} type="text" label="Canonical Player ID" readonly/>
 
     <:actions>
         <.button>Save Player</.button>

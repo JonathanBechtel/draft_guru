@@ -10,10 +10,10 @@ defmodule DraftGuru.NBADotComScraper do
   require Logger
   alias HTTPoison.Response
 
-  import Utilities, only: [export_data_to_file: 2,
-                           split_name_into_parts: 1,
-                           sanitize: 1,
-                           parse_draft_year: 1]
+  import DraftGuru.DataCollection.Utilities, only: [export_data_to_file: 2,
+                                                split_name_into_parts: 1,
+                                                sanitize: 1,
+                                                parse_draft_year: 1]
   use Wallaby.DSL
 
   # pull in the config from the applicatioin
@@ -46,7 +46,9 @@ defmodule DraftGuru.NBADotComScraper do
     :height_w_shoes,
     :height_wo_shoes,
     :standing_reach,
-    :wingspan
+    :wingspan,
+    :hand_length,
+    :hand_width
    ]
 
    keys_to_sanitize = [

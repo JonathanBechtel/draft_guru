@@ -3,8 +3,20 @@ defmodule DraftGuru.PlayerCombineStats do
   Context for the PlayerCombineStat table
   """
   import Ecto.Query, warn: false
+  import DraftGuru.DataCollection.Utilities, only: [split_name_into_parts: 1,
+                                                    sanitize: 1,
+                                                    clean_map_value: 1]
+
   alias DraftGuru.Repo
+
+  alias DraftGuru.PlayerCombineStats
   alias DraftGuru.Players.PlayerCombineStat
+
+  alias DraftGuru.Players
+  alias DraftGuru.Players.Player
+
+  alias DraftGuru.PlayerIDLookups
+  alias DraftGuru.Players.PlayerIdLookup
 
   def get_player_combine_stats_w_full_name!(id) do
     query = PlayerCombineStat
@@ -108,9 +120,49 @@ defmodule DraftGuru.PlayerCombineStats do
   def get_player_combine_stats_by_player_id!(player_id), do: Repo.get_by!(PlayerCombineStat, player_id)
 
   def create_player_combine_stats(attrs \\ %{}) do
-    %PlayerCombineStat{}
-    |> PlayerCombineStat.changeset(attrs)
-    |> Repo.insert()
+
+    keys_to_format = [
+      :height_w_shoes,
+      :height_wo_shoes,
+      :standing_reach,
+      :wingspan,
+      :hand_length,
+      :hand_width
+     ]
+
+    # strip white space and extra punctuation from player name
+    combine_stats_attrs = Map.put(attrs, :player_name, sanitize(attrs[:player_name]))
+
+    # convert measurements to inches
+    combine_stats_attrs = Enum.reduce(keys_to_format, combine_stats_attrs, fn {key, value}, acc ->
+      Map.update(acc, "#{key}_inches", 0, clean_map_value(value))
+    end)
+
+    # get the attributes for the player_canonical table
+    canonical_attrs =
+      %{}
+      |> Map.merge(split_name_into_parts(updated_attrs[:player_name]))
+
+    player_slug = "#{canonical_params[:first_name]}_#{canonical_params[:middle_name]}_#{canonical_params[:last_name]}_#{canonical_params[:suffix]}_#{attrs[:draft_year]}"
+    combine_stats_attrs = Map.put(combine_stats_attrs, "player_slug", player_slug)
+
+    player_id_attrs =
+      %{}
+      |> Map.put("data_source_id", player_slug)
+      |> Map.put("data_source", "nba.com/stats/draft")
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(:player_canonical, Player.changeset(%Player{}, canonical_attrs))
+    |> Ecto.Multi.insert(:player_id_lookup, fn %{canonical: canonical} ->
+      PlayerIdLookup.changeset(%PlayerIdLookup{},
+        Map.put(player_id_attrs, :player_id, canonical.id))
+    end)
+    |> Ecto.Multi.insert(:player_combine_stats, fn %{player_canonical: canonical} ->
+      PlayerCombineStat.changeset(%PlayerCombineStat{},
+        Map.put(combine_stats_attrs, :player_id, canonical.id))
+    end)
+    |> Repo.transaction()
+
   end
 
   def change_player_combine_stats(%PlayerCombineStat{} = player_combine_stat, attrs \\ %{}) do
