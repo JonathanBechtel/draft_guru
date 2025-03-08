@@ -139,24 +139,28 @@ defmodule DraftGuru.PlayerCombineStats do
     end)
 
     # get the attributes for the player_canonical table
-    canonical_params =
+    canonical_attrs =
       %{}
       |> Map.merge(split_name_into_parts(updated_attrs[:player_name]))
 
     player_slug = "#{canonical_params[:first_name]}_#{canonical_params[:middle_name]}_#{canonical_params[:last_name]}_#{canonical_params[:suffix]}_#{attrs[:draft_year]}"
     combine_stats_attrs = Map.put(combine_stats_attrs, "player_slug", player_slug)
 
-    player_id_params =
+    player_id_attrs =
       %{}
       |> Map.put("data_source_id", player_slug)
       |> Map.put("data_source", "nba.com/stats/draft")
 
     Ecto.Multi.new()
-    |> Ecto.Multi.insert(:player_canonical, Player.changeset(%Player{}, canonical_params))
+    |> Ecto.Multi.insert(:player_canonical, Player.changeset(%Player{}, canonical_attrs))
     |> Ecto.Multi.insert(:player_id_lookup, fn %{canonical: canonical} ->
-      PlayerIdLookup.changeset(%PlayerIdLookup{}, player_id_params)
+      PlayerIdLookup.changeset(%PlayerIdLookup{},
+        Map.put(player_id_attrs, :player_id, canonical.id))
     end)
-    |> Ecto.Multi.insert(:player_combine_stats, PlayerCombineStat.changeset(%PlayerCombineStat{}, player_id_params))
+    |> Ecto.Multi.insert(:player_combine_stats, fn %{player_canonical: canonical} ->
+      PlayerCombineStat.changeset(%PlayerCombineStat{},
+        Map.put(combine_stats_attrs, :player_id, canonical.id))
+    end)
     |> Repo.transaction()
 
   end
