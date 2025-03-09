@@ -54,16 +54,18 @@ defmodule DraftGuruWeb.PlayerCombineStatsController do
     end
   end
 
-  def create(conn, %{"player_combine_stats" => player_params}) do
+  def create(conn, %{"player_combine_stat" => player_params}) do
     case PlayerCombineStats.create_player_combine_stats(player_params) do
-      {_canonical_params, _lookup_params, _combine_stats_params} ->
+      {:ok, _result} ->
         conn
         |> put_flash(:info, "Sucessfully created player.")
         |> redirect(to: ~p"/player_combine_stats")
 
-      {:error, %Ecto.Changeset{} = changeset} ->
+      {:error, failed_operation, failed_value, _changes_so_far} ->
         # is there a better way to handle this?
-        render(conn, :new, changeset: changeset)
+        conn
+        |> put_flash(:error, "Failed to successfully create the record.  Operation: #{failed_operation}, value: #{failed_value}")
+        |> render(conn, :new)
     end
   end
 

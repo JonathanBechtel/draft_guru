@@ -3,9 +3,9 @@
         Oops, something went wrong!  Please check the errors below.
 </.error>
 
-    <.input field={f[:player_name]} type="text" label="Player Name" />
-    <.input field={f[:position]} type="text" label="Position" />
-    <.input field={f[:draft_year]} type="text" label="Draft Year" />
+    <.input field={f[:player_name]} type="text" label="Player Name" required/>
+    <.input field={f[:position]} type="select" label="Position" options={["pg", "sg", "pg-sg", "g", "sg-sf", "sf", "pf", "f", "c", "pf-c"]} required/>
+    <.input field={f[:draft_year]} type="text" label="Draft Year" required/>
     <.input field={f[:lane_agility_time]} type="text" label="Lane Agility" />
     <.input field={f[:shuttle_run]} type="text" label="Shuttle Run" />
     <.input field={f[:three_quarter_sprint]} type="text" label="3/4 Sprint" />
