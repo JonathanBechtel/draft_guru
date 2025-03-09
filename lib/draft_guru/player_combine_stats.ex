@@ -47,9 +47,9 @@ defmodule DraftGuru.PlayerCombineStats do
 
     query = apply_sorting(query, allowed_fields, params)
 
-    age = to_integer_with_default(Map.get(params, "age"), 1)
+    page = to_integer_with_default(Map.get(params, "page"), 1)
     page_size = 100
-    offset = (age - 1) * page_size
+    offset = (page - 1) * page_size
 
     total_pages = ceil(record_count / page_size)
 
