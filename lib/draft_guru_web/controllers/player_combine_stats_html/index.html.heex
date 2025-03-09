@@ -10,7 +10,7 @@
 <form action = "/player_combine_stats" method="get" class="flex items-center gap-2 mb-4">
 <input
  type="text"
- name="player_slug"
+ name="player_name"
  value={@search}
  placeholder="search by player name"
  class="input"
@@ -23,11 +23,13 @@
     id = "player_combine_stats"
     rows = {@players}
     row_click = {&JS.navigate(~p"/player_combine_stats/#{&1}")}
+    container_class="pl-0 sm:px-0"
+    table_class="w-full"
 >
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=player_name&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "player_name")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=player_name&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "player_name")}&player_name=#{@search}"}>
           Player Name
           </.link>
           """}
@@ -40,7 +42,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=draft_year&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "draft_year")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=draft_year&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "draft_year")}&player_name=#{@search}"}>
           Draft Year
           </.link>
           """}
@@ -53,7 +55,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=position&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "position")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=position&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "position")}&player_name=#{@search}"}>
           Position
           </.link>
           """}
@@ -64,7 +66,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=player_slug&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "player_slug")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=player_slug&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "player_slug")}&player_name=#{@search}"}>
           Player Slug
           </.link>
           """}
@@ -75,7 +77,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=lane_agility_time&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "lane_agility_time")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=lane_agility_time&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "lane_agility_time")}&player_name=#{@search}"}>
           Lane Agility
           </.link>
           """}
@@ -86,7 +88,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=shuttle_run&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "shuttle_run")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=shuttle_run&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "shuttle_run")}&player_name=#{@search}"}>
           Shuttle Run
           </.link>
           """}
@@ -97,7 +99,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=three_quarter_sprint&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "three_quarter_sprint")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=three_quarter_sprint&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "three_quarter_sprint")}&player_name=#{@search}"}>
           3/4 Sprint
           </.link>
           """}
@@ -108,7 +110,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=standing_vertical_leap&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "standing_vertical_leap")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=standing_vertical_leap&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "standing_vertical_leap")}&player_name=#{@search}"}>
           Standing Vertical Leap
           </.link>
           """}
@@ -119,7 +121,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=max_vertical_leap&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "max_vertical_leap")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=max_vertical_leap&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "max_vertical_leap")}&player_name=#{@search}"}>
           Max Vertical Leap
           </.link>
           """}
@@ -130,7 +132,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=max_bench_press_repetitions&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "max_bench_press_repetitions")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=max_bench_press_repetitions&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "max_bench_press_repetitions")}&player_name=#{@search}"}>
           Max Bench
           </.link>
           """}
@@ -141,7 +143,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=height_w_shoes&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "height_w_shoes")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=height_w_shoes&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "height_w_shoes")}&player_name=#{@search}"}>
           Height w/ Shoes
           </.link>
           """}
@@ -152,7 +154,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=height_wo_shoes&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "height_wo_shoes")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=height_wo_shoes&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "height_wo_shoes")}&player_name=#{@search}"}>
           Height w/o Shoes
           </.link>
           """}
@@ -163,7 +165,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=body_fat_pct&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "body_fat_pct")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=body_fat_pct&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "body_fat_pct")}&player_name=#{@search}"}>
           Body Fat %
           </.link>
           """}
@@ -174,7 +176,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=hand_length&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "hand_length")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=hand_length&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "hand_length")}&player_name=#{@search}"}>
           Hand Length
           </.link>
           """}
@@ -185,7 +187,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=hand_length_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "hand_length_inches")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=hand_length_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "hand_length_inches")}&player_name=#{@search}"}>
           Hand Length Inches
           </.link>
           """}
@@ -196,7 +198,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=hand_width&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "hand_width")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=hand_width&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "hand_width")}&player_name=#{@search}"}>
           Hand Width
           </.link>
           """}
@@ -207,7 +209,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=hand_width_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "hand_width_inches")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=hand_width_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "hand_width_inches")}&player_name=#{@search}"}>
           Hand Width Inches
           </.link>
           """}
@@ -218,7 +220,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=standing_reach&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "standing_reach")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=standing_reach&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "standing_reach")}&player_name=#{@search}"}>
           Standing Reach
           </.link>
           """}
@@ -229,7 +231,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=standing_reach_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "standing_reach_inches")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=standing_reach_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "standing_reach_inches")}&player_name=#{@search}"}>
           Standing Reach Inches
           </.link>
           """}
@@ -240,7 +242,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=weight_lbs&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "weight_lbs")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=weight_lbs&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "weight_lbs")}&player_name=#{@search}"}>
           Weight (lbs)
           </.link>
           """}
@@ -251,7 +253,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=wingspan&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "wingspan")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=wingspan&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "wingspan")}&player_name=#{@search}"}>
           Wingspan
           </.link>
           """}
@@ -262,7 +264,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=wingspan_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "wingspan_inches")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=wingspan_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "wingspan_inches")}&player_name=#{@search}"}>
           Wingspan Inches
           </.link>
           """}
@@ -273,7 +275,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=height_w_shoes_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "height_w_shoes_inches")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=height_w_shoes_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "height_w_shoes_inches")}&player_name=#{@search}"}>
           Height w/ Shoes (inches)
           </.link>
           """}
@@ -284,7 +286,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=height_wo_shoes_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "height_wo_shoes_inches")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=height_wo_shoes_inches&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "height_wo_shoes_inches")}&player_name=#{@search}"}>
           Height w/o Shoes (inches)
           </.link>
           """}
@@ -295,7 +297,7 @@
 
 <:col 
   label = {~H"""
-          <.link navigate={"/player_combine_stats?sort_field=player_id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "player_id")}&player_slug=#{@search}"}>
+          <.link navigate={"/player_combine_stats?sort_field=player_id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "player_id")}&player_name=#{@search}"}>
           Canonical Player ID
           </.link>
           """}
@@ -330,14 +332,14 @@
  <div class="join">
     <%= if current_page > 1 do %>
         <button class="join-item btn">
-        <a href={"/player_combine_stats?page=1&player_slug=#{@search}"}>First</a>
+        <a href={"/player_combine_stats?page=1&player_name=#{@search}"}>First</a>
         </button>
     <% end %>
 
     <%= if current_page > 1 do %>
 
       <button class="join-item btn">
-        <a href={"/player_combine_stats?page=#{current_page - 1}&player_slug=#{@search}"}>Previous</a>
+        <a href={"/player_combine_stats?page=#{current_page - 1}&player_name=#{@search}"}>Previous</a>
       </button>
     <% end %>
 
@@ -346,7 +348,7 @@
 <%= if page_number < total_pages do %>
 
   <button class={"join-item btn " <> if page_number == current_page, do: "btn-active", else: ""}>
-    <a href={"/player_combine_stats?page=#{page_number}&player_slug=#{@search}"}>
+    <a href={"/player_combine_stats?page=#{page_number}&player_name=#{@search}"}>
       <%= page_number %>
     </a>
   </button>
@@ -358,11 +360,11 @@
     <%= if current_page < total_pages do %>
 
       <button class="join-item btn">
-        <a href={"/player_combine_stats?page=#{current_page + 1}&player_slug=#{@search}"}>Next</a>
+        <a href={"/player_combine_stats?page=#{current_page + 1}&player_name=#{@search}"}>Next</a>
       </button>
 
       <button class="join-item btn">
-        <a href={"/player_combine_stats?page=#{total_pages}&player_slug=#{@search}"}>Last</a>
+        <a href={"/player_combine_stats?page=#{total_pages}&player_name=#{@search}"}>Last</a>
       </button>      
 
 

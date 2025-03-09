@@ -7,6 +7,8 @@ defmodule DraftGuru.PlayerCombineStats do
                                                     sanitize: 1,
                                                     clean_map_value: 1]
 
+ import DraftGuru.Contexts.Utilities
+
   alias DraftGuru.Repo
 
   alias DraftGuru.Players.PlayerCombineStat
@@ -27,15 +29,23 @@ defmodule DraftGuru.PlayerCombineStats do
 
   def list_players_combine_stats(params) do
 
-    player_slug = Map.get(params, "player_slug")
+    # to use for sorting
+    allowed_fields = ["id", "position", "player_slug", "lane_agility_time", "shuttle_run",
+    "three_quarter_sprint", "standing_vertical_leap", "max_vertical_leap",
+    "max_bench_press_repetitions", "height_w_shoes", "height_wo_shoes", "body_fat_pct",
+    "hand_length", "hand_length_inches", "hand_width", "standing_reach", "standing_reach_inches",
+    "weight_lbs", "wingspan", "wingspan_inches", "height_w_shoes_inches", "height_wo_shoes_inches",
+    "player_id", "player_name", "draft_year"]
+
+    search_term = Map.get(params, "player_name")
 
     query = PlayerCombineStat
 
-    query = maybe_apply_search(query, player_slug)
+    query = maybe_apply_search(query, search_term, :player_name)
 
     record_count = Repo.aggregate(query, :count, :id)
 
-    query = apply_sorting(query, params)
+    query = apply_sorting(query, allowed_fields, params)
 
     age = to_integer_with_default(Map.get(params, "age"), 1)
     page_size = 100
@@ -57,59 +67,6 @@ defmodule DraftGuru.PlayerCombineStats do
 
   end
 
-  def apply_sorting(query, params) do
-    allowed_fields = ["id", "position", "player_slug", "lane_agility_time", "shuttle_run",
-                      "three_quarter_sprint", "standing_vertical_leap", "max_vertical_leap",
-                      "max_bench_press_repetitions", "height_w_shoes", "height_wo_shoes", "body_fat_pct",
-                      "hand_length", "hand_length_inches", "hand_width", "standing_reach", "standing_reach_inches",
-                      "weight_lbs", "wingspan", "wingspan_inches", "height_w_shoes_inches", "height_wo_shoes_inches",
-                      "player_id", "player_name", "draft_year"]
-    sort_field = Map.get(params, "sort_field", "id")
-    sort_direction = Map.get(params, "sort_direction", "asc")
-
-    sort_field =
-      if sort_field in allowed_fields do
-        sort_field
-      else
-        "id"
-      end
-
-    # convert sort_field to atom to use w/ ecto query
-    sort_dir_atom =
-      case sort_direction do
-        "desc" -> :desc
-        _ -> :asc
-      end
-
-    sort_field_atom = String.to_existing_atom(sort_field)
-
-    from p in query,
-      order_by: [{^sort_dir_atom, field(p, ^sort_field_atom)}]
-
-  end
-
-  def get_total_pages(table_struct) do
-    total_count = Repo.one(from p in table_struct, select: count(p.id))
-
-    Float.ceil(total_count / 100)
-    |> trunc()
-  end
-
-  def maybe_apply_search(query, ""), do: query
-  def maybe_apply_search(query, nil), do: query
-  def maybe_apply_search(query, player_name) do
-      from(p in query,
-          where:
-            ilike(p.player_name, ^"%#{player_name}%"))
-  end
-
-  def to_integer_with_default(nil, default), do: default
-  def to_integer_with_default(str, default) do
-    case Integer.parse(to_string(str)) do
-      {int, _} -> int
-      :error   -> default
-    end
-  end
   def get_player_combine_stats!(id), do: Repo.get!(PlayerCombineStat, id)
 
   def get_player_combine_stats_by_player_id!(layer_id), do: Repo.get_by!(PlayerCombineStat, layer_id)
