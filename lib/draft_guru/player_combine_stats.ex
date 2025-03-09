@@ -110,8 +110,6 @@ defmodule DraftGuru.PlayerCombineStats do
       :error   -> default
     end
   end
-
-alias DraftGuru.Repo
   def get_player_combine_stats!(id), do: Repo.get!(PlayerCombineStat, id)
 
   def get_player_combine_stats_by_player_id!(layer_id), do: Repo.get_by!(PlayerCombineStat, layer_id)
@@ -141,7 +139,6 @@ alias DraftGuru.Repo
       %{}
       |> Map.merge(split_name_into_parts(combine_stats_attrs["player_name"]))
 
-    IO.inspect(canonical_attrs, label: "canonical attrs")
     player_slug = "#{canonical_attrs[:first_name]}_#{canonical_attrs[:middle_name]}_#{canonical_attrs[:last_name]}_#{canonical_attrs[:suffix]}_#{attrs["draft_year"]}"
     combine_stats_attrs = Map.put(combine_stats_attrs, "player_slug", player_slug)
 
