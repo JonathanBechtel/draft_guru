@@ -2,27 +2,23 @@ defmodule DraftGuru.PlayerCombineStats do
   @moduledoc """
   Context for the PlayerCombineStat table
   """
-  import Ecto.Query, warn: false
-  import DraftGuru.DataCollection.Utilities, only: [split_name_into_parts: 1,
+ import Ecto.Query, warn: false
+ import DraftGuru.DataCollection.Utilities, only: [split_name_into_parts: 1,
                                                     sanitize: 1,
                                                     clean_map_value: 1]
 
   alias DraftGuru.Repo
 
-  alias DraftGuru.PlayerCombineStats
   alias DraftGuru.Players.PlayerCombineStat
-
-  alias DraftGuru.Players
   alias DraftGuru.Players.Player
-
-  alias DraftGuru.PlayerIDLookups
   alias DraftGuru.Players.PlayerIdLookup
 
+  @spec get_player_combine_stats_w_full_name!(any()) :: any()
   def get_player_combine_stats_w_full_name!(id) do
     query = PlayerCombineStat
 
-    query = from(pcs in query,
-    join: p in assoc(pcs, :player_canonical),
+    query = from(cs in query,
+    join: p in assoc(cs, :player_canonical),
     preload: [player_canonical: p])
 
     Repo.get!(query, id)
@@ -41,9 +37,9 @@ defmodule DraftGuru.PlayerCombineStats do
 
     query = apply_sorting(query, params)
 
-    page = to_integer_with_default(Map.get(params, "page"), 1)
+    age = to_integer_with_default(Map.get(params, "age"), 1)
     page_size = 100
-    offset = (page - 1) * page_size
+    offset = (age - 1) * page_size
 
     total_pages = ceil(record_count / page_size)
 
@@ -61,7 +57,7 @@ defmodule DraftGuru.PlayerCombineStats do
 
   end
 
-  defp apply_sorting(query, params) do
+  def apply_sorting(query, params) do
     allowed_fields = ["id", "position", "player_slug", "lane_agility_time", "shuttle_run",
                       "three_quarter_sprint", "standing_vertical_leap", "max_vertical_leap",
                       "max_bench_press_repetitions", "height_w_shoes", "height_wo_shoes", "body_fat_pct",
@@ -99,51 +95,54 @@ defmodule DraftGuru.PlayerCombineStats do
     |> trunc()
   end
 
-  defp maybe_apply_search(query, ""), do: query
-  defp maybe_apply_search(query, nil), do: query
-  defp maybe_apply_search(query, player_name) do
+  def maybe_apply_search(query, ""), do: query
+  def maybe_apply_search(query, nil), do: query
+  def maybe_apply_search(query, player_name) do
       from(p in query,
           where:
             ilike(p.player_name, ^"%#{player_name}%"))
   end
 
-  defp to_integer_with_default(nil, default), do: default
-  defp to_integer_with_default(str, default) do
+  def to_integer_with_default(nil, default), do: default
+  def to_integer_with_default(str, default) do
     case Integer.parse(to_string(str)) do
       {int, _} -> int
       :error   -> default
     end
   end
 
+alias DraftGuru.Repo
   def get_player_combine_stats!(id), do: Repo.get!(PlayerCombineStat, id)
 
-  def get_player_combine_stats_by_player_id!(player_id), do: Repo.get_by!(PlayerCombineStat, player_id)
+  def get_player_combine_stats_by_player_id!(layer_id), do: Repo.get_by!(PlayerCombineStat, layer_id)
 
   def create_player_combine_stats(attrs \\ %{}) do
 
     keys_to_format = [
-      :height_w_shoes,
-      :height_wo_shoes,
-      :standing_reach,
-      :wingspan,
-      :hand_length,
-      :hand_width
+      "height_w_shoes",
+      "height_wo_shoes",
+      "standing_reach",
+      "wingspan",
+      "hand_length",
+      "hand_width"
      ]
 
-    # strip white space and extra punctuation from player name
-    combine_stats_attrs = Map.put(attrs, :player_name, sanitize(attrs[:player_name]))
+    # stri white sace and extra unctuation from layer name
+    combine_stats_attrs = Map.put(attrs, "player_name", sanitize(attrs["player_name"]))
 
     # convert measurements to inches
-    combine_stats_attrs = Enum.reduce(keys_to_format, combine_stats_attrs, fn {key, value}, acc ->
-      Map.update(acc, "#{key}_inches", 0, clean_map_value(value))
+    combine_stats_attrs = Enum.reduce(keys_to_format, combine_stats_attrs, fn key, acc ->
+      value = Map.get(acc, key)
+      Map.put(acc, "#{key}_inches", clean_map_value(value))
     end)
 
-    # get the attributes for the player_canonical table
+    # get the attributes for the layer_canonical table
     canonical_attrs =
       %{}
-      |> Map.merge(split_name_into_parts(updated_attrs[:player_name]))
+      |> Map.merge(split_name_into_parts(combine_stats_attrs["player_name"]))
 
-    player_slug = "#{canonical_params[:first_name]}_#{canonical_params[:middle_name]}_#{canonical_params[:last_name]}_#{canonical_params[:suffix]}_#{attrs[:draft_year]}"
+    IO.inspect(canonical_attrs, label: "canonical attrs")
+    player_slug = "#{canonical_attrs[:first_name]}_#{canonical_attrs[:middle_name]}_#{canonical_attrs[:last_name]}_#{canonical_attrs[:suffix]}_#{attrs["draft_year"]}"
     combine_stats_attrs = Map.put(combine_stats_attrs, "player_slug", player_slug)
 
     player_id_attrs =
@@ -153,13 +152,13 @@ defmodule DraftGuru.PlayerCombineStats do
 
     Ecto.Multi.new()
     |> Ecto.Multi.insert(:player_canonical, Player.changeset(%Player{}, canonical_attrs))
-    |> Ecto.Multi.insert(:player_id_lookup, fn %{canonical: canonical} ->
+    |> Ecto.Multi.insert(:player_id_lookup, fn %{player_canonical: player_canonical} ->
       PlayerIdLookup.changeset(%PlayerIdLookup{},
-        Map.put(player_id_attrs, :player_id, canonical.id))
+        Map.put(player_id_attrs, "player_id", player_canonical.id))
     end)
-    |> Ecto.Multi.insert(:player_combine_stats, fn %{player_canonical: canonical} ->
+    |> Ecto.Multi.insert(:player_combine_stats, fn %{player_canonical: player_canonical} ->
       PlayerCombineStat.changeset(%PlayerCombineStat{},
-        Map.put(combine_stats_attrs, :player_id, canonical.id))
+        Map.put(combine_stats_attrs, "player_id", player_canonical.id))
     end)
     |> Repo.transaction()
 
@@ -176,8 +175,8 @@ defmodule DraftGuru.PlayerCombineStats do
     |> Repo.update()
   end
 
-  def delete_player_combine_stats(%PlayerCombineStat{} = player) do
-    Repo.delete(player)
+  def delete_player_combine_stats(%PlayerCombineStat{} = layer) do
+    Repo.delete(layer)
   end
 
 end
