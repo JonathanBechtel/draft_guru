@@ -488,7 +488,8 @@ def table(assigns) do
     the caller passes in, so you can override them on a per-table basis.
   -->
   <div class={["overflow-x-auto px-4 sm:overflow-visible sm:px-0", @container_class]}>
-    <table class={["w-[40rem] mt-11 sm:w-full", @table_class]}>
+    <table class={["w-[40rem] mt-11 sm:w-full",
+      @table_class]}>
       <thead class="text-sm text-left leading-6 text-zinc-500">
         <tr>
           <th :for={col <- @col} class="p-0 pb-4 pr-6 font-normal">
