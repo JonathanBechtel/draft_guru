@@ -22,21 +22,39 @@
 >
 
     <:col
-        label = {"Id"}
+        label = {
+            ~H"""
+            <.link navigate={"/player_id_lookup?sort_field=id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "id")}&idlookup=#{@search}"}>
+                Id
+            </.link>
+            """
+            }
         :let = {lookup}
     >
         <%= lookup.id %>
     </:col>
 
     <:col 
-        label = {"Data Source"}
+        label = {
+        ~H"""
+        <.link navigate={"/player_id_lookup?sort_field=data_source&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "data_source")}&idlookup=#{@search}"}>
+            Data Source
+        </.link>
+        """
+        }
         :let = {lookup}
     >
         <%= lookup.data_source %>
     </:col>
 
     <:col
-        label = {"Data Source ID"}
+        label = {
+        ~H"""
+        <.link navigate={"/player_id_lookup?sort_field=data_source_id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "data_source_id")}&idlookup=#{@search}"}>
+            Data Source ID
+        </.link>
+        """
+        }
         :let = {lookup}
     >
         <%= lookup.data_source_id %>
@@ -44,10 +62,67 @@
     </:col>
 
     <:col
-        label = {"Canonical Player ID"}
+        label = {
+        ~H"""
+        <.link navigate={"/player_id_lookup?sort_field=player_id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "player_id")}&idlookup=#{@search}"}>
+            Canonical Player Id
+        </.link>
+        """
+        }
         :let = {lookup}
     >
         <%= lookup.player_id %>
     </:col>
 
 </.table>
+
+<!-- Pagination -->
+
+<%
+    current_page = String.to_integer(@page)
+    total_pages = @total_pages
+    start_page = max(1, current_page - 2)
+    end_page = min(total_pages, current_page + 2)
+ %>
+ <div class="join">
+    <%= if current_page > 1 do %>
+        <button class="join-item btn">
+        <a href={"/player_id_lookup?page=1&idlookup=#{@search}"}>First</a>
+        </button>
+    <% end %>
+
+    <%= if current_page > 1 do %>
+
+      <button class="join-item btn">
+        <a href={"/player_id_lookup?page=#{current_page - 1}&idlookup=#{@search}"}>Previous</a>
+      </button>
+    <% end %>
+
+    <%= for page_number <- start_page..end_page do %>
+
+<%= if page_number < total_pages do %>
+
+  <button class={"join-item btn " <> if page_number == current_page, do: "btn-active", else: ""}>
+    <a href={"/player_id_lookup?page=#{page_number}&idlookup=#{@search}"}>
+      <%= page_number %>
+    </a>
+  </button>
+
+<% end %>
+
+    <% end %>
+
+    <%= if current_page < total_pages do %>
+
+      <button class="join-item btn">
+        <a href={"/player_id_lookup?page=#{current_page + 1}&idlookup=#{@search}"}>Next</a>
+      </button>
+
+      <button class="join-item btn">
+        <a href={"/player_id_lookup?page=#{total_pages}&idlookup=#{@search}"}>Last</a>
+      </button>      
+
+
+    <% end %>
+
+ </div>

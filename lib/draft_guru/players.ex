@@ -4,8 +4,12 @@ defmodule DraftGuru.Players do
   """
 
   import Ecto.Query, warn: false
-  alias DraftGuru.Repo
+  import DraftGuru.Contexts.Utilities, only: [
+    apply_sorting: 3,
+    to_integer_with_default: 2
+  ]
 
+  alias DraftGuru.Repo
   alias DraftGuru.Players.Player
 
   @doc """
@@ -21,23 +25,42 @@ def list_player_canonical(params \\ %{}) do
   # Start with a base query
   query = Player
 
+  # used for sorting
+  allowed_fields = [
+    "id",
+    "first_name",
+     "middle_name",
+    "last_name",
+    "suffix",
+    "inserted_at",
+    "updated_at"
+  ]
+
   # 1) Optionally filter by name
   query = maybe_apply_search(query, Map.get(params, "name"))
 
+  record_count = Repo.aggregate(query, :count, :id)
+
   # 2) Sort by column/direction if provided
-  query = apply_sorting(query, params)
+  query = apply_sorting(query, allowed_fields, params)
 
   # 3) Paginate at 100 rows/page
-  page      = to_integer_with_default(Map.get(params, "page"), 1)
-  page_size = 100
-  offset    = (page - 1) * page_size
+  page        = to_integer_with_default(Map.get(params, "page"), 1)
+  page_size   = 100
+  offset      = (page - 1) * page_size
+  total_pages = ceil(record_count / page_size)
 
   query =
     query
     |> limit(^page_size)
     |> offset(^offset)
 
-  Repo.all(query)
+  records = Repo.all(query)
+
+  %{
+    records: records,
+    total_pages: total_pages
+  }
 end
 
 defp maybe_apply_search(query, nil), do: query
@@ -50,6 +73,7 @@ defp maybe_apply_search(query, name) do
   )
 end
 
+"""
 defp apply_sorting(query, params) do
   allowed_fields    = ~w(id first_name middle_name last_name suffix inserted_at updated_at)
   sort_field        = Map.get(params, "sort_field", "id")
@@ -75,14 +99,16 @@ defp apply_sorting(query, params) do
   from q in query,
     order_by: [{^sort_dir_atom, field(q, ^sort_field_atom)}]
 end
+"""
 
-defp to_integer_with_default(nil, default), do: default
-defp to_integer_with_default(str, default) do
-  case Integer.parse(to_string(str)) do
-    {int, _} -> int
-    :error   -> default
-  end
-end
+#defp to_integer_with_default(nil, default), do: default
+#defp to_integer_with_default(str, default) do
+#  case Integer.parse(to_string(str)) do
+#{int, _} -> int
+#    :error   -> default
+#  end
+
+#end
 
   @doc """
   Gets a single player.

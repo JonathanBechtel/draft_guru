@@ -4,6 +4,8 @@ defmodule DraftGuru.PlayerIDLookups do
   """
 
   import Ecto.Query, warn: false
+  import DraftGuru.Contexts.Utilities
+
   alias DraftGuru.Repo
 
   alias DraftGuru.Players.PlayerIdLookup
@@ -14,21 +16,36 @@ defmodule DraftGuru.PlayerIDLookups do
   """
   def list_player_id_lookups(params \\ {}) do
 
+    allowed_fields = ["id", "data_source", "data_source_id", "player_id"]
+
+    search_term = Map.get(params, "idlookup")
+
     query = PlayerIdLookup
 
-    query = maybe_apply_search(query, Map.get(params, "idlookup"))
+    query = maybe_apply_search(query, search_term, :data_source_id)
 
-    query = from(p in query, order_by: [asc: p.id])
-    Repo.all(query)
-  end
+    record_count = Repo.aggregate(query, :count, :id)
 
-  defp maybe_apply_search(query, nil), do: query
-  defp maybe_apply_search(query, ""), do: query
-  defp maybe_apply_search(query, idlookup) do
-    from(p in query,
-      where:
-        ilike(p.data_source_id, ^"%#{idlookup}%")
-    )
+    query = apply_sorting(query, allowed_fields, params)
+
+    page = to_integer_with_default(Map.get(params, "page"), 1)
+    page_size = 100
+    offset = (page - 1) * page_size
+
+    total_pages = ceil(record_count / page_size)
+
+    query =
+      query
+      |> limit(^page_size)
+      |> offset(^offset)
+
+
+    records = Repo.all(query)
+
+    %{
+      records: records,
+      total_pages: total_pages
+    }
   end
 
   @doc """
