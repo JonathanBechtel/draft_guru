@@ -10,10 +10,11 @@ defmodule DraftGuru.Accounts.UserRoles do
 
   @valid_roles ["admin", "contributer", "user"]
 
+  @doc false
   def changeset(user_role, attrs) do
     user_role
     |> cast(attrs, [:role])
-    |> validate_required([:role])
-    |> validate_inclusion([:role], @valid_roles)
+    |> validate_required([:role], message: "must choose a role")
+    |> validate_inclusion([:role], @valid_roles, message: "role must be one of admin, contributor, or user")
   end
 end
