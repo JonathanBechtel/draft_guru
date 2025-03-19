@@ -5,6 +5,8 @@ defmodule DraftGuru.Accounts.UserRoles do
   @primary_key {:id, :id, autogenerate: true}
   schema "user_roles" do
     field :role, :string
+    has_many :users, DraftGuru.Accounts.Users
+
     timestamps(utc: :datetime)
   end
 
