@@ -149,6 +149,7 @@ defmodule DraftGuru.DraftCombineStatsPipeline do
     {:ok, :record_inserted_successfully}
   end
 
+# TO DO:  should add these to utilities and away from this file
   def parse_value(value) do
     case value do
       value when is_integer(value) -> value

@@ -9,6 +9,8 @@ defmodule DraftGuru.Accounts.Users do
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
 
+    belongs_to :user_roles, DraftGuru.Accounts.UserRoles
+
     timestamps(type: :utc_datetime)
   end
 
