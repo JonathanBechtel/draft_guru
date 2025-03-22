@@ -11,6 +11,7 @@ defmodule DraftGuruWeb.UsersRegistrationController do
   end
 
   def create(conn, %{"users" => users_params}) do
+    users_params = Map.put(users_params, "user_role_id", 2)
     case Accounts.register_users(users_params) do
       {:ok, users} ->
         {:ok, _} =

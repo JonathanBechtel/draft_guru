@@ -19,7 +19,7 @@ defmodule DraftGuru.MixProject do
   def application do
     [
       mod: {DraftGuru.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :bcrypt_elixir]
     ]
   end
 
