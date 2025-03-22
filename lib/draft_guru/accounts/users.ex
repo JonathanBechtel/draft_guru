@@ -9,7 +9,7 @@ defmodule DraftGuru.Accounts.Users do
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
 
-    belongs_to :user_roles, DraftGuru.Accounts.UserRoles
+    belongs_to :user_roles, DraftGuru.Accounts.UserRoles, foreign_key: :user_role_id
 
     timestamps(type: :utc_datetime)
   end
@@ -38,8 +38,10 @@ defmodule DraftGuru.Accounts.Users do
       Defaults to `true`.
   """
   def registration_changeset(users, attrs, opts \\ []) do
+    IO.inspect(users, label: "users struct")
+    IO.inspect(attrs, label: "attrs map")
     users
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [:email, :password, :user_role_id])
     |> validate_email(opts)
     |> validate_password(opts)
   end
