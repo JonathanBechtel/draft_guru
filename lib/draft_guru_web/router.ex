@@ -34,7 +34,7 @@ end
   scope "/", DraftGuruWeb do
     pipe_through [:browser, :require_authenticated_users, :require_admin]
 
-    resources "/player_canonical", PlayerController
+    resources "/models/player_canonical", PlayerController
     resources "/player_id_lookup", PlayerIdLookupController, only: [:show, :index]
     resources "/player_combine_stats", PlayerCombineStatsController
   end
