@@ -7,7 +7,6 @@ defmodule DraftGuruWeb.Plugs.RequireAdmin do
   def call(conn, _opts) do
     current_user = conn.assigns[:current_user] || conn.assigns[:current_users]
 
-    IO.inspect(current_user, label: "current user")
     if current_user && current_user.user_role_id == 1 do
       conn
     else

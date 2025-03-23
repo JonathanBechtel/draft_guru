@@ -73,43 +73,6 @@ defp maybe_apply_search(query, name) do
   )
 end
 
-"""
-defp apply_sorting(query, params) do
-  allowed_fields    = ~w(id first_name middle_name last_name suffix inserted_at updated_at)
-  sort_field        = Map.get(params, "sort_field", "id")
-  sort_direction    = Map.get(params, "sort_direction", "asc")
-
-  # Safeguard so a user cannot sort by bogus columns
-  sort_field =
-    if sort_field in allowed_fields do
-      sort_field
-    else
-      "id"
-    end
-
-  # Convert string direction to :asc or :desc
-  sort_dir_atom =
-    case sort_direction do
-      "desc" -> :desc
-      _      -> :asc
-    end
-
-  sort_field_atom = String.to_existing_atom(sort_field)
-
-  from q in query,
-    order_by: [{^sort_dir_atom, field(q, ^sort_field_atom)}]
-end
-"""
-
-#defp to_integer_with_default(nil, default), do: default
-#defp to_integer_with_default(str, default) do
-#  case Integer.parse(to_string(str)) do
-#{int, _} -> int
-#    :error   -> default
-#  end
-
-#end
-
   @doc """
   Gets a single player.
 
