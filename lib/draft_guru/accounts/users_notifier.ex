@@ -8,7 +8,7 @@ defmodule DraftGuru.Accounts.UsersNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"DraftGuru", "contact@example.com"})
+      |> from({"DraftGuru", "jonathanbechtel@gmail.com"}) # add as environment variable later
       |> subject(subject)
       |> text_body(body)
 

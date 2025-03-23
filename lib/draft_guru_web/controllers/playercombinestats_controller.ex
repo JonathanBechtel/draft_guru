@@ -47,7 +47,7 @@ defmodule DraftGuruWeb.PlayerCombineStatsController do
       {:ok, player} ->
         conn
         |> put_flash(:info, "Player updated successfully.")
-        |> redirect(to: ~p"/player_combine_stats/#{player}")
+        |> redirect(to: ~p"/models/player_combine_stats/#{player}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :edit, player: player, changeset: changeset)
@@ -59,7 +59,7 @@ defmodule DraftGuruWeb.PlayerCombineStatsController do
       {:ok, _result} ->
         conn
         |> put_flash(:info, "Sucessfully created player.")
-        |> redirect(to: ~p"/player_combine_stats")
+        |> redirect(to: ~p"/models/player_combine_stats")
 
       {:error, failed_operation, failed_value, _changes_so_far} ->
         # is there a better way to handle this?
@@ -72,6 +72,15 @@ defmodule DraftGuruWeb.PlayerCombineStatsController do
   def new(conn, _params) do
     changeset = PlayerCombineStats.change_player_combine_stats(%PlayerCombineStat{})
     render(conn, :new, changeset: changeset)
+  end
+
+  def delete(conn, %{"id" => id}) do
+    player = PlayerCombineStats.get_player_combine_stats!(id)
+    {:ok, _player} = PlayerCombineStats.delete_player_combine_stats(player)
+
+    conn
+    |> put_flash(:info, "Player deleted successfully.")
+    |> redirect(to: ~p"/models/player_combine_stats")
   end
 
 end

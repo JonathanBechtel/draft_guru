@@ -36,7 +36,7 @@ end
 
     resources "/models/player_canonical", PlayerController
     resources "/models/player_id_lookup", PlayerIdLookupController, only: [:show, :index]
-    resources "/player_combine_stats", PlayerCombineStatsController
+    resources "/models/player_combine_stats", PlayerCombineStatsController
   end
 
   # Other scopes may use custom stacks.
