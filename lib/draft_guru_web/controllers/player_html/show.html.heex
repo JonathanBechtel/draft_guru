@@ -2,7 +2,7 @@
   Player {@player.id}
   <:subtitle>This is a player record from your database.</:subtitle>
   <:actions>
-    <.link href={~p"/player_canonical/#{@player}/edit"}>
+    <.link href={~p"/models/player_canonical/#{@player}/edit"}>
       <.button>Edit player</.button>
     </.link>
   </:actions>
@@ -15,4 +15,4 @@
   <:item title="Suffix">{@player.suffix}</:item>
 </.list>
 
-<.back navigate={~p"/player_canonical"}>Back to player_canonical</.back>
+<.back navigate={~p"/models/player_canonical"}>Back to player_canonical</.back>

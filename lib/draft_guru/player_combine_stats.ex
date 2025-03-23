@@ -129,8 +129,8 @@ defmodule DraftGuru.PlayerCombineStats do
     |> Repo.update()
   end
 
-  def delete_player_combine_stats(%PlayerCombineStat{} = layer) do
-    Repo.delete(layer)
+  def delete_player_combine_stats(%PlayerCombineStat{} = player) do
+    Repo.delete(player)
   end
 
 end

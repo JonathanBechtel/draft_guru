@@ -2,7 +2,7 @@
   Player {@player.id}
   <:subtitle>Individual Combine Stats Record for {@player.player_canonical.first_name} {@player.player_canonical.last_name}</:subtitle>
   <:actions>
-    <.link href={~p"/player_combine_stats/#{@player}/edit"}>
+    <.link href={~p"/models/player_combine_stats/#{@player}/edit"}>
       <.button>Edit player</.button>
     </.link>
   </:actions>
@@ -36,4 +36,4 @@
   <:item title="Canonical Player ID">{@player.player_canonical.id}</:item>
 </.list>
 
-<.back navigate={~p"/player_combine_stats"}>Back to player combine stats</.back>
+<.back navigate={~p"/models/player_combine_stats"}>Back to player combine stats</.back>

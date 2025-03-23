@@ -3,7 +3,7 @@
 </.header>
 
 <!-- Search form -->
-<form action="/player_id_lookup" method="get" class="flex items-center gap-2 mb-4">
+<form action="/models/player_id_lookup" method="get" class="flex items-center gap-2 mb-4">
     <input 
         type="text"
         name="idlookup"
@@ -18,13 +18,13 @@
 <.table
     id = "player_id_lookup"
     rows = {@lookups}
-    row_click = {&JS.navigate(~p"/player_id_lookup/#{&1}")}
+    row_click = {&JS.navigate(~p"/models/player_id_lookup/#{&1}")}
 >
 
     <:col
         label = {
             ~H"""
-            <.link navigate={"/player_id_lookup?sort_field=id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "id")}&idlookup=#{@search}"}>
+            <.link navigate={"/models/player_id_lookup?sort_field=id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "id")}&idlookup=#{@search}"}>
                 Id
             </.link>
             """
@@ -37,7 +37,7 @@
     <:col 
         label = {
         ~H"""
-        <.link navigate={"/player_id_lookup?sort_field=data_source&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "data_source")}&idlookup=#{@search}"}>
+        <.link navigate={"/models/player_id_lookup?sort_field=data_source&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "data_source")}&idlookup=#{@search}"}>
             Data Source
         </.link>
         """
@@ -50,7 +50,7 @@
     <:col
         label = {
         ~H"""
-        <.link navigate={"/player_id_lookup?sort_field=data_source_id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "data_source_id")}&idlookup=#{@search}"}>
+        <.link navigate={"/models/player_id_lookup?sort_field=data_source_id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "data_source_id")}&idlookup=#{@search}"}>
             Data Source ID
         </.link>
         """
@@ -64,7 +64,7 @@
     <:col
         label = {
         ~H"""
-        <.link navigate={"/player_id_lookup?sort_field=player_id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "player_id")}&idlookup=#{@search}"}>
+        <.link navigate={"/models/player_id_lookup?sort_field=player_id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "player_id")}&idlookup=#{@search}"}>
             Canonical Player Id
         </.link>
         """
@@ -87,14 +87,14 @@
  <div class="join">
     <%= if current_page > 1 do %>
         <button class="join-item btn">
-        <a href={"/player_id_lookup?page=1&idlookup=#{@search}"}>First</a>
+        <a href={"/models/player_id_lookup?page=1&idlookup=#{@search}"}>First</a>
         </button>
     <% end %>
 
     <%= if current_page > 1 do %>
 
       <button class="join-item btn">
-        <a href={"/player_id_lookup?page=#{current_page - 1}&idlookup=#{@search}"}>Previous</a>
+        <a href={"/models/player_id_lookup?page=#{current_page - 1}&idlookup=#{@search}"}>Previous</a>
       </button>
     <% end %>
 
@@ -103,7 +103,7 @@
 <%= if page_number < total_pages do %>
 
   <button class={"join-item btn " <> if page_number == current_page, do: "btn-active", else: ""}>
-    <a href={"/player_id_lookup?page=#{page_number}&idlookup=#{@search}"}>
+    <a href={"/models/player_id_lookup?page=#{page_number}&idlookup=#{@search}"}>
       <%= page_number %>
     </a>
   </button>
@@ -115,11 +115,11 @@
     <%= if current_page < total_pages do %>
 
       <button class="join-item btn">
-        <a href={"/player_id_lookup?page=#{current_page + 1}&idlookup=#{@search}"}>Next</a>
+        <a href={"/models/player_id_lookup?page=#{current_page + 1}&idlookup=#{@search}"}>Next</a>
       </button>
 
       <button class="join-item btn">
-        <a href={"/player_id_lookup?page=#{total_pages}&idlookup=#{@search}"}>Last</a>
+        <a href={"/models/player_id_lookup?page=#{total_pages}&idlookup=#{@search}"}>Last</a>
       </button>      
 
 

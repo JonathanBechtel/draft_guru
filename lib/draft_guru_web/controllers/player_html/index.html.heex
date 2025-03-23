@@ -1,14 +1,14 @@
 <.header>
   Master List of Players
   <:actions>
-    <.link href={~p"/player_canonical/new"}>
+    <.link href={~p"/models/player_canonical/new"}>
       <.button>New Player</.button>
     </.link>
   </:actions>
 </.header>
 
 <!-- Search form -->
-<form action="/player_canonical" method="get" class="flex items-center gap-2 mb-4">
+<form action="/models/player_canonical" method="get" class="flex items-center gap-2 mb-4">
   <input
     type="text"
     name="name"
@@ -28,13 +28,13 @@
 <.table
   id="player_canonical"
   rows={@player_canonical}
-  row_click={&JS.navigate(~p"/player_canonical/#{&1}")}
+  row_click={&JS.navigate(~p"/models/player_canonical/#{&1}")}
 >
   <!-- ID Column, clickable label for sorting -->
   <:col 
     label={
       ~H"""
-      <.link navigate={"/player_canonical?sort_field=id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "id")}&name=#{@search}"}>
+      <.link navigate={"/models/player_canonical?sort_field=id&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "id")}&name=#{@search}"}>
         Id
       </.link>
       """
@@ -49,7 +49,7 @@
     label={
       ~H"""
       <.link 
-        navigate={"/player_canonical?sort_field=first_name&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "first_name")}&name=#{@search}"}
+        navigate={"/models/player_canonical?sort_field=first_name&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "first_name")}&name=#{@search}"}
       >
         First name
       </.link>
@@ -65,7 +65,7 @@
     label={
       ~H"""
       <.link 
-        navigate={"/player_canonical?sort_field=middle_name&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "middle_name")}&name=#{@search}"}
+        navigate={"/models/player_canonical?sort_field=middle_name&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "middle_name")}&name=#{@search}"}
       >
         Middle name
       </.link>
@@ -81,7 +81,7 @@
     label={
       ~H"""
       <.link 
-        navigate={"/player_canonical?sort_field=last_name&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "last_name")}&name=#{@search}"}
+        navigate={"/models/player_canonical?sort_field=last_name&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "last_name")}&name=#{@search}"}
       >
         Last name
       </.link>
@@ -97,7 +97,7 @@
     label={
       ~H"""
       <.link
-        navigate={"/player_canonical?sort_field=suffix&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "suffix")}&name=#{@search}"}
+        navigate={"/models/player_canonical?sort_field=suffix&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "suffix")}&name=#{@search}"}
       >
         Suffix
       </.link>
@@ -110,13 +110,13 @@
   <!-- The "Edit" and "Delete" actions -->
   <:action :let={player}>
     <div class="sr-only">
-      <.link navigate={~p"/player_canonical/#{player}"}>Show</.link>
+      <.link navigate={~p"/models/player_canonical/#{player}"}>Show</.link>
     </div>
-    <.link navigate={~p"/player_canonical/#{player}/edit"}>Edit</.link>
+    <.link navigate={~p"/models/player_canonical/#{player}/edit"}>Edit</.link>
   </:action>
 
   <:action :let={player}>
-    <.link href={~p"/player_canonical/#{player}"} method="delete" data-confirm="Are you sure?">
+    <.link href={~p"/models/player_canonical/#{player}"} method="delete" data-confirm="Are you sure?">
       Delete
     </.link>
   </:action>
@@ -133,14 +133,14 @@
  <div class="join">
     <%= if current_page > 1 do %>
         <button class="join-item btn">
-        <a href={"/player_canonical?page=1&name=#{@search}"}>First</a>
+        <a href={"/models/player_canonical?page=1&name=#{@search}"}>First</a>
         </button>
     <% end %>
 
     <%= if current_page > 1 do %>
 
       <button class="join-item btn">
-        <a href={"/player_canonical?page=#{current_page - 1}&name=#{@search}"}>Previous</a>
+        <a href={"/models/player_canonical?page=#{current_page - 1}&name=#{@search}"}>Previous</a>
       </button>
     <% end %>
 
@@ -149,7 +149,7 @@
 <%= if page_number < total_pages do %>
 
   <button class={"join-item btn " <> if page_number == current_page, do: "btn-active", else: ""}>
-    <a href={"/player_canonical?page=#{page_number}&name=#{@search}"}>
+    <a href={"/models/player_canonical?page=#{page_number}&name=#{@search}"}>
       <%= page_number %>
     </a>
   </button>
@@ -161,11 +161,11 @@
     <%= if current_page < total_pages do %>
 
       <button class="join-item btn">
-        <a href={"/player_canonical?page=#{current_page + 1}&name=#{@search}"}>Next</a>
+        <a href={"/models/player_canonical?page=#{current_page + 1}&name=#{@search}"}>Next</a>
       </button>
 
       <button class="join-item btn">
-        <a href={"/player_canonical?page=#{total_pages}&name=#{@search}"}>Last</a>
+        <a href={"/models/player_canonical?page=#{total_pages}&name=#{@search}"}>Last</a>
       </button>      
 
 

@@ -30,7 +30,7 @@ defmodule DraftGuruWeb.PlayerController do
       {:ok, player} ->
         conn
         |> put_flash(:info, "Player created successfully.")
-        |> redirect(to: ~p"/player_canonical/#{player}")
+        |> redirect(to: ~p"/models/player_canonical/#{player}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :new, changeset: changeset)
@@ -55,7 +55,7 @@ defmodule DraftGuruWeb.PlayerController do
       {:ok, player} ->
         conn
         |> put_flash(:info, "Player updated successfully.")
-        |> redirect(to: ~p"/player_canonical/#{player}")
+        |> redirect(to: ~p"/models/player_canonical/#{player}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :edit, player: player, changeset: changeset)
@@ -68,6 +68,6 @@ defmodule DraftGuruWeb.PlayerController do
 
     conn
     |> put_flash(:info, "Player deleted successfully.")
-    |> redirect(to: ~p"/player_canonical")
+    |> redirect(to: ~p"/models/player_canonical")
   end
 end

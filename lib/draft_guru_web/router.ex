@@ -15,15 +15,28 @@ defmodule DraftGuruWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+end
+
+  pipeline :basic_auth do
+    plug DraftGuruWeb.Plugs.BasicAuth
+  end
+
+  pipeline :require_admin do
+    plug DraftGuruWeb.Plugs.RequireAdmin
   end
 
   scope "/", DraftGuruWeb do
     pipe_through :browser
 
     get "/", PageController, :home
-    resources "/player_canonical", PlayerController
-    resources "/player_id_lookup", PlayerIdLookupController, only: [:show, :index]
-    resources "/player_combine_stats", PlayerCombineStatsController
+  end
+
+  scope "/", DraftGuruWeb do
+    pipe_through [:browser, :require_authenticated_users, :require_admin]
+
+    resources "/models/player_canonical", PlayerController
+    resources "/models/player_id_lookup", PlayerIdLookupController, only: [:show, :index]
+    resources "/models/player_combine_stats", PlayerCombineStatsController
   end
 
   # Other scopes may use custom stacks.
@@ -51,7 +64,7 @@ defmodule DraftGuruWeb.Router do
   ## Authentication routes
 
   scope "/", DraftGuruWeb do
-    pipe_through [:browser, :redirect_if_users_is_authenticated]
+    pipe_through [:browser, :redirect_if_users_is_authenticated, :basic_auth]
 
     get "/users/register", UsersRegistrationController, :new
     post "/users/register", UsersRegistrationController, :create
@@ -72,7 +85,7 @@ defmodule DraftGuruWeb.Router do
   end
 
   scope "/", DraftGuruWeb do
-    pipe_through [:browser]
+    pipe_through [:browser, :basic_auth]
 
     delete "/users/log_out", UsersSessionController, :delete
     get "/users/confirm", UsersConfirmationController, :new

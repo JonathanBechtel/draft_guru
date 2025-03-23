@@ -3,6 +3,6 @@
   <:subtitle>Use this form to manage player records in your database.</:subtitle>
 </.header>
 
-<.player_form changeset={@changeset} action={~p"/player_canonical/#{@player}"} />
+<.player_form changeset={@changeset} action={~p"/models/player_canonical/#{@player}"} />
 
-<.back navigate={~p"/player_canonical"}>Back to player_canonical</.back>
+<.back navigate={~p"/models/player_canonical"}>Back to player_canonical</.back>
