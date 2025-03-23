@@ -13,30 +13,65 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.24/dist/full.min.css" rel="stylesheet" type="text/css" />
   </head>
   <body class="bg-white">
-    <ul class="relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
-      <%= if @current_users do %>
-        <li class="text-[0.8125rem] leading-6 text-zinc-900">
-          {@current_users.email}
-        </li>
-        <li>
-          <.link
-            href={~p"/users/settings"}
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-          >
-            Settings
-          </.link>
-        </li>
-        <li>
-          <.link
-            href={~p"/users/log_out"}
-            method="delete"
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-          >
-            Log out
-          </.link>
-        </li>
-      <% end %>
-    </ul>
+<ul class="relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
+  <%= if @current_users do %>
+    <li class="text-[0.8125rem] leading-6 text-zinc-900 py-2">
+      {@current_users.email}
+    </li>
+    <li class="relative group">
+      <button class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700 py-2">
+        Data
+      </button>
+      <div class="absolute w-full h-2 top-full"></div>
+      <ul class="absolute hidden group-hover:block bg-white border border-zinc-200 rounded shadow-md z-50 w-48 right-0 top-full pt-2">
+                   <li>
+             <.link
+               href={~p"/models/player_canonical"}
+               class="block px-4 py-2 text-[0.8125rem] leading-6 text-zinc-900 hover:bg-zinc-100"
+             >
+               Canonical Players
+             </.link>
+           </li>
+           <li>
+             <.link
+               href={~p"/models/player_id_lookup"}
+               class="block px-4 py-2 text-[0.8125rem] leading-6 text-zinc-900 hover:bg-zinc-100"
+             >
+               Player ID Lookup
+             </.link>
+           </li>
+           <li>
+             <.link
+               href={~p"/models/player_combine_stats"}
+               class="block px-4 py-2 text-[0.8125rem] leading-6 text-zinc-900 hover:bg-zinc-100"
+             >
+               Player Combine Stats
+             </.link>
+           </li>
+
+      </ul>
+    </li>
+
+    <li>
+      <.link
+        href={~p"/users/settings"}
+        class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700 py-2 inline-block"
+      >
+        Settings
+      </.link>
+    </li>
+    <li>
+      <.link
+        href={~p"/users/log_out"}
+        method="delete"
+        class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700 py-2 inline-block"
+      >
+        Log out
+      </.link>
+    </li>
+  <% end %>
+</ul>
+
     {@inner_content}
   </body>
 </html>
