@@ -15,7 +15,13 @@ defmodule DraftGuruWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+end
+
+  pipeline :basic_auth do
+    plug DraftGuruWeb.Plugs.BasicAuth
   end
+
+
 
   scope "/", DraftGuruWeb do
     pipe_through :browser
@@ -51,7 +57,7 @@ defmodule DraftGuruWeb.Router do
   ## Authentication routes
 
   scope "/", DraftGuruWeb do
-    pipe_through [:browser, :redirect_if_users_is_authenticated]
+    pipe_through [:browser, :redirect_if_users_is_authenticated, :basic_auth]
 
     get "/users/register", UsersRegistrationController, :new
     post "/users/register", UsersRegistrationController, :create
@@ -64,7 +70,7 @@ defmodule DraftGuruWeb.Router do
   end
 
   scope "/", DraftGuruWeb do
-    pipe_through [:browser, :require_authenticated_users]
+    pipe_through [:browser, :require_authenticated_users, :basic_auth]
 
     get "/users/settings", UsersSettingsController, :edit
     put "/users/settings", UsersSettingsController, :update
@@ -72,7 +78,7 @@ defmodule DraftGuruWeb.Router do
   end
 
   scope "/", DraftGuruWeb do
-    pipe_through [:browser]
+    pipe_through [:browser, :basic_auth]
 
     delete "/users/log_out", UsersSessionController, :delete
     get "/users/confirm", UsersConfirmationController, :new

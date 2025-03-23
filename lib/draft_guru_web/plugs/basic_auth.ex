@@ -1,18 +1,11 @@
 defmodule DraftGuruWeb.Plugs.BasicAuth do
-  import Plug.Conn
-
+  @spec init(any()) :: any()
   def init(opts), do: opts
 
-  def call(conn, opts) do
-    username = Keyword.fetch!(opts, :username)
-    password = Keyword.fetch!(opts, :password)
+  def call(conn, _opts) do
+    username = Application.get_env(:draft_guru, :basic_auth)[:username]
+    password = Application.get_env(:draft_guru, :basic_auth)[:password]
 
-    case Plug.BasicAuth.basic_auth(conn, username: username, password: password) do
-      :ok -> conn
-      :error -> conn
-      |> put_resp_header("www-authenticate", "Basic realm=\"Restricted Area\"")
-      |> send_resp(401, "Unauthorized")
-      |> halt()
-    end
+    Plug.BasicAuth.basic_auth(conn, username: username, password: password)
   end
 end
