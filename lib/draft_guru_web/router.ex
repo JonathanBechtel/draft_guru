@@ -21,12 +21,19 @@ end
     plug DraftGuruWeb.Plugs.BasicAuth
   end
 
-
+  pipeline :require_admin do
+    plug DraftGuruWeb.Plugs.RequireAdmin
+  end
 
   scope "/", DraftGuruWeb do
     pipe_through :browser
 
     get "/", PageController, :home
+  end
+
+  scope "/", DraftGuruWeb do
+    pipe_through [:browser, :require_authenticated_users, :require_admin]
+
     resources "/player_canonical", PlayerController
     resources "/player_id_lookup", PlayerIdLookupController, only: [:show, :index]
     resources "/player_combine_stats", PlayerCombineStatsController
@@ -70,7 +77,7 @@ end
   end
 
   scope "/", DraftGuruWeb do
-    pipe_through [:browser, :require_authenticated_users, :basic_auth]
+    pipe_through [:browser, :require_authenticated_users]
 
     get "/users/settings", UsersSettingsController, :edit
     put "/users/settings", UsersSettingsController, :update
