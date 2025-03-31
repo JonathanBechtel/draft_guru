@@ -1,0 +1,79 @@
+<.header>
+  Player Information Records
+  <:actions>
+    <.link href={~p"/models/player_info/new"}>
+      <.button>New Player Info</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<%# Add search form if implemented %>
+
+<.table
+  id="player_infos"
+  rows={@player_infos}
+  row_click={&JS.navigate(~p"/models/player_info/#{&1}")}
+  >
+  <:col label="ID" :let={pi}><%= pi.id %></:col>
+  <:col label="Player" :let={pi}>
+    <%= pi.player_canonical.first_name %> <%= pi.player_canonical.last_name %> <%= if pi.player_canonical.suffix, do: "(#{pi.player_canonical.suffix})" %>
+  </:col>
+  <:col label="Birth Year" :let={pi}><%= pi.birth_year %></:col>
+  <:col label="School" :let={pi}><%= pi.school %></:col>
+  <:col label="League" :let={pi}><%= pi.league %></:col>
+   <:col label="Headshot" :let={pi}>
+     <%= if pi.headshot do %>
+       <img src={image_url(pi.headshot)} alt="Headshot" class="h-10 w-10 object-cover"/>
+     <% else %>
+       <.icon name="hero-user-circle" class="h-10 w-10 text-gray-400" />
+     <% end %>
+   </:col>
+
+  <:action :let={pi}>
+    <div class="sr-only">
+      <.link navigate={~p"/models/player_info/#{pi}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/models/player_info/#{pi}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={pi}>
+    <.link href={~p"/models/player_info/#{pi}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<%# Add pagination controls similar to other index pages %>
+<% current_page = String.to_integer(@page) %>
+<% total_pages = @total_pages %>
+<% start_page = max(1, current_page - 2) %>
+<% end_page = min(total_pages, current_page + 2) %>
+
+<div class="join">
+  <%= if current_page > 1 do %>
+      <button class="join-item btn">
+      <a href={"/models/player_info?page=1&search=#{@search}"}>First</a>
+      </button>
+      <button class="join-item btn">
+        <a href={"/models/player_info?page=#{current_page - 1}&search=#{@search}"}>Previous</a>
+      </button>
+  <% end %>
+
+  <%= for page_number <- start_page..end_page do %>
+    <%= if page_number <= total_pages do %>
+      <button class={"join-item btn " <> if page_number == current_page, do: "btn-active", else: ""}>
+        <a href={"/models/player_info?page=#{page_number}&search=#{@search}"}>
+          <%= page_number %>
+        </a>
+      </button>
+    <% end %>
+  <% end %>
+
+  <%= if current_page < total_pages do %>
+    <button class="join-item btn">
+      <a href={"/models/player_info?page=#{current_page + 1}&search=#{@search}"}>Next</a>
+    </button>
+    <button class="join-item btn">
+      <a href={"/models/player_info?page=#{total_pages}&search=#{@search}"}>Last</a>
+    </button>
+  <% end %>
+</div>

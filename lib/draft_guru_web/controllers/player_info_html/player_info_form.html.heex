@@ -1,0 +1,45 @@
+<.simple_form :let={f} for={@changeset} action={@action} multipart>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+
+  <.input
+    field={f[:player_id]}
+    type="select"
+    label="Player"
+    prompt="Select a player"
+    options={@players_for_select}
+    required
+    disabled={@changeset.action == :update}
+  />
+
+  <.input field={f[:birth_year]} type="number" label="Birth Year" />
+  <.input field={f[:school]} type="text" label="School" />
+  <.input field={f[:league]} type="text" label="League" />
+
+  <%!-- Headshot Input --%>
+  <div class="my-4">
+    <.label>Headshot</.label>
+    <%= if @changeset.data.headshot do %>
+      <img src={image_url(@changeset.data.headshot)} alt="Current Headshot" class="my-2 h-24 w-24 object-cover border" />
+    <% end %>
+    <.input field={f[:headshot]} type="file" label="Upload New Headshot" />
+    <.error :for={err <- f[:headshot].errors}>{err}</.error>
+    <.input field={f[:remove_headshot]} type="checkbox" label="Remove current headshot" />
+  </div>
+
+  <%!-- Stylized Image Input --%>
+  <div class="my-4">
+    <.label>Stylized Image</.label>
+    <%= if @changeset.data.stylized_image do %>
+      <img src={image_url(@changeset.data.stylized_image)} alt="Current Stylized Image" class="my-2 h-24 w-auto object-contain border" />
+    <% end %>
+    <.input field={f[:stylized_image]} type="file" label="Upload New Stylized Image" />
+     <.error :for={err <- f[:stylized_image].errors}>{err}</.error>
+     <.input field={f[:remove_stylized_image]} type="checkbox" label="Remove current stylized image" />
+  </div>
+
+  <:actions>
+    <.button>Save Player Info</.button>
+  </:actions>
+</.simple_form>

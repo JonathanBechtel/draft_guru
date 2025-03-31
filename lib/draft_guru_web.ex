@@ -107,6 +107,8 @@ defmodule DraftGuruWeb do
     end
   end
 
+  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt uploads)
+
   @doc """
   When used, dispatch to the appropriate controller/live_view/etc.
   """
