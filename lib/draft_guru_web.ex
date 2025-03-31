@@ -17,7 +17,7 @@ defmodule DraftGuruWeb do
   those modules here.
   """
 
-  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
+  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt uploads)
 
   def router do
     quote do
@@ -106,8 +106,6 @@ defmodule DraftGuruWeb do
         statics: DraftGuruWeb.static_paths()
     end
   end
-
-  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt uploads)
 
   @doc """
   When used, dispatch to the appropriate controller/live_view/etc.
