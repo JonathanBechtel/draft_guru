@@ -2,8 +2,10 @@
 defmodule DraftGuru.Players.PlayerInfo do
   use Ecto.Schema
   import Ecto.Changeset
+  use Waffle.Ecto.Schema
 
   alias DraftGuru.Players.Player
+  alias DraftGuru.ImageUploader
 
   @primary_key {:id, :id, autogenerate: true}
   @foreign_key_type :id
@@ -20,9 +22,10 @@ defmodule DraftGuru.Players.PlayerInfo do
       foreign_key: :player_id,
       type: :id # Ensure this matches the type of player_canonical.id
 
-    # Virtual fields for uploads
-    field :headshot, :any, virtual: true
-    field :stylized_image, :any, virtual: true
+    # Waffle attachment fields
+    # The `:uploader` option specifies which Waffle definition module to use.
+    field :headshot, ImageUploader.Type
+    field :stylized_image, ImageUploader.Type
 
     timestamps(type: :utc_datetime)
   end
@@ -36,9 +39,9 @@ defmodule DraftGuru.Players.PlayerInfo do
       :college_year,
       :headshot_path,
       :stylized_image_path,
-      :player_id # Important: Allow casting player_id on creation
+      :player_id
     ])
-    |> cast_attachments(attrs, [:headshot, :stylized_image]) # Use Ecto's built-in attachment handling
+    |> cast_attachments(attrs, [:headshot, :stylized_image])
     |> validate_required([:player_id])
     |> validate_number(:birth_year,
       greater_than_or_equal_to: 1950,

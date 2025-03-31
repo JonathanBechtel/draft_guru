@@ -99,6 +99,10 @@ config :draft_guru, :basic_auth,
   username: "admin$%*",
   password: "453kc8d%8dk3k!"
 
+config :waffle,
+  storage: Waffle.Storage.Local,
+  uploader: DraftGuru.ImageUploader
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
