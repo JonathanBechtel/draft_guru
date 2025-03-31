@@ -1,22 +1,25 @@
-# lib/draft_guru_web/controllers/player_info_html.ex
 defmodule DraftGuruWeb.PlayerInfoHTML do
   use DraftGuruWeb, :html
 
-  alias DraftGuru.ImageUploader # Alias your uploader
+  alias DraftGuru.ImageUploader
 
   embed_templates "player_info_html/*"
 
   # Helper function to get the URL for a Waffle attachment
-  # It handles different storage backends (Local, S3)
-  def image_url(attachment, version \\ :original) when not is_nil(attachment) do
-    # Ensure we have a map or struct before calling url
-    file = ImageUploader.Type.cast(attachment)
-    ImageUploader.url({file, attachment}, version)
+  # It handles different storage backends (Local, S3).
+
+  # Define the function signature with the default for `version`.
+  def image_url(attachment, version \\ :original)
+
+  # Fallback clause if `attachment` is nil.
+  def image_url(nil, version) do
+    ImageUploader.default_url(version, nil)
   end
 
-  # Fallback if attachment is nil
-  def image_url(nil, version \\ :original) do
-    ImageUploader.default_url(version, nil)
+  # Clause when `attachment` is not nil.
+  def image_url(attachment, version) do
+    # Ensure we have a map or struct before calling url
+    ImageUploader.url({attachment, nil}, version)
   end
 
   # Reuse your existing sort toggle helper

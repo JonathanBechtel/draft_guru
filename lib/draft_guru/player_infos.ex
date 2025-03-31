@@ -122,9 +122,17 @@ defmodule DraftGuru.PlayerInfos do
   Returns a list of {Player Name, Player ID} for use in select dropdowns.
   """
   def list_players_for_select do
-    Player
-    |> order_by([p], p.last_name, p.first_name)
-    |> select([p], {[p.first_name, " ", p.last_name, if(not is_nil(p.suffix), [" (", p.suffix, ")"], "")], p.id})
+    from(p in Player,
+    order_by: [asc: p.last_name, asc: p.first_name],
+    select: {
+      fragment("? || ' ' || ? || COALESCE(' (' || ? || ')', '')",
+        p.first_name,
+        p.last_name,
+        p.suffix
+      ),
+      p.id
+    }
+  )
     |> Repo.all()
   end
 end

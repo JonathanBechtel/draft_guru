@@ -13,7 +13,7 @@ defmodule DraftGuru.Players.Player do
 
     has_many :id_lookups, DraftGuru.Players.PlayerIdLookup, foreign_key: :player_id
     has_many :player_combine_stats, DraftGuru.Players.PlayerCombineStat, foreign_key: :player_id
-    has_one :player_info, PlayerInfo, foreign_key: :player_id
+    has_one :player_info, DraftGuru.Players.PlayerInfo, foreign_key: :player_id
   end
 
   @doc false

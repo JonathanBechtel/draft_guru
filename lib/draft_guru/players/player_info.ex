@@ -5,7 +5,6 @@ defmodule DraftGuru.Players.PlayerInfo do
   use Waffle.Ecto.Schema
 
   alias DraftGuru.Players.Player
-  alias DraftGuru.ImageUploader
 
   @primary_key {:id, :id, autogenerate: true}
   @foreign_key_type :id
@@ -24,8 +23,8 @@ defmodule DraftGuru.Players.PlayerInfo do
 
     # Waffle attachment fields
     # The `:uploader` option specifies which Waffle definition module to use.
-    field :headshot, ImageUploader.Type
-    field :stylized_image, ImageUploader.Type
+    field :headshot, Waffle.Ecto.Type
+    field :stylized_image, Waffle.Ecto.Type
 
     timestamps(type: :utc_datetime)
   end
@@ -45,7 +44,7 @@ defmodule DraftGuru.Players.PlayerInfo do
     |> validate_required([:player_id])
     |> validate_number(:birth_year,
       greater_than_or_equal_to: 1950,
-      less_than_or_equal_to: :timer.now_to_universal_time() |> elem(0) |> :calendar.gregorian_years(), # Ensure birth year is reasonable
+      less_than_or_equal_to: 2010,
       message: "must be a valid year"
       )
     |> unique_constraint(:player_id, name: :player_info_player_id_unique_index, message: "already has player info")

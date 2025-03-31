@@ -3,7 +3,7 @@ defmodule DraftGuruWeb.PlayerInfoController do
   use DraftGuruWeb, :controller
 
   alias DraftGuru.PlayerInfos
-  alias DraftGuru.PlayerInfos.PlayerInfo
+  alias DraftGuru.Players.PlayerInfo
 
   def index(conn, params) do
     %{

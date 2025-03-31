@@ -3,6 +3,6 @@
   <:subtitle>Add biographical details and images for a player.</:subtitle>
 </.header>
 
-<.render file="_form.html", changeset: @changeset, action: ~p"/models/player_info", players_for_select: @players_for_select />
+<.player_info_form changeset={@changeset}, action={~p"/models/player_info"} players_for_select={@players_for_select} />
 
 <.back navigate={~p"/models/player_info"}>Back to Player Infos</.back>
