@@ -23,8 +23,8 @@ defmodule DraftGuru.Players.PlayerInfo do
 
     # Waffle attachment fields
     # The `:uploader` option specifies which Waffle definition module to use.
-    field :headshot, Waffle.Ecto.Type
-    field :stylized_image, Waffle.Ecto.Type
+    field :headshot, Waffle.Ecto.Type, virtual: true
+    field :stylized_image, Waffle.Ecto.Type, virtual: true
 
     timestamps(type: :utc_datetime)
   end
@@ -42,11 +42,6 @@ defmodule DraftGuru.Players.PlayerInfo do
     ])
     |> cast_attachments(attrs, [:headshot, :stylized_image])
     |> validate_required([:player_id])
-    |> validate_number(:birth_year,
-      greater_than_or_equal_to: 1950,
-      less_than_or_equal_to: 2010,
-      message: "must be a valid year"
-      )
     |> unique_constraint(:player_id, name: :player_info_player_id_unique_index, message: "already has player info")
   end
 end
