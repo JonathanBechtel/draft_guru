@@ -18,7 +18,7 @@
   <:col label="Player" :let={pi}>
     <%= pi.player_canonical.first_name %> <%= pi.player_canonical.last_name %> <%= if pi.player_canonical.suffix, do: "(#{pi.player_canonical.suffix})" %>
   </:col>
-  <:col label="Birth Year" :let={pi}><%= pi.birth_year %></:col>
+  <:col label="Birth Date" :let={pi}><%= pi.birth_date %></:col>
   <:col label="School" :let={pi}><%= pi.school %></:col>
   <:col label="League" :let={pi}><%= pi.league %></:col>
    <:col label="Headshot" :let={pi}>

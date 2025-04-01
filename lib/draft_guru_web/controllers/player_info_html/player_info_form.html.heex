@@ -11,8 +11,10 @@
     options={@players_for_select}
     required
     disabled={@changeset.action == :update}
+    class="px-4 py-2"
   />
 
+  <.input field={f[:birth_date]} type="date" label="Birth Date" />
   <.input field={f[:school]} type="text" label="School" />
   <.input field={f[:league]} type="text" label="League" />
 

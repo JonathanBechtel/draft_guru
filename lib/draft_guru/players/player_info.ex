@@ -10,6 +10,7 @@ defmodule DraftGuru.Players.PlayerInfo do
   @foreign_key_type :id
   schema "player_info" do
     # Fields
+    field :birth_date, :date
     field :school, :string
     field :league, :string
     field :college_year, :string
