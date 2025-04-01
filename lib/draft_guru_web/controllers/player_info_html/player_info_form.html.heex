@@ -16,7 +16,20 @@
 
   <.input field={f[:birth_date]} type="date" label="Birth Date" />
   <.input field={f[:school]} type="text" label="School" />
-  <.input field={f[:league]} type="text" label="League" />
+  <.input field={f[:league]} type="select" label="League / Conference"
+    prompt="Select a League / Conference"
+    options={[
+        "Big 12",
+        "Big 10",
+        "ACC",
+        "WCC",
+        "Euroleague",
+        "G-League Ignite",
+        "N/A"
+    ]}
+    
+    class="px-4 py-2" 
+    />
   <.input
     field={f[:college_year]}
     type="select"

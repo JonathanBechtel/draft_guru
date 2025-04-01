@@ -5,7 +5,8 @@ defmodule DraftGuru.PlayerInfos do
   """
 
   import Ecto.Query, warn: false
-  import DraftGuru.Contexts.Utilities # Reuse your existing utilities
+  # Reuse your existing utilities
+  import DraftGuru.Contexts.Utilities
 
   alias DraftGuru.Repo
   alias DraftGuru.Players.{Player, PlayerInfo}
@@ -15,7 +16,8 @@ defmodule DraftGuru.PlayerInfos do
   Preloads the associated player_canonical record.
   """
   def list_player_infos(params \\ %{}) do
-    allowed_fields = ["id", "birth_year", "school", "league", "player_id", "inserted_at"] # Add player name via join later if needed for sorting
+    # Add player name via join later if needed for sorting
+    allowed_fields = ["id", "birth_date", "school", "league", "player_id", "inserted_at"]
 
     query = from(pi in PlayerInfo, preload: [:player_canonical])
 
@@ -28,7 +30,8 @@ defmodule DraftGuru.PlayerInfos do
     query = apply_sorting(query, allowed_fields, params)
 
     page = to_integer_with_default(Map.get(params, "page"), 1)
-    page_size = 20 # Adjust page size as needed
+    # Adjust page size as needed
+    page_size = 20
     offset = (page - 1) * page_size
     total_pages = ceil(record_count / page_size)
 
@@ -52,14 +55,13 @@ defmodule DraftGuru.PlayerInfos do
   """
   def get_player_info!(id), do: Repo.get!(PlayerInfo, id) |> Repo.preload(:player_canonical)
 
-   @doc """
+  @doc """
   Gets a single player_info record by Player ID, preloading the player_canonical.
   Returns nil if not found.
   """
   def get_player_info_by_player_id(player_id) do
-     Repo.get_by(PlayerInfo, player_id: player_id) |> Repo.preload(:player_canonical)
+    Repo.get_by(PlayerInfo, player_id: player_id) |> Repo.preload(:player_canonical)
   end
-
 
   @doc """
   Creates a player_info record.
@@ -75,9 +77,9 @@ defmodule DraftGuru.PlayerInfos do
     # Ecto.Multi makes this clean.
     |> Ecto.Changeset.apply_action(:insert)
     |> case do
-        {:ok, player_info_struct} -> Repo.insert(player_info_struct)
-        {:error, changeset} -> {:error, changeset}
-       end
+      {:ok, player_info_struct} -> Repo.insert(player_info_struct)
+      {:error, changeset} -> {:error, changeset}
+    end
   end
 
   @doc """
@@ -86,14 +88,14 @@ defmodule DraftGuru.PlayerInfos do
   Handles updating attributes and potentially replacing images.
   """
   def update_player_info(%PlayerInfo{} = player_info, attrs) do
-     player_info
-     |> PlayerInfo.changeset(attrs)
-     # Apply action before update to allow Waffle access to scope
-     |> Ecto.Changeset.apply_action(:update)
-     |> case do
-        {:ok, player_info_struct} -> Repo.update(player_info_struct)
-        {:error, changeset} -> {:error, changeset}
-       end
+    player_info
+    |> PlayerInfo.changeset(attrs)
+    # Apply action before update to allow Waffle access to scope
+    |> Ecto.Changeset.apply_action(:update)
+    |> case do
+      {:ok, player_info_struct} -> Repo.update(player_info_struct)
+      {:error, changeset} -> {:error, changeset}
+    end
   end
 
   @doc """
@@ -123,16 +125,17 @@ defmodule DraftGuru.PlayerInfos do
   """
   def list_players_for_select do
     from(p in Player,
-    order_by: [asc: p.last_name, asc: p.first_name],
-    select: {
-      fragment("? || ' ' || ? || COALESCE(' (' || ? || ')', '')",
-        p.first_name,
-        p.last_name,
-        p.suffix
-      ),
-      p.id
-    }
-  )
+      order_by: [asc: p.last_name, asc: p.first_name],
+      select: {
+        fragment(
+          "? || ' ' || ? || COALESCE(' (' || ? || ')', '')",
+          p.first_name,
+          p.last_name,
+          p.suffix
+        ),
+        p.id
+      }
+    )
     |> Repo.all()
   end
 end

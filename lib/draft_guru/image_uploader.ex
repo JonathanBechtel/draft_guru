@@ -1,5 +1,6 @@
 defmodule DraftGuru.ImageUploader do
   use Waffle.Definition
+  use Waffle.Ecto.Definition
 
   # Evaluate the :waffle :storage configuration at compile time:
   @storage Application.compile_env(:waffle, :storage, Waffle.Storage.Local)
@@ -24,12 +25,14 @@ defmodule DraftGuru.ImageUploader do
   # Regular function (not a callback)
   def max_filesize, do: 10 * 1024 * 1024
 
-  def filename(version, {_file, scope}) do
-    player_id = scope.player_id || "misc"
+  def filename(version, {file, player_info}) do
+    player_id = player_info.player_id || "misc"
     timestamp = System.system_time(:millisecond)
-    field = scope.__struct__.waffle_field()
-    ext   = scope.__struct__.waffle_ext()
 
-    "#{field}-#{player_id}-#{timestamp}-#{version}#{ext}"
+    # TO DO:  provide the ability to detect which version
+    # of the image it is:  stylized or headshot
+
+    "#{player_id}-#{timestamp}-#{version}"
   end
+
 end
