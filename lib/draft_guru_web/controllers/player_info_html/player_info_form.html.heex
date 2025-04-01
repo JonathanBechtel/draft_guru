@@ -17,6 +17,21 @@
   <.input field={f[:birth_date]} type="date" label="Birth Date" />
   <.input field={f[:school]} type="text" label="School" />
   <.input field={f[:league]} type="text" label="League" />
+  <.input
+    field={f[:college_year]}
+    type="select"
+    label="College Year"
+    prompt="Select a college year"
+    options={[
+      {"Freshman", "freshman"},
+      {"Sophomore", "sophomore"},
+      {"Junior", "junior"},
+      {"Senior", "senior"},
+      {"N/A", "n/a"}
+    ]}
+    class="px-4 py-2"
+    required
+  />
 
   <%!-- Headshot Input --%>
   <div class="my-4">
