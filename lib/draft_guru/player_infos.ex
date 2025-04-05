@@ -88,8 +88,10 @@ defmodule DraftGuru.PlayerInfos do
   Handles updating attributes and potentially replacing images.
   """
   def update_player_info(%PlayerInfo{} = player_info, attrs) do
+    IO.inspect(player_info, label: "player info")
     player_info
     |> PlayerInfo.changeset(attrs)
+    |> IO.inspect(label: "changeset before update")
     # Apply action before update to allow Waffle access to scope
     # MIGHT NEED TO UNDO THIS
     |> Repo.update()
