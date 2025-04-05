@@ -25,7 +25,9 @@ defmodule DraftGuru.ImageUploader do
   # Regular function (not a callback)
   def max_filesize, do: 10 * 1024 * 1024
 
-  def filename(version, {file, player_info}) do
+  def filename(version, {_file, player_info}) do
+
+    IO.inspect(version, label: "photo version")
     player_id = player_info.player_id || "misc"
     timestamp = System.system_time(:millisecond)
 

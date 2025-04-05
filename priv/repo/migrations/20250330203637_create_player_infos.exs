@@ -10,6 +10,7 @@ defmodule DraftGuru.Repo.Migrations.CreatePlayerInfos do
       add :college_year, :string # e.g., "Freshman", "Sophomore", "International", "G-League Ignite"
 
       # Image paths (relative to the configured upload directory)
+      # NOTE: changed to waffle, might need to change these
       add :headshot_path, :string
       add :stylized_image_path, :string
 

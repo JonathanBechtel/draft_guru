@@ -17,7 +17,7 @@ defmodule DraftGuru.PlayerInfos do
   """
   def list_player_infos(params \\ %{}) do
     # Add player name via join later if needed for sorting
-    allowed_fields = ["id", "birth_date", "school", "league", "player_id", "inserted_at"]
+    allowed_fields = ["id", "birth_date", "school", "league",  "player_id", "inserted_at"]
 
     query = from(pi in PlayerInfo, preload: [:player_canonical])
 
@@ -91,11 +91,8 @@ defmodule DraftGuru.PlayerInfos do
     player_info
     |> PlayerInfo.changeset(attrs)
     # Apply action before update to allow Waffle access to scope
-    |> Ecto.Changeset.apply_action(:update)
-    |> case do
-      {:ok, player_info_struct} -> Repo.update(player_info_struct)
-      {:error, changeset} -> {:error, changeset}
-    end
+    # MIGHT NEED TO UNDO THIS
+    |> Repo.update()
   end
 
   @doc """
