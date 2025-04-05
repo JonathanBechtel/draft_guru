@@ -1,4 +1,4 @@
-defmodule DraftGuru.Repo.Migrations.CreateUsersRolesTable do
+defmodule DraftGuru.Repo.Migrations.CreateUserRolesTable do
   use Ecto.Migration
 
   def change do

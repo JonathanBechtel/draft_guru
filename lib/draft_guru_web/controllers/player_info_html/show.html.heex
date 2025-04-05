@@ -9,7 +9,7 @@
 
 <.list>
   <:item title="Player"><%= @player_info.player_canonical.first_name %> <%= @player_info.player_canonical.last_name %> <%= if @player_info.player_canonical.suffix, do: "(#{@player_info.player_canonical.suffix})" %></:item>
-  <:item title="Birth Year"><%= @player_info.birth_year %></:item>
+  <:item title="Birth Year"><%= @player_info.birth_date %></:item>
   <:item title="School"><%= @player_info.school %></:item>
   <:item title="League"><%= @player_info.league %></:item>
   <:item title="Headshot">

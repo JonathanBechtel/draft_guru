@@ -3,13 +3,14 @@ defmodule DraftGuru.Players.PlayerInfo do
   use Ecto.Schema
   import Ecto.Changeset
   use Waffle.Ecto.Schema
-
   alias DraftGuru.Players.Player
+  alias DraftGuru.ImageUploader
 
   @primary_key {:id, :id, autogenerate: true}
   @foreign_key_type :id
   schema "player_info" do
     # Fields
+    field :birth_date, :date
     field :school, :string
     field :league, :string
     field :college_year, :string
@@ -22,9 +23,9 @@ defmodule DraftGuru.Players.PlayerInfo do
       type: :id # Ensure this matches the type of player_canonical.id
 
     # Waffle attachment fields
-    # The `:uploader` option specifies which Waffle definition module to use.
-    field :headshot, Waffle.Ecto.Type, virtual: true
-    field :stylized_image, Waffle.Ecto.Type, virtual: true
+    # *** Put the :uploader option back here ***
+    field :headshot, ImageUploader.Type,  virtual: true
+    field :stylized_image, ImageUploader.Type,  virtual: true
 
     timestamps(type: :utc_datetime)
   end
@@ -33,6 +34,7 @@ defmodule DraftGuru.Players.PlayerInfo do
   def changeset(player_info, attrs) do
     player_info
     |> cast(attrs, [
+      :birth_date,
       :school,
       :league,
       :college_year,
@@ -40,6 +42,7 @@ defmodule DraftGuru.Players.PlayerInfo do
       :stylized_image_path,
       :player_id
     ])
+    # *** Revert cast_attachments to use a simple list of atoms ***
     |> cast_attachments(attrs, [:headshot, :stylized_image])
     |> validate_required([:player_id])
     |> unique_constraint(:player_id, name: :player_info_player_id_unique_index, message: "already has player info")
