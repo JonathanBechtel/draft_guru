@@ -75,12 +75,8 @@ defmodule DraftGuru.PlayerInfos do
     # Waffle requires the changeset to be applied before insert/update
     # if you need access to the scope (like player_id) in the uploader filename/path.
     # Ecto.Multi makes this clean.
-    |> Ecto.Changeset.apply_action(:insert)
-    |> case do
-      {:ok, player_info_struct} -> Repo.insert(player_info_struct)
-      {:error, changeset} -> {:error, changeset}
+    |> Repo.insert()
     end
-  end
 
   @doc """
   Updates a player_info record.
@@ -88,12 +84,8 @@ defmodule DraftGuru.PlayerInfos do
   Handles updating attributes and potentially replacing images.
   """
   def update_player_info(%PlayerInfo{} = player_info, attrs) do
-    IO.inspect(player_info, label: "player info")
     player_info
     |> PlayerInfo.changeset(attrs)
-    |> IO.inspect(label: "changeset before update")
-    # Apply action before update to allow Waffle access to scope
-    # MIGHT NEED TO UNDO THIS
     |> Repo.update()
   end
 

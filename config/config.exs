@@ -9,7 +9,9 @@ import Config
 
 config :draft_guru,
   ecto_repos: [DraftGuru.Repo],
-  generators: [timestamp_type: :utc_datetime]
+  generators: [timestamp_type: :utc_datetime],
+  base_image_url: "/imgs",
+  upload_dir: "imgs"
 
 # Configures the endpoint
 config :draft_guru, DraftGuruWeb.Endpoint,
@@ -98,10 +100,6 @@ config :phoenix, :json_library, Jason
 config :draft_guru, :basic_auth,
   username: "admin$%*",
   password: "453kc8d%8dk3k!"
-
-config :waffle,
-  storage: Waffle.Storage.Local,
-  uploader: DraftGuru.ImageUploader
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

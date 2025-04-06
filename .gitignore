@@ -40,3 +40,6 @@ npm-debug.log
 
 # 
 /lib/draft_guru/data_collection/data_files
+
+# all application images
+/imgs/

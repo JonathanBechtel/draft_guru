@@ -372,6 +372,31 @@ defmodule DraftGuruWeb.CoreComponents do
     """
   end
 
+  def input(%{type: "file"} = assigns) do
+    ~H"""
+    <div>
+      <.label for={@id}>{@label}</.label>
+      <input
+        type="file"
+        name={@name}
+        id={@id}
+        # Intentionally omit the value attribute for file inputs
+        class={[
+          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6 file:mr-4 file:py-2 file:px-4",
+          "file:rounded-full file:border-0 file:text-sm file:font-semibold",
+          "file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100", # Basic styling, adjust as needed
+          # You might not need error styling directly on the file input itself
+          @errors == [] && "border-zinc-300 focus:border-zinc-400",
+          @errors != [] && "border-rose-400 focus:border-rose-400",
+          @class
+        ]}
+        {@rest}
+      />
+      <.error :for={msg <- @errors}>{msg}</.error>
+    </div>
+    """
+  end
+
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
     ~H"""
