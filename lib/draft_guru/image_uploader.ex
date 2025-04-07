@@ -15,19 +15,19 @@ defmodule DraftGuru.ImageUploader do
     "player_images/#{player_id}"
   end
 
-  def default_url(_version, _scope), do: "/images/default_avatar.png"
+  def default_url(_version, _scope), do: "/player_images/default_avatar.png"
 
   def validate({file, _scope}) do
-    ~w(.jpg .jpeg .gif .png)
-    |> Enum.member?(Path.extname(file.file_name))
+    true
+    # ~w(.jpg .jpeg .gif .png)
+    # |> Enum.member?(Path.extname(file.file_name))
   end
 
   # Regular function (not a callback)
-  def max_filesize, do: 10 * 1024 * 1024
+  def max_filesize, do: 1000 * 1024 * 1024
 
   def filename(version, {_file, player_info}) do
 
-    IO.inspect(version, label: "photo version")
     player_id = player_info.player_id || "misc"
     timestamp = System.system_time(:millisecond)
 

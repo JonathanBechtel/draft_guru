@@ -9,14 +9,15 @@
 
 <.list>
   <:item title="Player"><%= @player_info.player_canonical.first_name %> <%= @player_info.player_canonical.last_name %> <%= if @player_info.player_canonical.suffix, do: "(#{@player_info.player_canonical.suffix})" %></:item>
-  <:item title="Birth Year"><%= @player_info.birth_date %></:item>
+  <:item title="Birth Date"><%= @player_info.birth_date %></:item>
   <:item title="School"><%= @player_info.school %></:item>
   <:item title="League"><%= @player_info.league %></:item>
+  <:item title="College Year"><%= @player_info.college_year %></:item>
   <:item title="Headshot">
-    <img src={image_url(@player_info.headshot)} alt="Headshot" class="h-32 w-32 object-cover border"/>
+    <img src={image_url(@player_info, :headshot_path)} alt="Headshot" class="h-32 w-32 object-cover border"/>
   </:item>
   <:item title="Stylized Image">
-    <img src={image_url(@player_info.stylized_image)} alt="Stylized Image" class="h-32 w-auto object-contain border"/>
+    <img src={image_url(@player_info, :stylized_image_path)} alt="Stylized Image" class="h-32 w-auto object-contain border"/>
   </:item>
 </.list>
 

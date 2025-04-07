@@ -22,8 +22,8 @@
   <:col label="School" :let={pi}><%= pi.school %></:col>
   <:col label="League" :let={pi}><%= pi.league %></:col>
    <:col label="Headshot" :let={pi}>
-     <%= if pi.headshot do %>
-       <img src={image_url(pi.headshot)} alt="Headshot" class="h-10 w-10 object-cover"/>
+     <%= if pi.headshot_path do %>
+       <img src={image_url(pi, :headshot_path)} alt="Headshot" class="h-10 w-10 object-cover"/>
      <% else %>
        <.icon name="hero-user-circle" class="h-10 w-10 text-gray-400" />
      <% end %>
