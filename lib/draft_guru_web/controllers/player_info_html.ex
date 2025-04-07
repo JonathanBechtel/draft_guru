@@ -16,7 +16,7 @@ defmodule DraftGuruWeb.PlayerInfoHTML do
     image_url(path)
   end
 
-  def image_url(nil), do: "/imgs/default_avatar.png"
+  def image_url(nil), do: "/uploads/default_avatar.png"
 
   def image_url(path) when is_binary(path) do
     # Convert filesystem path to web URL

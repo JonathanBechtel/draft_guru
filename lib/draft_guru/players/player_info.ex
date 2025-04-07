@@ -39,7 +39,9 @@ defmodule DraftGuru.Players.PlayerInfo do
       :school,
       :league,
       :college_year,
-      :player_id
+      :player_id,
+      :headshot_path,
+      :stylized_image_path
     ])
     |> validate_required([:player_id])
     |> unique_constraint(:player_id, name: :player_info_player_id_unique_index, message: "Informatin for this player already exists")
