@@ -9,6 +9,7 @@ defmodule DraftGuru.PlayerInfos do
   import DraftGuru.Contexts.Utilities
 
   alias DraftGuru.Repo
+  alias DraftGuru.ImageUploader
   alias DraftGuru.Players.{Player, PlayerInfo}
 
   @doc """
@@ -70,11 +71,9 @@ defmodule DraftGuru.PlayerInfos do
   The `:player_id` must correspond to an existing `Player` record.
   """
   def create_player_info(attrs \\ %{}) do
+    attrs = ImageUploader.process_player_attrs_upload_data(attrs)
     %PlayerInfo{}
     |> PlayerInfo.changeset(attrs)
-    # Waffle requires the changeset to be applied before insert/update
-    # if you need access to the scope (like player_id) in the uploader filename/path.
-    # Ecto.Multi makes this clean.
     |> Repo.insert()
     end
 
