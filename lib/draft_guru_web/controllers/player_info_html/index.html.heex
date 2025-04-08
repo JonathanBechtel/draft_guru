@@ -30,6 +30,7 @@
   row_click={&JS.navigate(~p"/models/player_info/#{&1}")}
   >
   <:col label="ID" :let={pi}><%= pi.id %></:col>
+  <:col label="Player ID" :let={pi}><%= pi.player_id %></:col>
   <:col label="Player" :let={pi}>
     <%= pi.player_canonical.first_name %> <%= pi.player_canonical.last_name %> <%= if pi.player_canonical.suffix, do: "(#{pi.player_canonical.suffix})" %>
   </:col>
