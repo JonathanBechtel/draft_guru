@@ -75,7 +75,7 @@ defmodule DraftGuru.PlayerInfos do
     %PlayerInfo{}
     |> PlayerInfo.changeset(attrs)
     |> Repo.insert()
-    end
+  end
 
   @doc """
   Updates a player_info record.
@@ -83,9 +83,31 @@ defmodule DraftGuru.PlayerInfos do
   Handles updating attributes and potentially replacing images.
   """
   def update_player_info(%PlayerInfo{} = player_info, attrs) do
+    # Process uploads when files are present, regardless of replacement flags
+    processed_attrs = attrs
+      |> process_upload_if_present("headshot")
+      |> process_upload_if_present("stylized_image")
+
+    # Handle removals if checkboxes are checked
+    final_attrs = processed_attrs
+      |> handle_image_removal("headshot_path", player_info.headshot_path, attrs["remove_headshot"])
+      |> handle_image_removal("stylized_image_path", player_info.stylized_image_path, attrs["remove_stylized_image"])
+
     player_info
-    |> PlayerInfo.changeset(attrs)
+    |> PlayerInfo.changeset(final_attrs)
     |> Repo.update()
+  end
+
+  # Process the upload if a file is present in the params
+  defp process_upload_if_present(attrs, image_type) do
+    if _upload = attrs[image_type], do: ImageUploader.process_image_upload(attrs, image_type), else: attrs
+  end
+
+  # Handle image removal based on checkbox
+  defp handle_image_removal(attrs, path_key, _existing_path, "true"), do: Map.put(attrs, path_key, nil)
+  defp handle_image_removal(attrs, path_key, existing_path, _) do
+    # Keep existing path if there's no new upload
+    if Map.has_key?(attrs, path_key), do: attrs, else: Map.put(attrs, path_key, existing_path)
   end
 
   @doc """

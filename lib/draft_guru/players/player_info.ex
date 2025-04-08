@@ -29,10 +29,6 @@ defmodule DraftGuru.Players.PlayerInfo do
 
   @doc false
   def changeset(player_info, attrs) do
-    IO.inspect(attrs["headshot"], label: "DEBUG: attrs['headshot'] entering changeset")
-    IO.inspect(attrs["stylized_image"], label: "DEBUG:  attrs['stylized_image] entering changeset")
-    IO.inspect(attrs, label: "all attrs going into changeset")
-    IO.inspect(player_info, label: "player_info going into changeset")
     player_info
     |> cast(attrs, [
       :birth_date,
@@ -45,6 +41,5 @@ defmodule DraftGuru.Players.PlayerInfo do
     ])
     |> validate_required([:player_id])
     |> unique_constraint(:player_id, name: :player_info_player_id_unique_index, message: "Informatin for this player already exists")
-    |> dbg()
   end
 end
