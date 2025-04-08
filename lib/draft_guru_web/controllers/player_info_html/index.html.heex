@@ -7,7 +7,22 @@
   </:actions>
 </.header>
 
-<%# Add search form if implemented %>
+<!-- Search form -->
+<form action="/models/player_info" method="get" class="flex items-center gap-2 mb-4">
+  <input
+    type="text"
+    name="search"
+    value={@search}
+    placeholder="Search by player name"
+    class="input"
+  />
+
+  <!-- Keep the current sorting if we re-search -->
+  <input type="hidden" name="sort_field" value={@sort_field} />
+  <input type="hidden" name="sort_direction" value={@sort_direction} />
+
+  <.button>Search</.button>
+</form>
 
 <.table
   id="player_infos"

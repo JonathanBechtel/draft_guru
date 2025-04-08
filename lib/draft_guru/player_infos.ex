@@ -22,9 +22,17 @@ defmodule DraftGuru.PlayerInfos do
 
     query = from(pi in PlayerInfo, preload: [:player_canonical])
 
-    # Optional: Add search functionality (e.g., by school or joined player name)
-    # search_term = Map.get(params, "search")
-    # query = maybe_apply_search(query, search_term, [:school, :league]) # Adjust columns as needed
+    # Search by player name (first or last name)
+    search_term = Map.get(params, "search")
+
+    query = if search_term && search_term != "" do
+      from pi in query,
+        join: p in assoc(pi, :player_canonical),
+        where: ilike(p.first_name, ^"%#{search_term}%") or
+               ilike(p.last_name, ^"%#{search_term}%")
+        else
+          query
+    end
 
     record_count = Repo.aggregate(query, :count, :id)
 
