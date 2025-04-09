@@ -78,6 +78,15 @@ defmodule DraftGuruWeb.PlayerInfoController do
     end
   end
 
+  def bulk_update(conn, %{"bulk_update" => %{"players" => players}}) do
+    results = PlayerInfos.bulk_update_active_status(players)
+    success_count = results |> Enum.filter(fn {status, _} -> status == :ok end) |> Enum.count()
+
+    conn
+    |> put_flash(:info, "Successfully updated #{success_count} player(s) active status.")
+    |> redirect(to: ~p"/models/player_info")
+  end
+
   def delete(conn, %{"id" => id}) do
     player_info = PlayerInfos.get_player_info!(id)
     {:ok, _player_info} = PlayerInfos.delete_player_info(player_info)

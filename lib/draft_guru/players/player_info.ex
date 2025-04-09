@@ -13,14 +13,14 @@ defmodule DraftGuru.Players.PlayerInfo do
     field :college_year, :string
     field :headshot_path, :string
     field :stylized_image_path, :string
+    field :is_active, :boolean, default: false
 
-    # Associations
     belongs_to :player_canonical, Player,
       foreign_key: :player_id,
       type: :id # Ensure this matches the type of player_canonical.id
 
-    # Waffle attachment fields
-    # *** Put the :uploader option back here ***
+    # Virtual fields for image uploads
+    # These fields are not stored in the database but are used for file uploads
     field :headshot, :any, virtual: true
     field :stylized_image, :any, virtual: true
 
@@ -29,6 +29,7 @@ defmodule DraftGuru.Players.PlayerInfo do
 
   @doc false
   def changeset(player_info, attrs) do
+
     player_info
     |> cast(attrs, [
       :birth_date,
@@ -37,7 +38,8 @@ defmodule DraftGuru.Players.PlayerInfo do
       :college_year,
       :player_id,
       :headshot_path,
-      :stylized_image_path
+      :stylized_image_path,
+      :is_active
     ])
     |> validate_required([:player_id])
     |> unique_constraint(:player_id, name: :player_info_player_id_unique_index, message: "Informatin for this player already exists")

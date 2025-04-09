@@ -15,7 +15,7 @@ defmodule DraftGuruWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
-end
+  end
 
   pipeline :basic_auth do
     plug DraftGuruWeb.Plugs.BasicAuth
@@ -38,6 +38,7 @@ end
     resources "/models/player_id_lookup", PlayerIdLookupController, only: [:show, :index]
     resources "/models/player_combine_stats", PlayerCombineStatsController
     resources "/models/player_info", PlayerInfoController
+    post "/models/player_info/bulk_update", PlayerInfoController, :bulk_update
   end
 
   # Other scopes may use custom stacks.
