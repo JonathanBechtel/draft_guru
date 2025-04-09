@@ -1,62 +1,74 @@
 <.header>
   Player Information Records
-  <:actions>
-    <.link href={~p"/models/player_info/new"}>
-      <.button>New Player Info</.button>
-    </.link>
-  </:actions>
 </.header>
 
-<!-- Search form -->
-<form action="/models/player_info" method="get" class="flex items-center gap-2 mb-4">
-  <input
-    type="text"
-    name="search"
-    value={@search}
-    placeholder="Search by player name"
-    class="input"
-  />
+<div class="flex justify-between items-center mb-4">
+  <!-- Search form -->
+  <form action="/models/player_info" method="get" class="flex items-center gap-2">
+    <input
+      type="text"
+      name="search"
+      value={@search}
+      placeholder="Search by player name"
+      class="input"
+    />
 
-  <!-- Keep the current sorting if we re-search -->
-  <input type="hidden" name="sort_field" value={@sort_field} />
-  <input type="hidden" name="sort_direction" value={@sort_direction} />
+    <!-- Keep the current sorting if we re-search -->
+    <input type="hidden" name="sort_field" value={@sort_field} />
+    <input type="hidden" name="sort_direction" value={@sort_direction} />
 
-  <.button>Search</.button>
-</form>
+    <.button class="bg-blue-500 hover:bg-blue-600">Search</.button>
+  </form>
 
-<.table
-  id="player_infos"
-  rows={@player_infos}
-  row_click={&JS.navigate(~p"/models/player_info/#{&1}")}
-  >
-  <:col label="ID" :let={pi}><%= pi.id %></:col>
-  <:col label="Player ID" :let={pi}><%= pi.player_id %></:col>
-  <:col label="Player" :let={pi}>
-    <%= pi.player_canonical.first_name %> <%= pi.player_canonical.last_name %> <%= if pi.player_canonical.suffix, do: "(#{pi.player_canonical.suffix})" %>
-  </:col>
-  <:col label="Birth Date" :let={pi}><%= pi.birth_date %></:col>
-  <:col label="School" :let={pi}><%= pi.school %></:col>
-  <:col label="League" :let={pi}><%= pi.league %></:col>
-   <:col label="Headshot" :let={pi}>
-     <%= if pi.headshot_path do %>
-       <img src={image_url(pi, :headshot_path)} alt="Headshot" class="h-10 w-10 object-cover"/>
-     <% else %>
-       <img src="/uploads/default_avatar.png" alt="Default Avatar" class="h-10 w-10 object-cover"/>
-     <% end %>
-   </:col>
-
-  <:action :let={pi}>
-    <div class="sr-only">
-      <.link navigate={~p"/models/player_info/#{pi}"}>Show</.link>
-    </div>
-    <.link navigate={~p"/models/player_info/#{pi}/edit"}>Edit</.link>
-  </:action>
-  <:action :let={pi}>
-    <.link href={~p"/models/player_info/#{pi}"} method="delete" data-confirm="Are you sure?">
-      Delete
+  <!-- Action buttons -->
+  <div class="flex items-center gap-2">
+    <.link href={~p"/models/player_info/new"}>
+      <.button class="bg-green-500 hover:bg-green-600">New Player Info</.button>
     </.link>
-  </:action>
-</.table>
+    
+    <.button form="bulk-update-form" type="submit" class="bg-purple-500 hover:bg-purple-600">
+      Save Active Status Changes
+    </.button>
+  </div>
+</div>
+
+<.form :let={f} for={%{}} as={:bulk_update} action={~p"/models/player_info/bulk_update"} method="post" id="bulk-update-form">
+  <.table
+    id="player_infos"
+    rows={@player_infos}
+    >
+    <:col label="ID" :let={pi}><%= pi.id %></:col>
+    <:col label="Player ID" :let={pi}><%= pi.player_id %></:col>
+    <:col label="Player" :let={pi}>
+      <.link navigate={~p"/models/player_info/#{pi}"} class="text-blue-600 hover:underline">
+        <%= pi.player_canonical.first_name %> <%= pi.player_canonical.last_name %> <%= if pi.player_canonical.suffix, do: "(#{pi.player_canonical.suffix})" %>
+      </.link>
+    </:col>
+    <:col label="Active" :let={pi}>
+      <input type="hidden" name={"bulk_update[players][#{pi.id}][id]"} value={pi.id}>
+      <input type="checkbox" name={"bulk_update[players][#{pi.id}][is_active]"} value="true" checked={pi.is_active} class="h-5 w-5">
+    </:col>
+    <:col label="Birth Date" :let={pi}><%= pi.birth_date %></:col>
+    <:col label="School" :let={pi}><%= pi.school %></:col>
+    <:col label="League" :let={pi}><%= pi.league %></:col>
+     <:col label="Headshot" :let={pi}>
+       <%= if pi.headshot_path do %>
+         <img src={image_url(pi, :headshot_path)} alt="Headshot" class="h-10 w-10 object-cover"/>
+       <% else %>
+         <img src="/uploads/default_avatar.png" alt="Default Avatar" class="h-10 w-10 object-cover"/>
+       <% end %>
+     </:col>
+
+    <:action :let={pi}>
+      <.link navigate={~p"/models/player_info/#{pi}/edit"}>Edit</.link>
+    </:action>
+    <:action :let={pi}>
+      <.link href={~p"/models/player_info/#{pi}"} method="delete" data-confirm="Are you sure?">
+        Delete
+      </.link>
+    </:action>
+  </.table>
+</.form>
 
 <%# Add pagination controls similar to other index pages %>
 <% current_page = String.to_integer(@page) %>
