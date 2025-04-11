@@ -31,6 +31,10 @@ defmodule DraftGuru.Metrics.PlayerCombineStatNeighbors do
       foreign_key: :nn_player_id,
       type: :id
 
+    belongs_to :player_combine_stats, DraftGuru.Players.PlayerCombineStat,
+      foreign_key: :player_combine_stats_id,
+      type: :id
+
     timestamps(type: :utc_datetime)
   end
 
