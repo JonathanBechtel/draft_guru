@@ -14,6 +14,7 @@ defmodule DraftGuru.Players.PlayerInfo do
     field :headshot_path, :string
     field :stylized_image_path, :string
     field :is_active, :boolean, default: false
+    field :played_in_nba, :boolean, default: false
 
     belongs_to :player_canonical, Player,
       foreign_key: :player_id,
@@ -39,7 +40,8 @@ defmodule DraftGuru.Players.PlayerInfo do
       :player_id,
       :headshot_path,
       :stylized_image_path,
-      :is_active
+      :is_active,
+      :played_in_nba
     ])
     |> validate_required([:player_id])
     |> unique_constraint(:player_id, name: :player_info_player_id_unique_index, message: "Informatin for this player already exists")

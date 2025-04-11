@@ -14,7 +14,7 @@ defmodule DraftGuru.PlayerIDLookups do
   Returns the list of all player_id_lookups, as modified by the search
   function
   """
-  def list_player_id_lookups(params \\ {}) do
+  def list_player_id_lookups(params \\ %{}) do
 
     allowed_fields = ["id", "data_source", "data_source_id", "player_id"]
 

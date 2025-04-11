@@ -27,7 +27,7 @@
     </.link>
     
     <.button form="bulk-update-form" type="submit" class="bg-purple-500 hover:bg-purple-600">
-      Save Active Status Changes
+      Save Status Changes
     </.button>
   </div>
 </div>
@@ -47,6 +47,9 @@
     <:col label="Active" :let={pi}>
       <input type="hidden" name={"bulk_update[players][#{pi.id}][id]"} value={pi.id}>
       <input type="checkbox" name={"bulk_update[players][#{pi.id}][is_active]"} value="true" checked={pi.is_active} class="h-5 w-5">
+    </:col>
+    <:col label="Played In NBA" :let={pi}>
+      <input type="checkbox" name={"bulk_update[players][#{pi.id}][played_in_nba]"} value="true" checked={pi.played_in_nba} class="h-5 w-5">
     </:col>
     <:col label="Birth Date" :let={pi}><%= pi.birth_date %></:col>
     <:col label="School" :let={pi}><%= pi.school %></:col>

@@ -160,22 +160,23 @@ defmodule DraftGuru.PlayerInfos do
   end
 
   @doc """
-  Bulk updates the active status for multiple player_info records.
-  Takes a map of player IDs and their active statuses.
+  Bulk updates the active status and played_in_nba status for multiple player_info records.
+  Takes a map of player IDs and their statuses.
   Returns a list of tuples with the result for each update.
 
   ## Examples
 
-      iex> bulk_update_active_status(%{"1" => %{"id" => "1", "is_active" => "true"}, "2" => %{"id" => "2"}})
+      iex> bulk_update_active_status(%{"1" => %{"id" => "1", "is_active" => "true", "played_in_nba" => "true"}, "2" => %{"id" => "2"}})
       [{:ok, %PlayerInfo{}}, {:ok, %PlayerInfo{}}]
   """
   def bulk_update_active_status(players) do
     Enum.map(players, fn {_key, player_data} ->
       id = Map.get(player_data, "id")
       is_active = Map.get(player_data, "is_active", "false") == "true"
+      played_in_nba = Map.get(player_data, "played_in_nba", "false") == "true"
 
       player_info = get_player_info!(id)
-      update_player_info(player_info, %{"is_active" => is_active})
+      update_player_info(player_info, %{"is_active" => is_active, "played_in_nba" => played_in_nba})
     end)
   end
 end
