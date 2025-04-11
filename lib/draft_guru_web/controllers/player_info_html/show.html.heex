@@ -11,6 +11,7 @@
   <:item title="Player"><%= @player_info.player_canonical.first_name %> <%= @player_info.player_canonical.last_name %> <%= if @player_info.player_canonical.suffix, do: "(#{@player_info.player_canonical.suffix})" %></:item>
   <:item title="Player ID"><%= @player_info.player_id %></:item>
   <:item title="Active Status"><%= if @player_info.is_active, do: "Active", else: "Inactive" %></:item>
+  <:item title="NBA Status"><%= if @player_info.played_in_nba, do: "Has played in NBA", else: "Has not played in NBA" %></:item>
   <:item title="Birth Date"><%= @player_info.birth_date %></:item>
   <:item title="School"><%= @player_info.school %></:item>
   <:item title="League"><%= @player_info.league %></:item>
