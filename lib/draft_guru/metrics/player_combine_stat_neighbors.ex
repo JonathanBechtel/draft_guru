@@ -22,8 +22,13 @@ defmodule DraftGuru.Metrics.PlayerCombineStatNeighbors do
     field :nn_distance, :float
     field :nn_distance_scaled, :float
 
+
     belongs_to :player_canonical, DraftGuru.Players.Player,
       foreign_key: :player_id,
+      type: :id
+
+    belongs_to :nn_player_canonical, DraftGuru.Players.Player,
+      foreign_key: :nn_player_id,
       type: :id
 
     timestamps(type: :utc_datetime)
