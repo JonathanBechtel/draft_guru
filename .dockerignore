@@ -1,0 +1,28 @@
+# .dockerignore
+/.git
+/.vscode
+/_build
+/deps
+/cover
+/doc
+*.ez
+erl_crash.dump
+/tmp/
+*.tar
+/priv/static/assets/*
+!/priv/static/assets/app.*
+!/priv/static/assets/images # Keep if needed, but usually only digested assets matter
+/priv/static/cache_manifest.json
+/assets/node_modules
+/lib/draft_guru/data_collection/data_files
+/imgs/*
+!/imgs/default_avatar.png
+/priv/static/uploads # Dev uploads should not be in prod image
+
+# Ignore docker specific files
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Tests are not needed in the final image
+/test

@@ -1,0 +1,49 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest # Or a specific version like postgres:15
+    container_name: draft_guru_db
+    environment:
+      POSTGRES_USER: jbadmin # Use your dev user from dev.exs
+      POSTGRES_PASSWORD: bX$!#kZ23 # Use your dev password from dev.exs
+      POSTGRES_DB: draft_guru_dev # Use your dev db name from dev.exs
+    ports:
+      - "5432:5432" # Expose PostgreSQL port locally if needed for direct access
+    volumes:
+      - draft_guru_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jbadmin -d draft_guru_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: . # Build the image from the Dockerfile in the current directory
+    container_name: draft_guru_app
+    depends_on:
+      db:
+        condition: service_healthy # Wait for db to be ready
+    ports:
+      - "4000:4000" # Map container port 4000 to host port 4000
+    environment:
+      MIX_ENV: prod # Run in production mode inside container
+      PORT: 4000
+      PHX_HOST: localhost # Adjust for production if needed
+      # Generate a secure secret key using `mix phx.gen.secret`
+      SECRET_KEY_BASE: YOUR_GENERATED_SECRET_KEY_BASE # REPLACE THIS!
+      # DATABASE_URL points to the 'db' service defined above
+      DATABASE_URL: ecto://jbadmin:bX$!#kZ23@db:5432/draft_guru_dev
+      POOL_SIZE: 10 # Or adjust as needed
+      # Add AWS/S3 variables here if needed for local testing against S3
+      # AWS_ACCESS_KEY_ID: your_aws_access_key
+      # AWS_SECRET_ACCESS_KEY: your_aws_secret_key
+      # AWS_REGION: your_aws_region
+      # S3_BUCKET: your_s3_bucket
+    command: ["/app/bin/draft_guru", "start"] # Use start here, migrations run separately with compose
+    # If not using the Release module in CMD, you can run migrations manually after starting:
+    # docker-compose exec app /app/bin/draft_guru eval 'DraftGuru.Release.migrate()'
+
+volumes:
+  draft_guru_postgres_data: # Persist database data
