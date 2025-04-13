@@ -93,6 +93,9 @@ config :wallaby,
     headless: true
   ]
 
+# config/config.exs (or maybe runtime.exs if needed)
+config :wallaby, chromedriver: [path: "/usr/bin/chromedriver"]
+
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 

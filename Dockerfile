@@ -6,7 +6,8 @@
 # Choose a version compatible with your project (~> 1.14 means 1.14, 1.15, 1.16 etc.)
 # This image includes Erlang/OTP and Elixir.
 # We use a Debian-based image ("bookworm") which makes installing Node.js easier.
-FROM hexpm/elixir:1.16.0-erlang-26.2.2-debian-bookworm-20240221-slim AS builder
+# Use the latest stable 1.17 Elixir / OTP 26 on bookworm slim
+FROM elixir:1.17-slim AS builder
 
 # Set environment variables
 ENV MIX_ENV=prod \
