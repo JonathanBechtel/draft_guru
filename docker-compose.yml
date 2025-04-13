@@ -1,0 +1,45 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest # Or a specific version like postgres:15
+    container_name: draft_guru_db
+    environment:
+      POSTGRES_USER: jbadmin # Use your dev user from dev.exs
+      POSTGRES_PASSWORD: bX$!#kZ23 # Use your dev password from dev.exs
+      POSTGRES_DB: draft_guru_dev # Use your dev db name from dev.exs
+    ports:
+      - "5433:5432" # Expose PostgreSQL port locally if needed for direct access
+    volumes:
+      - draft_guru_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jbadmin -d draft_guru_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: . # Build the image from the Dockerfile in the current directory
+    container_name: draft_guru_app
+    depends_on:
+      db:
+        condition: service_healthy # Wait for db to be ready
+    ports:
+      - "4001:4000" # Map container port 4000 to host port 4000
+    environment:
+      MIX_ENV: prod # Run in production mode inside container
+      PHX_SERVER: "true" # Start the Phoenix server
+      PORT: 4000
+      PHX_HOST: localhost # Adjust for production if needed
+      # Generate a secure secret key using `mix phx.gen.secret`
+      SECRET_KEY_BASE: e1VjR/2C44yMntVVcIdVZBI27RFgEKpNJ+JtuKoBHZLp+rI4qIPkWx1WtC8A0gxA # REPLACE THIS!
+      # DATABASE_URL points to the 'db' service defined above
+      DATABASE_URL: ecto://jbadmin:bX%24%21%23kZ23@db:5432/draft_guru_dev
+      POOL_SIZE: 10 # Or adjust as needed
+    command: ["/app/bin/draft_guru", "start"] # Use start here, migrations run separately with compose
+    # If not using the Release module in CMD, you can run migrations manually after starting:
+    # docker-compose exec app /app/bin/draft_guru eval 'DraftGuru.Release.migrate()'
+
+volumes:
+  draft_guru_postgres_data: # Persist database data

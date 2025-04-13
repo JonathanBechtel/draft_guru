@@ -48,18 +48,6 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  # Add Waffle S3 configuration
-  aws_access_key_id = System.get_env("AWS_ACCESS_KEY_ID") || raise "AWS_ACCESS_KEY_ID missing"
-  aws_secret_access_key = System.get_env("AWS_SECRET_ACCESS_KEY") || raise "AWS_SECRET_ACCESS_KEY missing"
-  aws_region = System.get_env("AWS_REGION") || raise "AWS_REGION missing"
-  s3_bucket = System.get_env("S3_BUCKET") || raise "S3_BUCKET missing"
-
-  config :waffle, Waffle.Storage.S3,
-    access_key_id: aws_access_key_id,
-    secret_access_key: aws_secret_access_key,
-    region: aws_region,
-    bucket: s3_bucket
-
   host = System.get_env("PHX_HOST") || "example.com"
   port = String.to_integer(System.get_env("PORT") || "4000")
 
