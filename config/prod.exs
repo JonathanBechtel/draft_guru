@@ -16,11 +16,3 @@ config :swoosh, local: false
 
 # Do not print debug messages in production
 config :logger, level: :info
-
-# Runtime production configuration, including reading
-# of environment variables, is done on config/runtime.exs.
-# Add/Modify Waffle config for production
-config :waffle,
-  storage: Waffle.Storage.S3,
-  # Define your uploader module
-  uploader: DraftGuru.ImageUploader
