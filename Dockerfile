@@ -45,6 +45,9 @@ COPY config config
 # Copy priv directory (for static assets, migrations, etc.)
 COPY priv priv
 
+#  after  COPY priv priv
+COPY lib/draft_guru/data_collection/data_files priv/data_files
+
 # Copy application code
 COPY lib lib
 
