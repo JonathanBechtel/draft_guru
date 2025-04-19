@@ -8,6 +8,33 @@ defmodule DraftGuru.DraftCombineStatsPipeline do
   alias DraftGuru.Players.Player
   alias DraftGuru.Players.PlayerIdLookup
 
+  @combine_fields_to_update [
+    :position,
+    :lane_agility_time,
+    :shuttle_run,
+    :three_quarter_sprint,
+    :standing_vertical_leap,
+    :max_vertical_leap,
+    :max_bench_press_repetitions,
+    :height_w_shoes,
+    :height_wo_shoes,
+    :body_fat_pct,
+    :hand_length,
+    :hand_length_inches,
+    :hand_width,
+    :hand_width_inches,
+    :standing_reach,
+    :standing_reach_inches,
+    :weight_lbs,
+    :wingspan,
+    :wingspan_inches,
+    :height_w_shoes_inches,
+    :height_wo_shoes_inches,
+    :draft_year,
+    :player_name
+    # NOTE: Do NOT include :player_id or :player_slug here
+  ]
+
   @doc """
   Cleans incoming player map for data inconsistencies
 
@@ -150,14 +177,11 @@ defmodule DraftGuru.DraftCombineStatsPipeline do
       end
 
   def process_draft_combine_stats_map(player_map) do
-    IO.inspect(player_map, label: "DEBUG: Initial player_map in process_draft_combine_stats_map")
     {:ok, updated_map} = parse_map(player_map)
-    IO.inspect(updated_map, label: "DEBUG: updated_map after parse_map")
     {:ok, canonical_player_result} = check_for_canonical_player_record(updated_map)
 
     {:ok, player_id_result} = check_for_player_id_lookup_record(canonical_player_result)
     {:ok, updated_canonical_record} = update_player_id_lookup_table(updated_map, canonical_player_result, player_id_result)
-    IO.inspect(updated_map, label: "DEBUG: updated_map before insert_updated_map")
     {:ok, _record} = insert_updated_map_into_draft_combine_stats_table(updated_map, updated_canonical_record)
     {:ok, :record_inserted_successfully}
   end
