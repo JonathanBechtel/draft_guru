@@ -74,27 +74,28 @@ defmodule DraftGuru.PlayerCombineStats do
   def create_player_combine_stats(attrs \\ %{}) do
 
     keys_to_format = [
-      "height_w_shoes",
-      "height_wo_shoes",
-      "standing_reach",
-      "wingspan",
-      "hand_length",
-      "hand_width"
+      :height_w_shoes,
+      :height_wo_shoes,
+      :standing_reach,
+      :wingspan,
+      :hand_length,
+      :hand_width
      ]
 
     # stri white sace and extra unctuation from layer name
-    combine_stats_attrs = Map.put(attrs, "player_name", sanitize(attrs["player_name"]))
+    combine_stats_attrs = Map.put(attrs, :player_name, sanitize(attrs[:player_name]))
 
     # convert measurements to inches
     combine_stats_attrs = Enum.reduce(keys_to_format, combine_stats_attrs, fn key, acc ->
       value = Map.get(acc, key)
-      Map.put(acc, "#{key}_inches", clean_map_value(value))
+      inches_key = String.to_atom("#{key}_inches")
+      Map.put(acc, inches_key, clean_map_value(value))
     end)
 
     # get the attributes for the layer_canonical table
     canonical_attrs =
       %{}
-      |> Map.merge(split_name_into_parts(combine_stats_attrs["player_name"]))
+      |> Map.merge(split_name_into_parts(combine_stats_attrs[:player_name]))
 
     player_slug = "#{canonical_attrs[:first_name]}_#{canonical_attrs[:middle_name]}_#{canonical_attrs[:last_name]}_#{canonical_attrs[:suffix]}_#{attrs["draft_year"]}"
     combine_stats_attrs = Map.put(combine_stats_attrs, "player_slug", player_slug)
