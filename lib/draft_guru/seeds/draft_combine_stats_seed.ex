@@ -22,8 +22,6 @@ defmodule DraftGuru.DraftCombineStatsSeed do
     |> Enum.each(&process_player/1)
   end
 
-  ## ---
-
   defp process_player(player_map) do
     case process_draft_combine_stats_map(player_map) do
       {:ok, msg} -> IO.puts(msg)
@@ -31,5 +29,6 @@ defmodule DraftGuru.DraftCombineStatsSeed do
     end
   rescue
     e -> IO.puts("Error processing #{player_map["player_slug"]} – #{inspect(e)}")
+         IO.puts(Exception.format(:error, e, __STACKTRACE__))
   end
 end

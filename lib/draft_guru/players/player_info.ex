@@ -19,8 +19,7 @@ defmodule DraftGuru.Players.PlayerInfo do
       foreign_key: :player_id,
       type: :id # Ensure this matches the type of player_canonical.id
 
-    # Waffle attachment fields
-    # *** Put the :uploader option back here ***
+    # virtual fields to handle image uploads
     field :headshot, :any, virtual: true
     field :stylized_image, :any, virtual: true
 
@@ -40,6 +39,6 @@ defmodule DraftGuru.Players.PlayerInfo do
       :stylized_image_path
     ])
     |> validate_required([:player_id])
-    |> unique_constraint(:player_id, name: :player_info_player_id_unique_index, message: "Informatin for this player already exists")
+    |> unique_constraint(:player_id, name: :player_info_player_id_unique_index, message: "Information for this player already exists")
   end
 end

@@ -72,6 +72,7 @@ defmodule DraftGuru.Release do
       Application.app_dir(@app, "priv/data_files")   # <‑‑ copy CSVs here in Dockerfile
 
     Path.wildcard(Path.join(data_dir, "*.csv"))
+    |> dbg()
     |> Enum.each(&DraftGuru.DraftCombineStatsSeed.seed_data/1)
   end
 end

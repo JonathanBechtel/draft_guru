@@ -106,6 +106,15 @@ defmodule DraftGuru.DraftCombineStatsPipeline do
     def insert_updated_map_into_draft_combine_stats_table(player_map,
             canonical_record) do
 
+        # --- ADD DEBUG LINES ---
+        IO.inspect(player_map, label: "[INNER DEBUG] player_map_arg received")
+        IO.puts("[INNER DEBUG] Checking player_name key directly in player_map_arg:")
+        IO.inspect(Map.has_key?(player_map, "player_name"))
+        IO.puts("[INNER DEBUG] Getting player_name value directly from player_map_arg:")
+        player_name_value = Map.get(player_map, "player_name")
+        IO.inspect(player_name_value, label: "[INNER DEBUG] player_name_value")
+        # --- END ADD DEBUG LINES ---
+
         case PlayerCombineStats.create_player_combine_stats(%{
           player_name: player_map["player_name"],
           draft_year: player_map["draft_year"],
@@ -141,10 +150,14 @@ defmodule DraftGuru.DraftCombineStatsPipeline do
       end
 
   def process_draft_combine_stats_map(player_map) do
+    IO.inspect(player_map, label: "DEBUG: Initial player_map in process_draft_combine_stats_map")
     {:ok, updated_map} = parse_map(player_map)
+    IO.inspect(updated_map, label: "DEBUG: updated_map after parse_map")
     {:ok, canonical_player_result} = check_for_canonical_player_record(updated_map)
+
     {:ok, player_id_result} = check_for_player_id_lookup_record(canonical_player_result)
     {:ok, updated_canonical_record} = update_player_id_lookup_table(updated_map, canonical_player_result, player_id_result)
+    IO.inspect(updated_map, label: "DEBUG: updated_map before insert_updated_map")
     {:ok, _record} = insert_updated_map_into_draft_combine_stats_table(updated_map, updated_canonical_record)
     {:ok, :record_inserted_successfully}
   end
