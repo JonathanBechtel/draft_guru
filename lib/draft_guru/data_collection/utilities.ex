@@ -173,27 +173,63 @@ defmodule DraftGuru.DataCollection.Utilities do
   defp parse_null_value(nil), do: nil
   defp parse_null_value(value), do: value
 
-  defp parse_non_null_value(value) do
+  @height_regex ~r/^(?<ft>\d+)'[\s]*(?<in>\d+(?:\.\d+)?)(?:''|"{1,2})?$/
 
-    regex = ~r/^(?<ft>\d+)'[\s]*(?<in>\d+(?:\.\d+)?)(?:''|"{1,2})?$/
-
-    case Regex.named_captures(regex, value) do
-
-      %{"ft" => ft_str, "in" => in_str} ->
-        feet = case Integer.parse(ft_str) do
-          {value, _} -> value
-          :error -> 0
+  def parse_non_null_value(value) do
+    cond do
+      # 1. Check if it's a string that matches the height format FIRST
+      is_binary(value) and Regex.match?(@height_regex, value) ->
+        case Regex.named_captures(@height_regex, value) do
+          %{"ft" => ft_str, "in" => in_str} ->
+            try do
+              ft = String.to_integer(ft_str)
+              inch = String.to_float(in_str)
+              # Convert to total inches (or whatever format you use internally)
+              {:ok, ft * 12 + inch}
+            rescue
+              _ -> {:error, "Invalid height numbers: #{value}"} # Handle parsing errors
+            end
+          _ ->
+             # Matched the initial check but failed named_captures? Should be rare.
+             {:error, "Failed to capture height parts: #{value}"}
         end
 
-        inches = case Float.parse(in_str) do
-          {value, _} -> value
-          :error -> 0
-        end
-        feet * 12 + inches
+      # 2. Handle if the value is already a float (e.g., wingspan, reach already parsed)
+      is_float(value) ->
+        {:ok, value} # Assume float is already correctly parsed
 
-        _ -> parse_float(value)
+      # 3. Handle if the value is already an integer
+      is_integer(value) ->
+        {:ok, value} # Assume integer is already correctly parsed
+
+      # 4. Handle other string values (maybe attempt numeric conversion?)
+      is_binary(value) ->
+        case Float.parse(value) do
+          {float, ""} -> {:ok, float} # It's a string representing a float
+          :error ->
+            case Integer.parse(value) do
+              {int, ""} -> {:ok, int} # It's a string representing an integer
+              :error -> {:ok, value} # Keep as string if not numeric looking
+            end
+        end
+
+      # 5. Handle nil or other types explicitly if needed
+      is_nil(value) ->
+        {:ok, nil} # Or just nil depending on how you handle results
+
+      # 6. Fallback for any other unexpected types
+      true ->
+        {:error, "Unhandled value type: #{inspect value}"} # Or return the value itself
     end
+    |> handle_parse_result() # Add a helper to extract value or handle error downstream
+  end
 
+  # Helper to manage the {:ok, value} / {:error, reason} tuple
+  defp handle_parse_result({:ok, value}), do: value
+  defp handle_parse_result({:error, reason}) do
+    # Log the error or return a default value like nil
+    IO.inspect("Parsing Error: #{reason}", label: "Utilities.parse_non_null_value")
+    nil # Or raise an error, depending on requirements
   end
 
   defp parse_float(str) when is_binary(str) do
