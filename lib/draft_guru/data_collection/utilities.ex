@@ -176,60 +176,78 @@ defmodule DraftGuru.DataCollection.Utilities do
   @height_regex ~r/^(?<ft>\d+)'[\s]*(?<in>\d+(?:\.\d+)?)(?:''|"{1,2})?$/
 
   def parse_non_null_value(value) do
-    cond do
-      # 1. Check if it's a string that matches the height format FIRST
+    result = cond do
+      # 1. Check if it's a string that matches the height format
       is_binary(value) and Regex.match?(@height_regex, value) ->
         case Regex.named_captures(@height_regex, value) do
           %{"ft" => ft_str, "in" => in_str} ->
             try do
               ft = String.to_integer(ft_str)
-              inch = String.to_float(in_str)
-              # Convert to total inches (or whatever format you use internally)
+              inch = parse_float_safely(in_str)
               {:ok, ft * 12 + inch}
             rescue
-              _ -> {:error, "Invalid height numbers: #{value}"} # Handle parsing errors
+              _ -> {:error, "Invalid height numbers: #{value}"}
             end
           _ ->
-             # Matched the initial check but failed named_captures? Should be rare.
              {:error, "Failed to capture height parts: #{value}"}
         end
 
-      # 2. Handle if the value is already a float (e.g., wingspan, reach already parsed)
+      # 2. Handle if the value is already a float
       is_float(value) ->
-        {:ok, value} # Assume float is already correctly parsed
+        {:ok, value}
 
       # 3. Handle if the value is already an integer
       is_integer(value) ->
-        {:ok, value} # Assume integer is already correctly parsed
+        {:ok, value}
 
-      # 4. Handle other string values (maybe attempt numeric conversion?)
+      # 4. Handle other string values (try numeric conversion)
       is_binary(value) ->
-        case Float.parse(value) do
-          {float, ""} -> {:ok, float} # It's a string representing a float
-          :error ->
-            case Integer.parse(value) do
-              {int, ""} -> {:ok, int} # It's a string representing an integer
-              :error -> {:ok, value} # Keep as string if not numeric looking
-            end
-        end
+        try_parse_string(value)
 
-      # 5. Handle nil or other types explicitly if needed
+      # 5. Handle nil
       is_nil(value) ->
-        {:ok, nil} # Or just nil depending on how you handle results
+        {:ok, nil}
 
       # 6. Fallback for any other unexpected types
       true ->
-        {:error, "Unhandled value type: #{inspect value}"} # Or return the value itself
+        {:error, "Unhandled value type: #{inspect(value)}"}
     end
-    |> handle_parse_result() # Add a helper to extract value or handle error downstream
+
+    handle_parse_result(result)
+  end
+
+  # Handle string parsing attempts
+  defp try_parse_string(value) do
+    case Float.parse(value) do
+      {float, ""} -> {:ok, float}
+      {float, _rest} -> {:ok, float}  # Be lenient about trailing chars
+      :error ->
+        case Integer.parse(value) do
+          {int, ""} -> {:ok, int}
+          {int, _rest} -> {:ok, int}  # Be lenient about trailing chars
+          :error -> {:ok, value}  # Keep as string if parsing fails
+        end
+    end
+  end
+
+  # Helper to safely parse float values with integer fallback
+  defp parse_float_safely(str) do
+    case Float.parse(str) do
+      {float, _} -> float
+      :error ->
+        case Integer.parse(str) do
+          {int, _} -> int * 1.0
+          :error -> 0.0  # Default to 0 if all parsing fails
+        end
+    end
   end
 
   # Helper to manage the {:ok, value} / {:error, reason} tuple
   defp handle_parse_result({:ok, value}), do: value
   defp handle_parse_result({:error, reason}) do
-    # Log the error or return a default value like nil
-    IO.inspect("Parsing Error: #{reason}", label: "Utilities.parse_non_null_value")
-    nil # Or raise an error, depending on requirements
+    # Log the error but don't halt the process
+    IO.puts("Utilities.parse_non_null_value: #{reason}")
+    nil  # Return nil for invalid values
   end
 
   defp parse_float(str) when is_binary(str) do
