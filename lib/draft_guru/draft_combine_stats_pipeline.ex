@@ -8,33 +8,6 @@ defmodule DraftGuru.DraftCombineStatsPipeline do
   alias DraftGuru.Players.Player
   alias DraftGuru.Players.PlayerIdLookup
 
-  @combine_fields_to_update [
-    :position,
-    :lane_agility_time,
-    :shuttle_run,
-    :three_quarter_sprint,
-    :standing_vertical_leap,
-    :max_vertical_leap,
-    :max_bench_press_repetitions,
-    :height_w_shoes,
-    :height_wo_shoes,
-    :body_fat_pct,
-    :hand_length,
-    :hand_length_inches,
-    :hand_width,
-    :hand_width_inches,
-    :standing_reach,
-    :standing_reach_inches,
-    :weight_lbs,
-    :wingspan,
-    :wingspan_inches,
-    :height_w_shoes_inches,
-    :height_wo_shoes_inches,
-    :draft_year,
-    :player_name
-    # NOTE: Do NOT include :player_id or :player_slug here
-  ]
-
   @doc """
   Cleans incoming player map for data inconsistencies
 
@@ -132,15 +105,6 @@ defmodule DraftGuru.DraftCombineStatsPipeline do
 
     def insert_updated_map_into_draft_combine_stats_table(player_map,
             canonical_record) do
-
-        # --- ADD DEBUG LINES ---
-        IO.inspect(player_map, label: "[INNER DEBUG] player_map_arg received")
-        IO.puts("[INNER DEBUG] Checking player_name key directly in player_map_arg:")
-        IO.inspect(Map.has_key?(player_map, "player_name"))
-        IO.puts("[INNER DEBUG] Getting player_name value directly from player_map_arg:")
-        player_name_value = Map.get(player_map, "player_name")
-        IO.inspect(player_name_value, label: "[INNER DEBUG] player_name_value")
-        # --- END ADD DEBUG LINES ---
 
         case PlayerCombineStats.create_player_combine_stats(%{
           player_name: player_map["player_name"],

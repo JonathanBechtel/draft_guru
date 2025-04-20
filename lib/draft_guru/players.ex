@@ -117,11 +117,7 @@ end
           from(p in query, where: p.middle_name == ^middle_name)
         end
 
-      record = Repo.one(query)
-
-      IO.inspect(record, label: "record after retrieving player")
-
-      record
+      Repo.one(query)
   end
 
   @doc """

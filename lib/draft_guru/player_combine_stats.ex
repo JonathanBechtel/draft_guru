@@ -110,9 +110,12 @@ defmodule DraftGuru.PlayerCombineStats do
     |> Ecto.Multi.insert(:player_id_lookup, fn %{player_canonical: player_canonical} ->
       PlayerIdLookup.changeset(%PlayerIdLookup{},
         Map.put(player_id_attrs, :player_id, player_canonical.id))
-    end)
+    end,
+    on_conflict: :nothing,
+    conflict_target: [:data_source, :data_source_id])
     |> Ecto.Multi.insert(:player_combine_stats, fn %{player_canonical: player_canonical} ->
-      PlayerCombineStat.changeset(%PlayerCombineStat{}, combine_stats_attrs)
+      updated_combine_stats_attrs = Map.put(combine_stats_attrs, :player_id, player_canonical.id)
+      PlayerCombineStat.changeset(%PlayerCombineStat{}, updated_combine_stats_attrs)
     end)
     |> Repo.transaction()
 
