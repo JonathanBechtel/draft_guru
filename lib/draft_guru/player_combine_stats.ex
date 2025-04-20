@@ -71,6 +71,132 @@ defmodule DraftGuru.PlayerCombineStats do
 
   def get_player_combine_stats_by_player_id!(layer_id), do: Repo.get_by!(PlayerCombineStat, layer_id)
 
+  @doc """
+  Atomically finds or creates a player, its ID lookup, and combine stats.
+
+  Handles conflicts gracefully for ID lookup and combine stats.
+
+  USED IN SEEDING DATA WHEN STARTING THE APPLICATION
+  """
+  def upsert_player_with_stats(attrs \\ %{}) do
+    # --- 1. Prepare Attributes (Similar to your original create_player_combine_stats) ---
+    keys_to_format = [
+      :height_w_shoes, :height_wo_shoes, :standing_reach, :wingspan,
+      :hand_length, :hand_width
+    ]
+
+    # Use :player_name from input attrs, ensure it's sanitized
+    player_name = sanitize(attrs[:player_name])
+    # Start building combine_stats_attrs, ensuring player_name is present
+    combine_stats_attrs = Map.put(attrs, :player_name, player_name)
+
+    # convert measurements to inches
+    combine_stats_attrs = Enum.reduce(keys_to_format, combine_stats_attrs, fn key, acc ->
+      value = Map.get(acc, key)
+      inches_key = String.to_atom("#{key}_inches")
+      Map.put(acc, inches_key, clean_map_value(value))
+    end)
+
+    # get the attributes for the player_canonical table
+    canonical_attrs =
+      %{}
+      |> Map.merge(split_name_into_parts(player_name)) # Use sanitized name
+
+    # Use draft_year from input attrs
+    draft_year_str = to_string(attrs[:draft_year]) # Ensure it's a string for concatenation if needed
+
+    # Generate player_slug (ensure parts are not nil before joining)
+    slug_parts = [
+      canonical_attrs[:first_name],
+      canonical_attrs[:middle_name], # Handle potential nil
+      canonical_attrs[:last_name],
+      canonical_attrs[:suffix],      # Handle potential nil
+      draft_year_str                 # Use draft year from input
+    ]
+    |> Enum.reject(&is_nil/1)        # Remove nils
+    |> Enum.reject(&(&1 == ""))      # Remove empty strings
+    |> Enum.map(&to_string/1)        # Ensure all parts are strings
+    |> Enum.join("_")                # Join with underscore
+
+    player_slug = String.replace(slug_parts, "__", "_") # Clean up double underscores if middle/suffix were nil/empty
+
+    # Add player_slug to combine_stats_attrs
+    combine_stats_attrs = Map.put(combine_stats_attrs, :player_slug, player_slug)
+
+    player_id_attrs = %{
+      data_source_id: player_slug, # Use the calculated slug
+      data_source: "nba.com/stats/draft"
+    }
+
+    # --- 2. Build the Ecto.Multi Transaction ---
+    Multi.new()
+    |> Multi.run(:find_or_create_player, fn repo, _changes ->
+      # Try to find the player using the exact match function
+      case Players.get_player_by_name(canonical_attrs) do
+        nil ->
+          # Not found, prepare to insert
+          Player.changeset(%Player{}, canonical_attrs)
+          |> Multi.insert_changeset(:player_canonical) # Use a nested Multi operation name
+        %Player{} = existing_player ->
+          # Found, return it
+          {:ok, existing_player}
+      end
+    end)
+    |> Multi.run(:get_player_id, fn _repo, changes ->
+        # Extract the player ID, whether it was found or newly inserted
+        player = case changes do
+          %{find_or_create_player: %{player_canonical: inserted}} -> inserted # From nested insert
+          %{find_or_create_player: found} when is_struct(found, Player) -> found # From direct find
+          _ -> nil # Should not happen if find_or_create_player succeeded
+        end
+
+        if player, do: {:ok, player.id}, else: {:error, :cannot_determine_player_id}
+    end)
+    |> Multi.insert(:player_id_lookup, fn %{get_player_id: player_id} ->
+        lookup_attrs = Map.put(player_id_attrs, :player_id, player_id)
+        PlayerIdLookup.changeset(%PlayerIdLookup{}, lookup_attrs)
+      end,
+      # If a lookup record with the same data_source/data_source_id exists, do nothing.
+      # This assumes the player_id associated with that slug should not change.
+      on_conflict: :nothing,
+      conflict_target: [:data_source, :data_source_id] # Match unique index
+    )
+    |> Multi.insert(:player_combine_stats, fn %{get_player_id: player_id} ->
+        stats_attrs_with_id = Map.put(combine_stats_attrs, :player_id, player_id)
+        # Ensure required fields are present before creating changeset
+        required_fields = [:player_slug, :player_name, :draft_year, :position, :player_id]
+        if Enum.all?(required_fields, &(Map.has_key?(stats_attrs_with_id, &1) && !is_nil(Map.get(stats_attrs_with_id, &1)))) do
+           PlayerCombineStat.changeset(%PlayerCombineStat{}, stats_attrs_with_id)
+        else
+           # If required fields are missing, return an error changeset immediately
+           # This prevents the transaction from failing later on a validation error
+           # and allows us to potentially log it more clearly.
+           {:error, :missing_required_combine_stats_fields, stats_attrs_with_id}
+        end
+      end,
+      # If stats with the same player_slug exist, do nothing.
+      # Alternative: :replace_all to update if found, but :nothing seems safer for seeding.
+      on_conflict: :nothing,
+      conflict_target: :player_slug # Match unique index
+    )
+    |> Repo.transaction()
+    |> case do
+      {:ok, results} ->
+        # You might want to check results[:player_id_lookup] and results[:player_combine_stats]
+        # to see if they were :unchanged due to conflicts
+        {:ok, results}
+      {:error, :player_combine_stats, {:error, :missing_required_combine_stats_fields, data}, _changes} ->
+        # Specific handling for our custom error
+        IO.puts("Skipping combine stats due to missing required fields for slug: #{Map.get(data, :player_slug)}")
+        {:error, :validation, %{reason: :missing_required_combine_stats_fields, data: data}} # Return a more informative error
+      {:error, failed_step, error_value, _changes} ->
+        # Handle other transaction failures (e.g., database errors, changeset errors)
+        IO.puts("Transaction failed at step: #{failed_step}")
+        IO.inspect(error_value, label: "Error Value")
+        {:error, failed_step, error_value} # Propagate the error
+    end
+  end
+
   def create_player_combine_stats(attrs \\ %{}) do
 
     keys_to_format = [
