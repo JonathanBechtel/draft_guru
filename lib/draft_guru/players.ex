@@ -88,10 +88,10 @@ end
   """
   def get_player!(id), do: Repo.get!(Player, id)
 
-  def get_player_by_name(%{"suffix" => suffix,
-                           "first_name" => first_name,
-                           "middle_name" => middle_name,
-                           "last_name" => last_name} = _player_map) do
+  def get_player_by_name(%{suffix: suffix,
+                           first_name: first_name,
+                           middle_name: middle_name,
+                           last_name: last_name} = _player_map) do
 
       suffix      = if suffix == "", do: nil, else: suffix
       middle_name = if middle_name == "", do: nil, else: middle_name

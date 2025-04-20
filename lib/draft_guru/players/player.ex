@@ -8,7 +8,7 @@ defmodule DraftGuru.Players.Player do
     field :first_name, :string
     field :middle_name, :string
     field :last_name, :string
-    field :birth_data, :date
+    field :birth_date, :date
 
     timestamps(utc: :datetime)
 
@@ -22,6 +22,5 @@ defmodule DraftGuru.Players.Player do
     player
     |> cast(attrs, [:first_name, :middle_name, :last_name, :suffix, :birth_date])
     |> validate_required([:first_name, :last_name])
-    |> validate_
   end
 end

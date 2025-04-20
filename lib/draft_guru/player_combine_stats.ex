@@ -10,7 +10,9 @@ defmodule DraftGuru.PlayerCombineStats do
  import DraftGuru.Contexts.Utilities
 
   alias DraftGuru.Repo
+  alias Ecto.Multi
 
+  alias DraftGuru.Players
   alias DraftGuru.Players.PlayerCombineStat
   alias DraftGuru.Players.Player
   alias DraftGuru.Players.PlayerIdLookup
@@ -80,13 +82,18 @@ defmodule DraftGuru.PlayerCombineStats do
   """
   def upsert_player_with_stats(attrs \\ %{}) do
     # --- 1. Prepare Attributes (Similar to your original create_player_combine_stats) ---
+    attrs = atomize_keys(attrs) # Atomize keys first
+
     keys_to_format = [
       :height_w_shoes, :height_wo_shoes, :standing_reach, :wingspan,
       :hand_length, :hand_width
     ]
 
     # Use :player_name from input attrs, ensure it's sanitized
-    player_name = sanitize(attrs[:player_name])
+    raw_player_name = Map.get(attrs, :player_name)
+
+
+    player_name = sanitize(raw_player_name)
     # Start building combine_stats_attrs, ensuring player_name is present
     combine_stats_attrs = Map.put(attrs, :player_name, player_name)
 
@@ -96,6 +103,7 @@ defmodule DraftGuru.PlayerCombineStats do
       inches_key = String.to_atom("#{key}_inches")
       Map.put(acc, inches_key, clean_map_value(value))
     end)
+
 
     # get the attributes for the player_canonical table
     canonical_attrs =
@@ -123,6 +131,7 @@ defmodule DraftGuru.PlayerCombineStats do
     # Add player_slug to combine_stats_attrs
     combine_stats_attrs = Map.put(combine_stats_attrs, :player_slug, player_slug)
 
+
     player_id_attrs = %{
       data_source_id: player_slug, # Use the calculated slug
       data_source: "nba.com/stats/draft"
@@ -133,51 +142,53 @@ defmodule DraftGuru.PlayerCombineStats do
     |> Multi.run(:find_or_create_player, fn repo, _changes ->
       # Try to find the player using the exact match function
       case Players.get_player_by_name(canonical_attrs) do
-        nil ->
-          # Not found, prepare to insert
-          Player.changeset(%Player{}, canonical_attrs)
-          |> Multi.insert_changeset(:player_canonical) # Use a nested Multi operation name
         %Player{} = existing_player ->
-          # Found, return it
+          # Found, return it wrapped in :ok tuple for Multi.run
           {:ok, existing_player}
+        nil ->
+          # Not found, create changeset and INSERT using Repo directly.
+          # Repo.insert returns {:ok, player} or {:error, changeset},
+          # which is the correct format for Multi.run's return value.
+          changeset = Player.changeset(%Player{}, canonical_attrs)
+          Repo.insert(changeset)
+          # If you needed explicit repo: Repo.insert(repo, changeset)
       end
     end)
     |> Multi.run(:get_player_id, fn _repo, changes ->
-        # Extract the player ID, whether it was found or newly inserted
-        player = case changes do
-          %{find_or_create_player: %{player_canonical: inserted}} -> inserted # From nested insert
-          %{find_or_create_player: found} when is_struct(found, Player) -> found # From direct find
-          _ -> nil # Should not happen if find_or_create_player succeeded
+        # Extract the player ID. The result from :find_or_create_player under the key
+        # :find_or_create_player in the `changes` map will be the Player struct
+        # itself if the find or the insert was successful.
+        case changes do
+          %{find_or_create_player: %Player{} = player} ->
+            {:ok, player.id}
+         # If Repo.insert failed in the previous step, it would have returned
+         # {:error, changeset}, halting the Multi execution. So we primarily
+         # need to handle the success case here. We add a catch-all for safety.
+          _ ->
+            IO.inspect(changes, label: "Unexpected changes map in :get_player_id step")
+            {:error, :cannot_determine_player_id_from_previous_step_result}
         end
-
-        if player, do: {:ok, player.id}, else: {:error, :cannot_determine_player_id}
     end)
     |> Multi.insert(:player_id_lookup, fn %{get_player_id: player_id} ->
+        # This part remains the same
         lookup_attrs = Map.put(player_id_attrs, :player_id, player_id)
         PlayerIdLookup.changeset(%PlayerIdLookup{}, lookup_attrs)
       end,
-      # If a lookup record with the same data_source/data_source_id exists, do nothing.
-      # This assumes the player_id associated with that slug should not change.
       on_conflict: :nothing,
-      conflict_target: [:data_source, :data_source_id] # Match unique index
+      conflict_target: [:data_source, :data_source_id]
     )
     |> Multi.insert(:player_combine_stats, fn %{get_player_id: player_id} ->
+        # This part remains the same
         stats_attrs_with_id = Map.put(combine_stats_attrs, :player_id, player_id)
-        # Ensure required fields are present before creating changeset
         required_fields = [:player_slug, :player_name, :draft_year, :position, :player_id]
         if Enum.all?(required_fields, &(Map.has_key?(stats_attrs_with_id, &1) && !is_nil(Map.get(stats_attrs_with_id, &1)))) do
            PlayerCombineStat.changeset(%PlayerCombineStat{}, stats_attrs_with_id)
         else
-           # If required fields are missing, return an error changeset immediately
-           # This prevents the transaction from failing later on a validation error
-           # and allows us to potentially log it more clearly.
            {:error, :missing_required_combine_stats_fields, stats_attrs_with_id}
         end
       end,
-      # If stats with the same player_slug exist, do nothing.
-      # Alternative: :replace_all to update if found, but :nothing seems safer for seeding.
       on_conflict: :nothing,
-      conflict_target: :player_slug # Match unique index
+      conflict_target: :player_slug
     )
     |> Repo.transaction()
     |> case do
@@ -198,6 +209,7 @@ defmodule DraftGuru.PlayerCombineStats do
   end
 
   def create_player_combine_stats(attrs \\ %{}) do
+    attrs = atomize_keys(attrs) # Atomize keys first
 
     keys_to_format = [
       :height_w_shoes,
@@ -244,6 +256,28 @@ defmodule DraftGuru.PlayerCombineStats do
       PlayerCombineStat.changeset(%PlayerCombineStat{}, updated_combine_stats_attrs)
     end)
     |> Repo.transaction()
+    |> case do
+      {:ok, results} ->
+        {:ok, results}
+      {:error, :player_combine_stats, {:error, :missing_required_combine_stats_fields, data}, _changes} ->
+        # ... (existing handling) ...
+        {:error, :validation, %{reason: :missing_required_combine_stats_fields, data: data}}
+      {:error, :player_combine_stats, %Ecto.Changeset{} = invalid_changeset, _changes} -> # <--- ADD THIS CLAUSE
+        # This catches validation errors from PlayerCombineStat.changeset/2
+        ChangesetLogger.log_failure(invalid_changeset, %{module: DraftGuru.Players.PlayerCombineStat, reason: "validation"})
+        # Return an error tuple consistent with other failures
+        {:error, :player_combine_stats_validation, invalid_changeset}
+      {:error, failed_step, error_value, _changes} ->
+        # This handles other errors (DB errors, other steps failing)
+        # You could add more specific logging here if needed
+        IO.puts("Transaction failed at step: #{failed_step}")
+        IO.inspect(error_value, label: "Error Value")
+        # Log if it's a changeset error from a *different* step
+        if is_struct(error_value, Ecto.Changeset) do
+          ChangesetLogger.log_failure(error_value, %{module: "Unknown", step: failed_step})
+        end
+        {:error, failed_step, error_value}
+    end
 
   end
 
@@ -260,6 +294,15 @@ defmodule DraftGuru.PlayerCombineStats do
 
   def delete_player_combine_stats(%PlayerCombineStat{} = player) do
     Repo.delete(player)
+  end
+
+  # --- Private Helpers ---
+
+  @doc """
+  Converts string keys in a map to atom keys.
+  """
+  defp atomize_keys(map) when is_map(map) do
+    Map.new(map, fn {key, value} -> {String.to_atom(key), value} end)
   end
 
 end
