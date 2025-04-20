@@ -140,14 +140,35 @@ defmodule DraftGuru.DraftCombineStatsPipeline do
         end
       end
 
-  def process_draft_combine_stats_map(player_map) do
-    {:ok, updated_map} = parse_map(player_map)
-    {:ok, canonical_player_result} = check_for_canonical_player_record(updated_map)
-    {:ok, player_id_result} = check_for_player_id_lookup_record(canonical_player_result)
-    {:ok, updated_canonical_record} = update_player_id_lookup_table(updated_map, canonical_player_result, player_id_result)
-    {:ok, _record} = insert_updated_map_into_draft_combine_stats_table(updated_map, updated_canonical_record)
-    {:ok, :record_inserted_successfully}
-  end
+    def process_draft_combine_stats_map(player_map) do
+        with {:ok, updated_map} <- parse_map(player_map) do
+          # Directly call the new upsert function which handles the transaction
+          case PlayerCombineStats.upsert_player_with_stats(updated_map) do
+            {:ok, _results} ->
+              # Use updated_map["player_slug"] as it's more likely to be present than the calculated one if there's an issue
+              slug = Map.get(updated_map, "player_slug", "UNKNOWN_SLUG")
+              {:ok, "Successfully processed record for player slug: #{slug}"}
+
+            {:error, :validation, reason} ->
+                slug = Map.get(updated_map, "player_slug", "UNKNOWN_SLUG")
+                IO.puts("Validation Error processing slug: #{slug} - Reason: #{inspect(reason)}")
+                # Decide if validation errors should halt the whole seed or just skip the record
+                {:error, "Validation error for #{slug}"} # Return an error tuple
+
+            {:error, failed_step, error_value} ->
+              slug = Map.get(updated_map, "player_slug", "UNKNOWN_SLUG")
+              IO.puts("Transaction Error processing slug: #{slug} - Step: #{failed_step}, Value: #{inspect(error_value)}")
+              # Decide if transaction errors should halt the whole seed or just skip the record
+              {:error, "Transaction error for #{slug}"} # Return an error tuple
+          end
+        # The `else` block for the `with` statement handles errors from `parse_map`
+        else
+          {:error, reason} ->
+            IO.puts("Error parsing map: #{inspect(reason)}")
+            {:error, "Parsing error"} # Return an error tuple
+        end
+    end
+
 
 # TO DO:  should add these to utilities and away from this file
   def parse_value(value) do

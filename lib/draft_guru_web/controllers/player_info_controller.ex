@@ -36,8 +36,6 @@ defmodule DraftGuruWeb.PlayerInfoController do
         |> redirect(to: ~p"/models/player_info/#{player_info}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        IO.inspect(changeset.errors[:headshot], label: "DEBUG: Errors for :headshot field")
-        IO.inspect(changeset.errors, label: "DEBUG: Changeset errors on CREATE failure")
         players_for_select = PlayerInfos.list_players_for_select()
         render(conn, :new, changeset: changeset, players_for_select: players_for_select)
     end

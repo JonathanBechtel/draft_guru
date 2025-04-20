@@ -1,6 +1,7 @@
 defmodule DraftGuru.Players.PlayerCombineStat do
   use Ecto.Schema
   import Ecto.Changeset
+  alias DraftGuru.ChangesetLogger
 
   @primary_key {:id, :id, autogenerate: true}
   schema "player_combine_stats" do
@@ -67,14 +68,12 @@ defmodule DraftGuru.Players.PlayerCombineStat do
     |> validate_required([
             :player_slug,
             :player_name,
-            :draft_year,
-            :position])
-    |> unique_constraint(:player_combine_stats,
+            :draft_year])
+    |> unique_constraint(:player_slug,
         name: :player_combine_stats_unique_player_slug_index,
         message: "The player slug already exists")
     |> validate_inclusion(:draft_year, 1950..2100,
         message: "Must be between 1950 and 2100",
         allow_nil: true)
-
   end
 end

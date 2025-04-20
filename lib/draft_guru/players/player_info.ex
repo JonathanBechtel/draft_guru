@@ -20,6 +20,7 @@ defmodule DraftGuru.Players.PlayerInfo do
       foreign_key: :player_id,
       type: :id # Ensure this matches the type of player_canonical.id
 
+
     # Virtual fields for image uploads
     # These fields are not stored in the database but are used for file uploads
     field :headshot, :any, virtual: true
@@ -44,6 +45,6 @@ defmodule DraftGuru.Players.PlayerInfo do
       :played_in_nba
     ])
     |> validate_required([:player_id])
-    |> unique_constraint(:player_id, name: :player_info_player_id_unique_index, message: "Informatin for this player already exists")
+    |> unique_constraint(:player_id, name: :player_info_player_id_unique_index, message: "Information for this player already exists")
   end
 end
