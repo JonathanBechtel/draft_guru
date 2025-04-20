@@ -107,6 +107,22 @@
     <%= player.suffix %>
   </:col>
 
+  <!-- Birth Date -->
+  <:col 
+    label={
+      ~H"""
+      <.link 
+        navigate={"/models/player_canonical?sort_field=birth_date&sort_direction=#{toggle_sort(@sort_field, @sort_direction, "birth_date")}&name=#{@search}"}
+      >
+        Birth date
+      </.link>
+      """
+    }
+    :let={player}
+  >
+    <%= player.birth_date %>
+  </:col>
+
   <!-- The "Edit" and "Delete" actions -->
   <:action :let={player}>
     <div class="sr-only">
