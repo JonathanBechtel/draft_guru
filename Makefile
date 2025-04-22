@@ -1,3 +1,12 @@
+IMAGE=jonathanbechtel/draft_guru
+TAG?=dev
+
+build-remote:
+	docker build -t $(IMAGE):$(TAG) .
+
+push-remote:
+	docker push $(IMAGE):$(TAG)
+
 up:
 	docker-compose up
 
