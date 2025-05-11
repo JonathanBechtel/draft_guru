@@ -54,15 +54,28 @@ RUN mix assets.deploy
 # The release name should match your OTP app name (:draft_guru)
 RUN mix release
 
-FROM builder AS dev
+# Development image
+FROM builder as dev
+
+RUN apt-get update -y && \
+    apt-get install -y --no-install-recommends \
+    inotify-tools \
+    chromium-driver \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set MIX_ENV to dev
 ENV MIX_ENV=dev
 
-# install *all* deps (dev + test)
-RUN mix deps.get
-# copy source again in case you want clean layers
+# Install all dependencies, including dev and test
+RUN mix deps.get --force
+
+# Copy the rest of the application code
 COPY . .
 
-# default command for docker-compose.dev.yml
+# The port Phoenix listens on
+EXPOSE 4000
+
+# The command to start the Phoenix server in development
 CMD ["mix", "phx.server"]
 
 # Stage 2: Create the final runtime image
