@@ -1,21 +1,13 @@
 # Dockerfile
-
-# Stage 1: Build the release
-# ---------------------------
-# Use an official Elixir image as a parent image.
-# Choose a version compatible with your project (~> 1.14 means 1.14, 1.15, 1.16 etc.)
-# This image includes Erlang/OTP and Elixir.
-# We use a Debian-based image ("bookworm") which makes installing Node.js easier.
-# Use the latest stable 1.17 Elixir / OTP 26 on bookworm slim
 FROM elixir:1.17-slim AS builder
 
 # Set environment variables
 ENV MIX_ENV=prod \
     LANG=C.UTF-8
 
-# Install build dependencies and Node.js for asset compilation
-# apt-get update && apt-get install -y --no-install-recommends curl gnupg && \
-# curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
+ARG ERL_FLAGS="+JMsingle true"
+ENV ERL_FLAGS=${ERL_FLAGS}
+
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
     build-essential git curl ca-certificates \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
@@ -98,4 +90,4 @@ EXPOSE 4000
 # Consider adding migration step here using DraftGuru.Release.migrate (see release.ex)
 # CMD ["bin/draft_guru", "start"]
 # OR, if you want to run migrations automatically on start:
-CMD ["/app/bin/draft_guru", "eval", "DraftGuru.Release.migrate()", ";", "/app/bin/draft_guru", "start"]
+CMD ["/app/bin/draft_guru", "start"]

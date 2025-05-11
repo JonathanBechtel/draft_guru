@@ -19,26 +19,25 @@ services:
       retries: 5
 
   app:
-    build: . # Build the image from the Dockerfile in the current directory
+    build: .
     container_name: draft_guru_app
+    restart: always
     env_file:
       - .env
     depends_on:
       db:
         condition: service_healthy # Wait for db to be ready
     ports:
-      - "4001:4000" # Map container port 4001 to host port 4000
+      - ${APP_PORTS} # Map container port 4001 to host port 4000
     environment:
       MIX_ENV: prod # Run in production mode inside container
       PHX_SERVER: "true" # Start the Phoenix server
       PORT: 4000
-      PHX_HOST: localhost 
+      PHX_HOST: ${PHX_HOST} 
       SECRET_KEY_BASE: ${SECRET_KEY_BASE}
       DATABASE_URL: ${DATABASE_URL}
       POOL_SIZE: 10 # Or adjust as needed
-    command: ["/app/bin/draft_guru", "start"] # Use start here, migrations run separately with compose
-    # If not using the Release module in CMD, you can run migrations manually after starting:
-    # docker-compose exec app /app/bin/draft_guru eval 'DraftGuru.Release.migrate()'
+    command: ["/app/bin/draft_guru", "start"]
 
 volumes:
   draft_guru_postgres_data: # Persist database data
