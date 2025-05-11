@@ -1,17 +1,17 @@
-# docker-compose.yml
+version: "3.9"
 
 services:
   db:
-    image: postgres:latest # Or a specific version like postgres:15
+    image: postgres:${PG_TAG:-latest}
     container_name: draft_guru_db
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_USER:     ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_DB:       ${POSTGRES_DB}
     ports:
-      - "5433:5432" # Expose PostgreSQL port locally if needed for direct access
+      - "5433:5432"          # dev override can change this
     volumes:
-      - draft_guru_postgres_data:/var/lib/postgresql/data
+      - draft_guru_postgres:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
@@ -19,25 +19,23 @@ services:
       retries: 5
 
   app:
-    build: .
     container_name: draft_guru_app
     restart: always
     env_file:
-      - .env
+      - .env                 # each env has its own .env file
     depends_on:
       db:
-        condition: service_healthy # Wait for db to be ready
-    ports:
-      - ${APP_PORTS} # Map container port 4001 to host port 4000
+        condition: service_healthy
     environment:
-      MIX_ENV: prod # Run in production mode inside container
-      PHX_SERVER: "true" # Start the Phoenix server
+      MIX_ENV:   ${MIX_ENV:-prod}
+      PHX_SERVER: "true"
       PORT: 4000
-      PHX_HOST: ${PHX_HOST} 
+      PHX_HOST: ${PHX_HOST}
       SECRET_KEY_BASE: ${SECRET_KEY_BASE}
       DATABASE_URL: ${DATABASE_URL}
-      POOL_SIZE: 10 # Or adjust as needed
-    command: ["/app/bin/draft_guru", "start"]
+      POOL_SIZE: 10
+    ports:
+      - ${APP_PORTS:-"4000:4000"}
 
 volumes:
-  draft_guru_postgres_data: # Persist database data
+  draft_guru_postgres:

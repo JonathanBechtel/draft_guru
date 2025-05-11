@@ -54,6 +54,17 @@ RUN mix assets.deploy
 # The release name should match your OTP app name (:draft_guru)
 RUN mix release
 
+FROM builder AS dev
+ENV MIX_ENV=dev
+
+# install *all* deps (dev + test)
+RUN mix deps.get
+# copy source again in case you want clean layers
+COPY . .
+
+# default command for docker-compose.dev.yml
+CMD ["mix", "phx.server"]
+
 # Stage 2: Create the final runtime image
 # ----------------------------------------
 # Use a minimal Debian image as the base
