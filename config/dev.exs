@@ -4,8 +4,8 @@ import Config
 config :draft_guru, DraftGuru.Repo,
   username: "jbadmin",
   password: "bX$!#kZ23",
-  hostname: "localhost",
-  database: "draft_guru_dev",
+  hostname: "db",
+  database: "docker_draft_guru_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
