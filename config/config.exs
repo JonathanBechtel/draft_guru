@@ -3,7 +3,6 @@
 #
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
-
 # General application configuration
 import Config
 
@@ -87,14 +86,6 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-config :wallaby,
-  driver: Wallaby.Chrome,
-  chrome: [
-    headless: true
-  ]
-
-# config/config.exs (or maybe runtime.exs if needed)
-config :wallaby, chromedriver: [path: "/usr/bin/chromedriver"]
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason

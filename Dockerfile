@@ -1,21 +1,13 @@
 # Dockerfile
-
-# Stage 1: Build the release
-# ---------------------------
-# Use an official Elixir image as a parent image.
-# Choose a version compatible with your project (~> 1.14 means 1.14, 1.15, 1.16 etc.)
-# This image includes Erlang/OTP and Elixir.
-# We use a Debian-based image ("bookworm") which makes installing Node.js easier.
-# Use the latest stable 1.17 Elixir / OTP 26 on bookworm slim
 FROM elixir:1.17-slim AS builder
 
 # Set environment variables
 ENV MIX_ENV=prod \
     LANG=C.UTF-8
 
-# Install build dependencies and Node.js for asset compilation
-# apt-get update && apt-get install -y --no-install-recommends curl gnupg && \
-# curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
+ARG ERL_FLAGS="+JMsingle true"
+ENV ERL_FLAGS=${ERL_FLAGS}
+
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
     build-essential git curl ca-certificates \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
@@ -45,9 +37,6 @@ COPY config config
 # Copy priv directory (for static assets, migrations, etc.)
 COPY priv priv
 
-#  after  COPY priv priv
-COPY lib/draft_guru/data_collection/data_files priv/data_files
-
 # Copy application code
 COPY lib lib
 
@@ -61,6 +50,30 @@ RUN mix assets.deploy
 # Build the release
 # The release name should match your OTP app name (:draft_guru)
 RUN mix release
+
+# Development image
+FROM builder AS dev
+
+RUN apt-get update -y && \
+    apt-get install -y --no-install-recommends \
+    inotify-tools \
+    chromium-driver \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set MIX_ENV to dev
+ENV MIX_ENV=dev
+
+# Install all dependencies, including dev and test
+RUN mix deps.get --force
+
+# Copy the rest of the application code
+COPY . .
+
+# The port Phoenix listens on
+EXPOSE 4000
+
+# The command to start the Phoenix server in development
+CMD ["mix", "phx.server"]
 
 # Stage 2: Create the final runtime image
 # ----------------------------------------
@@ -98,4 +111,4 @@ EXPOSE 4000
 # Consider adding migration step here using DraftGuru.Release.migrate (see release.ex)
 # CMD ["bin/draft_guru", "start"]
 # OR, if you want to run migrations automatically on start:
-CMD ["/app/bin/draft_guru", "eval", "DraftGuru.Release.migrate()", ";", "/app/bin/draft_guru", "start"]
+CMD ["/app/bin/draft_guru", "start"]

@@ -1,0 +1,19 @@
+services:
+  db:
+    ports:
+      - "5433:5432"           
+
+  app:
+    build:
+      context: .
+      target: dev
+      dockerfile: Dockerfile   
+      args:
+        MIX_ENV: dev
+    environment:
+      MIX_ENV: dev
+    volumes:
+      - .:/app                
+    command: ["mix", "phx.server"]
+    ports:
+      - "4001:4000"
