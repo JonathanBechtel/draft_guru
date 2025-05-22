@@ -1,34 +1,25 @@
-IMAGE=jonathanbechtel/draft_guru
-TAG?=dev
+multi-platform-build-push:
+	docker buildx build --no-cache \
+  --platform linux/amd64,linux/arm64 \
+  -t jonathanbechtel/draft_guru:staging \
+  --push .
 
-build-remote:
-	docker build -t $(IMAGE):$(TAG) .
+push-remote-staging:
+	docker push jonathanbechtel/draft_guru:staging
 
-push-remote:
-	docker push $(IMAGE):$(TAG)
+dev-up:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 
-up:
-	docker-compose up
+dev-build:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build
 
-down:
-	docker-compose down
-
-build:
-	docker-compose build
-
-rebuild:
-	docker-compose up --build
+dev-up-build:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 
 .PHONY: bootstrap wait-db migrate seed
 
 # Bring *everything* from zero‑>ready in one shot
 bootstrap: build up wait-db migrate seed
-
-build:
-	docker-compose build
-
-up:
-	docker-compose up -d
 
 # crude, portable  wait loop; exits when healthcheck says "running"
 wait-db:
@@ -37,8 +28,8 @@ wait-db:
 	  sleep 2 ; \
 	done && echo "✅ database is up"
 
-migrate:
-	docker-compose exec app /app/bin/draft_guru eval "DraftGuru.Release.migrate()"
+dev-migrate:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml exec app mix ecto.migrate
 
-seed:
-	docker-compose exec app /app/bin/draft_guru eval "DraftGuru.Release.seed()"
+dev-seed:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml exec app mix run --no-start -e "DraftGuru.Release.seed()"
