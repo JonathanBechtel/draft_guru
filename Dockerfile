@@ -92,23 +92,13 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
 # Create a non-root user and group for security
 RUN adduser --system --group appuser
 
-# Set the working directory
 WORKDIR /app
 
-# Copy the compiled release from the builder stage
-# Ensure ownership is set to the non-root user
 COPY --from=builder --chown=appuser:appuser /app/_build/prod/rel/draft_guru ./
 
-# Set the default user for running the application
 USER appuser
 
-# Expose the port the application will run on (default 4000, check runtime.exs)
-# The PORT env var can override this at runtime.
 EXPOSE 4000
 
-# Define the entry point and command to start the application.
-# Using "start" runs the application in the foreground.
-# Consider adding migration step here using DraftGuru.Release.migrate (see release.ex)
-# CMD ["bin/draft_guru", "start"]
-# OR, if you want to run migrations automatically on start:
+
 CMD ["/app/bin/draft_guru", "start"]

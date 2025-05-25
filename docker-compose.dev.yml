@@ -9,5 +9,3 @@ services:
     volumes:
       - .:/app                
     command: ["mix", "phx.server"]
-    ports:
-      - "4001:4000"
