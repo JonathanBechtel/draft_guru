@@ -5,19 +5,22 @@ multi-platform-build-push:
   --push .
 
 dev-up:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 
 dev-build:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml build
 
 dev-up-build:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 
 dev-stop:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml stop
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml stop
 
 dev-down:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml down
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml down
+
+dev-logs:
+	docker compose -f docker-compose.yml -f docker-compose.stag.yml logs
 
 stag-up:
 	docker compose -f docker-compose.yml -f docker-compose.stag.yml up
@@ -40,14 +43,17 @@ stag-down:
 stag-ps:
 	docker compose -f docker-compose.yml -f docker-compose.stag.yml ps
 
+stag-logs:
+	docker compose -f docker-compose.yml -f docker-compose.stag.yml logs
+
 dev-ps:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml ps
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml ps
 
 dev-migrate:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml exec app mix ecto.migrate
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app mix ecto.migrate
 
 dev-seed:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml exec app mix run --no-start -e "DraftGuru.Release.seed()"
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app mix run --no-start -e "DraftGuru.Release.seed()"
 
 stag-migrate:
 	docker compose -f docker-compose.yml -f docker-compose.stag.yml \
@@ -56,5 +62,3 @@ stag-migrate:
 stag-seed:
 	docker compose -f docker-compose.yml -f docker-compose.stag.yml \
 		exec app bin/draft_guru eval "DraftGuru.Release.seed()"
-
-
