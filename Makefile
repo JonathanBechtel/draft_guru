@@ -46,6 +46,12 @@ stag-ps:
 stag-logs:
 	docker compose -f docker-compose.yml -f docker-compose.stag.yml logs
 
+stag-bash:
+	docker compose -f docker-compose.yml -f docker-compose.stag.yml exec --user root app /bin/sh
+
+dev-bash:
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml exec --user root app /bin/sh
+
 dev-ps:
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml ps
 

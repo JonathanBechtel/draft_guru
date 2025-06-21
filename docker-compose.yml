@@ -18,7 +18,7 @@ services:
   app:
     restart: always
     env_file:
-      - .env                 # each env has its own .env file
+      - .env                 
     depends_on:
       db:
         condition: service_healthy
