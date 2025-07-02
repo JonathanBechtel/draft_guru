@@ -32,7 +32,7 @@
   </div>
 </div>
 
-<.form :let={f} for={%{}} as={:bulk_update} action={~p"/models/player_info/bulk_update"} method="post" id="bulk-update-form">
+<.form :let={_f} for={%{}} as={:bulk_update} action={~p"/models/player_info/bulk_update"} method="post" id="bulk-update-form">
   <.table
     id="player_infos"
     rows={@player_infos}

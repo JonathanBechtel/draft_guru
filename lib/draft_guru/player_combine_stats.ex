@@ -139,7 +139,7 @@ defmodule DraftGuru.PlayerCombineStats do
 
     # --- 2. Build the Ecto.Multi Transaction ---
     Multi.new()
-    |> Multi.run(:find_or_create_player, fn repo, _changes ->
+    |> Multi.run(:find_or_create_player, fn _repo, _changes ->
       # Try to find the player using the exact match function
       case Players.get_player_by_name(canonical_attrs) do
         %Player{} = existing_player ->
@@ -256,28 +256,29 @@ defmodule DraftGuru.PlayerCombineStats do
       PlayerCombineStat.changeset(%PlayerCombineStat{}, updated_combine_stats_attrs)
     end)
     |> Repo.transaction()
-    |> case do
-      {:ok, results} ->
-        {:ok, results}
-      {:error, :player_combine_stats, {:error, :missing_required_combine_stats_fields, data}, _changes} ->
-        # ... (existing handling) ...
-        {:error, :validation, %{reason: :missing_required_combine_stats_fields, data: data}}
-      {:error, :player_combine_stats, %Ecto.Changeset{} = invalid_changeset, _changes} -> # <--- ADD THIS CLAUSE
-        # This catches validation errors from PlayerCombineStat.changeset/2
-        ChangesetLogger.log_failure(invalid_changeset, %{module: DraftGuru.Players.PlayerCombineStat, reason: "validation"})
-        # Return an error tuple consistent with other failures
-        {:error, :player_combine_stats_validation, invalid_changeset}
-      {:error, failed_step, error_value, _changes} ->
-        # This handles other errors (DB errors, other steps failing)
-        # You could add more specific logging here if needed
-        IO.puts("Transaction failed at step: #{failed_step}")
-        IO.inspect(error_value, label: "Error Value")
-        # Log if it's a changeset error from a *different* step
-        if is_struct(error_value, Ecto.Changeset) do
-          ChangesetLogger.log_failure(error_value, %{module: "Unknown", step: failed_step})
-        end
-        {:error, failed_step, error_value}
-    end
+    |> Repo.transaction()
+    #|> case do
+    #  {:ok, results} ->
+    #    {:ok, results}
+    #  {:error, :player_combine_stats, {:error, :missing_required_combine_stats_fields, data}, _changes} ->
+    #    # ... (existing handling) ...
+    #    {:error, :validation, %{reason: :missing_required_combine_stats_fields, data: data}}
+    #  {:error, :player_combine_stats, %Ecto.Changeset{} = invalid_changeset, _changes} -> # <--- ADD THIS CLAUSE
+    #    # This catches validation errors from PlayerCombineStat.changeset/2
+    #    ChangesetLogger.log_failure(invalid_changeset, %{module: DraftGuru.Players.PlayerCombineStat, reason: "validation"})
+    #    # Return an error tuple consistent with other failures
+    #    {:error, :player_combine_stats_validation, invalid_changeset}
+    #  {:error, failed_step, error_value, _changes} ->
+    #    # This handles other errors (DB errors, other steps failing)
+    #    # You could add more specific logging here if needed
+    #    IO.puts("Transaction failed at step: #{failed_step}")
+    #    IO.inspect(error_value, label: "Error Value")
+    #    # Log if it's a changeset error from a *different* step
+    #    if is_struct(error_value, Ecto.Changeset) do
+    #      ChangesetLogger.log_failure(error_value, %{module: "Unknown", step: failed_step})
+    #    end
+    #    {:error, failed_step, error_value}
+    #end
 
   end
 
@@ -296,11 +297,7 @@ defmodule DraftGuru.PlayerCombineStats do
     Repo.delete(player)
   end
 
-  # --- Private Helpers ---
-
-  @doc """
-  Converts string keys in a map to atom keys.
-  """
+  @doc false
   defp atomize_keys(map) when is_map(map) do
     Map.new(map, fn {key, value} -> {String.to_atom(key), value} end)
   end

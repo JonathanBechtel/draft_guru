@@ -250,15 +250,6 @@ defmodule DraftGuru.DataCollection.Utilities do
     nil  # Return nil for invalid values
   end
 
-  defp parse_float(str) when is_binary(str) do
-
-    case Float.parse(str) do
-      {value, ""} -> value
-      {value, _rest} -> value
-      :error -> str
-    end
-  end
-
   def parse_draft_year(nil), do: "unknown"
   def parse_draft_year(year) when is_integer(year), do: year
   def parse_draft_year(year) when is_float(year), do: trunc(year)

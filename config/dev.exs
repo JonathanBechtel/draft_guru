@@ -1,11 +1,15 @@
 import Config
 
 # Configure your database
+# Use a DATABASE_URL for development, similar to production.
+# This allows for connecting to managed dev databases like Neon.
+database_url =
+  System.get_env("DATABASE_URL") ||
+    "postgresql://jb_admin:npg_8UWOwgIj7YaJ@ep-autumn-unit-a5qjxgqu-pooler.us-east-2.aws.neon.tech/draft_guru?sslmode=require&channel_binding=require"
+
 config :draft_guru, DraftGuru.Repo,
-  username: "jbadmin",
-  password: "bX$!#kZ23",
-  hostname: "db",
-  database: "draft_guru_dev",
+  # Instead of hardcoding credentials, use the URL.
+  url: database_url,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10

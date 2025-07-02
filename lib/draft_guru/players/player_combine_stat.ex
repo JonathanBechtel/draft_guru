@@ -1,7 +1,6 @@
 defmodule DraftGuru.Players.PlayerCombineStat do
   use Ecto.Schema
   import Ecto.Changeset
-  alias DraftGuru.ChangesetLogger
 
   @primary_key {:id, :id, autogenerate: true}
   schema "player_combine_stats" do

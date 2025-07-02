@@ -10,13 +10,13 @@ defmodule DraftGuru.Accounts.UserRoles do
     timestamps(utc: :datetime)
   end
 
-  @valid_roles ["admin", "contributer", "user"]
+  @valid_roles ["admin", "contributor", "user"]
 
   @doc false
   def changeset(user_role, attrs) do
     user_role
     |> cast(attrs, [:role])
     |> validate_required([:role], message: "must choose a role")
-    |> validate_inclusion([:role], @valid_roles, message: "role must be one of admin, contributor, or user")
+    |> validate_inclusion(:role, @valid_roles, message: "role must be one of admin, contributor, or user")
   end
 end

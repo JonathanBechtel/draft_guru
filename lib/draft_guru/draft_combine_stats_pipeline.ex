@@ -136,7 +136,9 @@ defmodule DraftGuru.DraftCombineStatsPipeline do
           {:ok, record} ->
             IO.puts("Successfully inserted record for player: #{player_map["player_slug"]}")
             {:ok, record}
-          {:error, _changeset} -> IO.puts("Unsuccessful insertion for player: #{player_map["player_slug"]}")
+          {:error, reason} ->
+  IO.puts("Unsuccessful insertion for player: #{player_map["player_slug"]}, because: #{reason}")
+  {:error, :insertion_failed}  # Add explicit return value
         end
       end
 

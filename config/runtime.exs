@@ -63,7 +63,7 @@ if config_env() == :prod do
       # See the documentation on https://hexdocs.pm/bandit/Bandit.html#t:options/0
       # for details about using IPv6 vs IPv4 and loopback vs public addresses.
       # setting to just use IPV4 traffic for now -- as per InMotion Hosting
-      ip: {0, 0, 0, 0},
+      ip: {0, 0, 0, 0, 0, 0},
       port: port
     ],
     secret_key_base: secret_key_base,

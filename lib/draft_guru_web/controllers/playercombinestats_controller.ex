@@ -61,11 +61,8 @@ defmodule DraftGuruWeb.PlayerCombineStatsController do
         |> put_flash(:info, "Sucessfully created player.")
         |> redirect(to: ~p"/models/player_combine_stats")
 
-      {:error, failed_operation, failed_value, _changes_so_far} ->
-        # is there a better way to handle this?
-        conn
-        |> put_flash(:error, "Failed to successfully create the record.  Operation: #{failed_operation}, value: #{failed_value}")
-        |> render(conn, :new)
+      {:error, _failed_step, changeset, _changes} ->
+        render(conn, :new, changeset: changeset)
     end
   end
 
