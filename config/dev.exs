@@ -11,6 +11,10 @@ config :draft_guru, DraftGuru.Repo,
   # Instead of hardcoding credentials, use the URL.
   url: database_url,
   stacktrace: true,
+  ssl: true,
+  ssl_opts: [
+    verify: :verify_none
+  ],
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
