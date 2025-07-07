@@ -1,38 +1,24 @@
-services:
-  db:
-    image: postgres:${PG_TAG:-latest}
-    environment:
-      POSTGRES_USER:     ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB:       ${POSTGRES_DB}
-    ports:
-      - "5433:5432"
-    volumes:
-      - draft_guru_postgres:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+version: "3.9"
 
+services:
   app:
-    restart: always
+    build: .
+    # or `image: jonathanbechtel/draft_guru:staging` once you push
     env_file:
-      - .env                 
-    depends_on:
-      db:
-        condition: service_healthy
+      - .env
     environment:
-      MIX_ENV:   ${MIX_ENV:-prod}
+      # Phoenix / release flags
       PHX_SERVER: "true"
       PORT: ${PORT:-4000}
-      PHX_HOST: ${PHX_HOST}
       SECRET_KEY_BASE: ${SECRET_KEY_BASE}
-      DATABASE_URL: ${DATABASE_URL}
-      POOL_SIZE: 10
-      PUBLIC_CANONICAL_HOST: ${PUBLIC_CANONICAL_HOST}
-    ports:
-      - ${APP_PORTS:-"4000:4000"}
 
-volumes:
-  draft_guru_postgres:
+      # Postgres (Neon) -- include `sslmode=require`
+      DATABASE_URL: ${DATABASE_URL}
+
+      # Optional: pool & host config you already use
+      POOL_SIZE: ${POOL_SIZE:-10}
+      PHX_HOST:  ${PHX_HOST:-localhost}
+      PUBLIC_CANONICAL_HOST: ${PUBLIC_CANONICAL_HOST:-localhost}
+    ports:
+      - "${APP_PORTS:-4000:4000}"
+    restart: unless-stopped

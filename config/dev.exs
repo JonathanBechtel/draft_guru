@@ -7,13 +7,15 @@ database_url =
   System.get_env("DATABASE_URL") ||
     "postgresql://jb_admin:npg_8UWOwgIj7YaJ@ep-autumn-unit-a5qjxgqu-pooler.us-east-2.aws.neon.tech/draft_guru?sslmode=require&channel_binding=require"
 
+cacertfile = System.get_env("PG_SSL_LOCATION", "/etc/ssl/cert.pem")
+
 config :draft_guru, DraftGuru.Repo,
   # Instead of hardcoding credentials, use the URL.
   url: database_url,
   stacktrace: true,
   ssl: [
     verify: :verify_peer,
-    cacertfile: "/etc/ssl/cert.pem",
+    cacertfile: cacertfile,
     server_name_indication: ~c"ep-autumn-unit-a5qjxgqu-pooler.us-east-2.aws.neon.tech"
   ],
   show_sensitive_data_on_connection_error: true,

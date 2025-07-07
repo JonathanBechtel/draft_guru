@@ -1,11 +1,17 @@
-services:      
+# compose.dev.yml
+services:
   app:
     build:
       context: .
-      target: dev
-      dockerfile: Dockerfile   
+      target: builder
       args:
         MIX_ENV: dev
     volumes:
-      - .:/app                
+      - .:/app
     command: ["mix", "phx.server"]
+    ports:
+      - "4000:4000"
+    environment:
+      MIX_ENV: dev
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY_BASE: dev_secret_key_base
