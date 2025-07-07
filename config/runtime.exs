@@ -37,7 +37,13 @@ if config_env() == :prod do
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
   config :draft_guru, DraftGuru.Repo,
-    ssl: true,
+    ssl: [
+    verify: :verify_peer,
+    # note -- this is assuming you are running out of docker
+    # assumption should be true if using non-dev docker deploy
+    cacertfile: "/etc/ssl/certs/ca-certificates.crt",
+    server_name_indication: ~c"ep-autumn-unit-a5qjxgqu-pooler.us-east-2.aws.neon.tech"
+    ],
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
     socket_options: maybe_ipv6
@@ -67,7 +73,7 @@ if config_env() == :prod do
       # See the documentation on https://hexdocs.pm/bandit/Bandit.html#t:options/0
       # for details about using IPv6 vs IPv4 and loopback vs public addresses.
       # setting to just use IPV4 traffic for now -- as per InMotion Hosting
-      ip: {0, 0, 0, 0, 0, 0},
+      ip: {0, 0, 0, 0},
       port: port
     ],
     secret_key_base: secret_key_base,
