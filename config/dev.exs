@@ -11,9 +11,10 @@ config :draft_guru, DraftGuru.Repo,
   # Instead of hardcoding credentials, use the URL.
   url: database_url,
   stacktrace: true,
-  ssl: true,
-  ssl_opts: [
-    verify: :verify_none
+  ssl: [
+    verify: :verify_peer,
+    cacertfile: "/etc/ssl/cert.pem",
+    server_name_indication: ~c"ep-autumn-unit-a5qjxgqu-pooler.us-east-2.aws.neon.tech"
   ],
   show_sensitive_data_on_connection_error: true,
   pool_size: 10

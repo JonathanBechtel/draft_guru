@@ -20,6 +20,11 @@ if System.get_env("PHX_SERVER") do
   config :draft_guru, DraftGuruWeb.Endpoint, server: true
 end
 
+# automatically load env vars in non-prod environment
+if config_env() != :prod do
+  Dotenv.load!(".env")
+end
+
 if config_env() == :prod do
 
   database_url =
@@ -50,7 +55,6 @@ if config_env() == :prod do
       """
 
   public_host = System.get_env("PUBLIC_CANONICAL_HOST") || "localhost"
-  host = System.get_env("PHX_HOST") || "example.com"
   port = String.to_integer(System.get_env("PORT") || "4000")
 
   config :draft_guru, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")

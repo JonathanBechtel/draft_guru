@@ -60,7 +60,8 @@ defmodule DraftGuru.MixProject do
       {:bandit, "~> 1.5"},
       {:httpoison, "~> 2.0"},
       {:floki, ">= 0.30.0"},
-      {:nimble_csv, "~> 1.1"}
+      {:nimble_csv, "~> 1.1"},
+      {:dotenv, "~> 3.0.0"}
     ]
   end
 
